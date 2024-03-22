@@ -19,5 +19,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "declaration.d.ts"]
+  "include": ["src", "declaration.d.ts"],
+  "exclude": ["src/devmain.ts"]
 }

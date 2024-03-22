@@ -1,8 +1,10 @@
 {
-  "name": "tiptap-exitus",
+  "name": "exituseditor",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "files": ["dist"],
+  "main": "./dist/exituseditor.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
