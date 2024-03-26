@@ -12,35 +12,22 @@ function isEmptyObject(obj: Object) {
 class Toolbar {
   editor: Editor;
   toolbarItems: string[];
+  toolbarItemsDiv: HTMLDivElement;
 
-  constructor(editor: Editor, toolbarItems: string[]) {
+  constructor(editor: Editor, toolbarItems: string[], toolbarItemsDiv: HTMLDivElement) {
     this.editor = editor;
     this.toolbarItems = toolbarItems;
-  }
-
-  createButton(icon: string) {
-    const button = document.createElement("button");
-    button.className = "toolbar-button";
-    button.innerHTML = icon;
-    return button;
+    this.toolbarItemsDiv = toolbarItemsDiv
   }
 
   createToolbar() {
-    const titems = document.querySelector<HTMLDivElement>(".toolbar-items");
     this.toolbarItems.forEach((item) => {
-      const tool = getExtensionStorage(this.editor, item);
+    const tool = getExtensionStorage(this.editor, item);
 
       if (!isEmptyObject(tool)) {
-        const button = this.createButton(tool.icon);
-        button.addEventListener(
-          "click",
-          tool.callbackEvent.bind({
-            button,
-            editor: this.editor,
-          })
-        );
-        tool.toolbarButton = button;
-        titems?.appendChild(button);
+        const toolbarButton = tool.toolbarButton;
+        toolbarButton.setEditor(this.editor)
+        this.toolbarItemsDiv?.appendChild(toolbarButton.generateButton());
       }
     });
   }

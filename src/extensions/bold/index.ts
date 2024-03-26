@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { Bold as BoldBase } from "@tiptap/extension-bold";
 import bold from "../../assets/icons/Editor/bold.svg";
+import Button from "../../editor/ui/Button";
+import { Editor } from "@tiptap/core";
 
 function toggleBold() {
   this.editor.chain().focus().toggleBold().run();
@@ -14,15 +16,18 @@ function toggleBold() {
 const Bold = BoldBase.extend({
   addStorage() {
     return {
-      icon: bold,
-      callbackEvent: toggleBold,
-      toolbarButton: null,
+      toolbarButton: new Button({
+        icon: bold,
+        events: {
+          "click": toggleBold
+        }
+      }),
     };
   },
-  onSelectionUpdate({ editor }) {
-    const button = this.storage.toolbarButton
+  onSelectionUpdate() {
+    const button = this.storage.toolbarButton.button
     
-    if (editor.isActive(this.name)) {
+    if (this.editor.isActive(this.name)) {
       button.classList.add("toolbar-button-active");
     } else {
       button.classList.remove("toolbar-button-active");
