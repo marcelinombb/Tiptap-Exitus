@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/exituseditor.js",
   "scripts": {
     "dev": "vite",
@@ -15,14 +17,8 @@
     "vite": "^5.2.0",
     "vite-svg-loader": "^5.1.0"
   },
-   "dependencies": {
+  "dependencies": {
     "@tiptap/core": "^2.2.4",
-    "@tiptap/extension-table": "^2.2.4",
-    "@tiptap/extension-table-cell": "^2.2.4",
-    "@tiptap/extension-table-header": "^2.2.4",
-    "@tiptap/extension-table-row": "^2.2.4",
-    "@tiptap/extension-text-align": "^2.2.4",
-    "@tiptap/pm": "^2.2.4",
     "@tiptap/extension-blockquote": "^2.2.4",
     "@tiptap/extension-bold": "^2.2.4",
     "@tiptap/extension-bullet-list": "^2.2.4",
@@ -33,11 +29,19 @@
     "@tiptap/extension-heading": "^2.2.4",
     "@tiptap/extension-history": "^2.2.4",
     "@tiptap/extension-horizontal-rule": "^2.2.4",
+    "@tiptap/extension-image": "^2.2.4",
     "@tiptap/extension-italic": "^2.2.4",
     "@tiptap/extension-list-item": "^2.2.4",
     "@tiptap/extension-ordered-list": "^2.2.4",
     "@tiptap/extension-paragraph": "^2.2.4",
     "@tiptap/extension-strike": "^2.2.4",
-    "@tiptap/extension-text": "^2.2.4"
+    "@tiptap/extension-table": "^2.2.4",
+    "@tiptap/extension-table-cell": "^2.2.4",
+    "@tiptap/extension-table-header": "^2.2.4",
+    "@tiptap/extension-table-row": "^2.2.4",
+    "@tiptap/extension-text": "^2.2.4",
+    "@tiptap/extension-text-align": "^2.2.4",
+    "@tiptap/pm": "^2.2.4",
+    "vite-plugin-css-injected-by-js": "^3.5.0"
   }
 }

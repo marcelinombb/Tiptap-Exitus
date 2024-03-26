@@ -1,11 +1,13 @@
 import { defineConfig } from "vite";
 import { resolve } from 'path'
-
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 import svgLoader from 'vite-svg-loader';
+
 export default defineConfig({
   base: './',
   root: "src",
   build: {
+    sourcemap: true,
     polyfill: false,
     outDir: "../dist",
     emptyOutDir: true,
@@ -24,6 +26,7 @@ export default defineConfig({
   plugins: [
     svgLoader({
       defaultImport: 'raw'
-    })
+    }),
+    cssInjectedByJsPlugin({styleId: "exitus-editor-style"}),
   ]
 });
