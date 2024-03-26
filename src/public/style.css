@@ -1,4 +1,5 @@
 .tiptap {
+    box-sizing: border-box;
     padding: 1rem;
     table {
       border-collapse: collapse;
@@ -102,8 +103,8 @@
   }
 
   .toolbar-button-active {
-    color: red;
-    border-color: red;
+    color: hsl(218,81.8%,56.9%);;
+    background-color: #cae1fc;
   }
 
   .toolbar-button:hover {
@@ -176,23 +177,33 @@
     padding: 0 20px;
   }
 
-  .dropdown-content {
+  .dropdown {
     display: none;
     position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-    padding: 12px 16px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px 1px rgba(0,0,0,.15);
+    padding: 10px;
     z-index: 1;
   }
-  
-  .dropdown-content a {
-    color: black;
-    padding: 8px 0;
-    text-decoration: none;
-    display: block;
+
+  .dropdown-content {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    width: calc(12px * 10 + 2px * 10) /* calc(width * 10 + margin(left + right) * 10 + padding(left + right)) */ 
   }
-  
-  .dropdown-content a:hover {
-    background-color: #f1f1f1;
+
+  .grid-button {
+    width: 12px;
+    height: 11px;
+    border: none;
+    cursor: pointer;
+    margin: 1px;
+    border: 1px solid #ccced1;
+    padding: calc( 0.6em *0.3);
+  }
+
+  .grid-button-hover {
+    background: #cae1fc;
+    border-color: hsl(218,81.8%,56.9%);
   }

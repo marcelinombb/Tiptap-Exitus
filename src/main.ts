@@ -1,3 +1,5 @@
+import './public/style.css'
+
 import Bold from './extensions/bold'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
@@ -19,7 +21,9 @@ import { OrderedList } from '@tiptap/extension-ordered-list'
 import { Paragraph } from '@tiptap/extension-paragraph'
 import { Strike } from '@tiptap/extension-strike'
 import { Text } from '@tiptap/extension-text'
+import Image from '@tiptap/extension-image'
 import ExitusEditor from './ExitusEditor'
+
 
 ExitusEditor.extensions = [
   Blockquote,
@@ -38,6 +42,10 @@ ExitusEditor.extensions = [
   OrderedList,
   Text,
   Bold,
+  Image.configure({
+    inline: true,
+    allowBase64: true,
+  }),
   TableCustom.configure({
     resizable: true,
     allowTableNodeSelection: true
