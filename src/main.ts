@@ -1,11 +1,5 @@
 import './public/style.css'
 
-import Bold from './extensions/bold'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import TableRow from '@tiptap/extension-table-row'
-import TextAlign from '@tiptap/extension-text-align'
-import TableCustom from './extensions/table'
 import { Blockquote } from '@tiptap/extension-blockquote'
 import { BulletList } from '@tiptap/extension-bullet-list'
 import { Document } from '@tiptap/extension-document'
@@ -15,15 +9,21 @@ import { HardBreak } from '@tiptap/extension-hard-break'
 import { Heading } from '@tiptap/extension-heading'
 import { History } from '@tiptap/extension-history'
 import { HorizontalRule } from '@tiptap/extension-horizontal-rule'
-import Italic from './extensions/italic/Italic'
+import Image from '@tiptap/extension-image'
 import { ListItem } from '@tiptap/extension-list-item'
 import { OrderedList } from '@tiptap/extension-ordered-list'
 import { Paragraph } from '@tiptap/extension-paragraph'
 import { Strike } from '@tiptap/extension-strike'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 import { Text } from '@tiptap/extension-text'
-import Image from '@tiptap/extension-image'
-import ExitusEditor from './ExitusEditor'
+import TextAlign from '@tiptap/extension-text-align'
 
+import ExitusEditor from './ExitusEditor'
+import Bold from './extensions/bold'
+import Italic from './extensions/italic/Italic'
+import TableCustom from './extensions/table'
 
 ExitusEditor.extensions = [
   Blockquote,
@@ -44,7 +44,7 @@ ExitusEditor.extensions = [
   Bold,
   Image.configure({
     inline: true,
-    allowBase64: true,
+    allowBase64: true
   }),
   TableCustom.configure({
     resizable: true,
@@ -54,8 +54,8 @@ ExitusEditor.extensions = [
   TableHeader,
   TableCell,
   TextAlign.configure({
-    types: ['heading', 'paragraph', "table"],
-  }),
+    types: ['heading', 'paragraph', 'table']
+  })
 ]
 
-export default ExitusEditor;
+export default ExitusEditor

@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { Node as ProseMirrorNode } from '@tiptap/pm/model'
-import { NodeView } from '@tiptap/pm/view'
+import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
+import { type NodeView } from '@tiptap/pm/view'
 
 export function updateColumns(
   node: ProseMirrorNode,
@@ -8,7 +8,7 @@ export function updateColumns(
   table: Element,
   cellMinWidth: number,
   overrideCol?: number,
-  overrideValue?: any,
+  overrideValue?: any
 ) {
   let totalWidth = 0
   let fixedWidth = true
@@ -87,14 +87,11 @@ export class TableView implements NodeView {
 
     this.node = node
     updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
-    
+
     return true
   }
 
   ignoreMutation(mutation: MutationRecord | { type: 'selection'; target: Element }) {
-    return (
-      mutation.type === 'attributes'
-      && (mutation.target === this.table || this.colgroup.contains(mutation.target))
-    )
+    return mutation.type === 'attributes' && (mutation.target === this.table || this.colgroup.contains(mutation.target))
   }
 }
