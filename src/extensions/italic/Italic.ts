@@ -3,21 +3,25 @@ import { Italic as ItalicBase } from '@tiptap/extension-italic'
 
 import italic from '../../assets/icons/Editor/italic.svg'
 
-function toggleItalic({ editor }) {
+function toggleItalic({ editor, button }) {
   editor.chain().focus().toggleItalic().run()
+  if (editor.isActive('italic')) {
+    button.classList.add('ex-button-active')
+  } else {
+    button.classList.remove('ex-button-active')
+  }
 }
 
-const Italic = ItalicBase.extend({
+export const Italic = ItalicBase.extend({
   addStorage() {
     return {
-      toolbarButton: {
+      toolbarButtonConfig: {
         icon: italic,
         events: {
           click: toggleItalic
-        }
+        },
+        checkActive: this.name
       }
     }
   }
 })
-
-export default Italic

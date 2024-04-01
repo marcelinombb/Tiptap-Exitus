@@ -1,19 +1,31 @@
 import { type Editor } from '@tiptap/core'
 
+export interface EventProps {
+  editor: Editor
+  button: HTMLButtonElement
+  event: Event
+}
+
 export interface ButtonConfig {
   icon: string
   label?: string
   attributes?: object[]
   events?: {
-    [key: string]: (...args: any) => void
+    [key: string]: (obj: EventProps) => void
   }
+  checkActive?: string | object
 }
-export default class Button {
+
+const defaultConfig: ButtonConfig = {
+  icon: ''
+}
+
+export class Button {
   config: ButtonConfig
   button: HTMLButtonElement
   editor: Editor
   constructor(editor: Editor, config: ButtonConfig) {
-    this.config = config
+    this.config = { ...defaultConfig, ...config }
     this.editor = editor
     this.button = this.createButton()
   }
@@ -32,7 +44,6 @@ export default class Button {
   bindEvents() {
     const events = this.config.events
     for (const key in events) {
-      //events[key] = event => events[key](event, this.editor, this.button)
       const currying = (editor: Editor, button: HTMLButtonElement) => {
         return (event: any) => {
           events[key]({
@@ -46,16 +57,26 @@ export default class Button {
     }
   }
 
-  removeEvents() {
-    const events = this.config.events
-    for (const key in events) {
-      this.button.removeEventListener(key, events[key] as EventListener)
+  checkActive() {
+    if (this.config.checkActive != undefined) {
+      this.editor.on('selectionUpdate', () => {
+        if (this.editor.isActive(this.config?.checkActive as string | object)) {
+          this.button.classList.add('ex-button-active')
+        } else {
+          this.button.classList.remove('ex-button-active')
+        }
+      })
     }
   }
 
   generateButton() {
     this.bindEvents()
+    this.checkActive()
     this.button.innerHTML = this.config.icon
+    return this.button
+  }
+
+  getButtonElement(): HTMLButtonElement {
     return this.button
   }
 }

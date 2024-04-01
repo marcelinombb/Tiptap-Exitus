@@ -1,7 +1,7 @@
 import { type Editor } from '@tiptap/core'
 
 import type ExitusEditor from '../../ExitusEditor'
-import Button from '../ui/Button'
+import { Button } from '../ui'
 
 function getExtensionStorage(editor: Editor, name: string) {
   const storage = editor.extensionStorage[name]
@@ -24,13 +24,12 @@ class Toolbar {
   }
 
   createToolbar() {
-    //console.log(this.editor)
     this.toolbarItems.forEach(item => {
       const tool = getExtensionStorage(this.editor, item)
 
       if (!isEmptyObject(tool)) {
-        const toolbarButton = tool.toolbarButton
-        const button = new Button(this.editor, toolbarButton)
+        const toolbarButtonConfig = tool.toolbarButtonConfig
+        const button = new Button(this.editor, toolbarButtonConfig)
         this.toolbarItemsDiv?.append(button.generateButton())
       }
     })

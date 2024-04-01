@@ -30,7 +30,6 @@ class ExitusEditor {
     this.editor = this._createEditor()
     this.toolbar = new Toolbar(this)
     this.toolbar.createToolbar()
-    console.log(this.editor)
   }
 
   _generateEditorUI() {
