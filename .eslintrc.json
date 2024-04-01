@@ -19,6 +19,7 @@
       "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
+      "import/export": 0,
       "prettier/prettier": [
         "error",
         {
