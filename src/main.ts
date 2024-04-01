@@ -13,17 +13,20 @@ import Image from '@tiptap/extension-image'
 import { ListItem } from '@tiptap/extension-list-item'
 import { OrderedList } from '@tiptap/extension-ordered-list'
 import { Paragraph } from '@tiptap/extension-paragraph'
-import { Strike } from '@tiptap/extension-strike'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import { Text } from '@tiptap/extension-text'
-import TextAlign from '@tiptap/extension-text-align'
 
 import ExitusEditor from './ExitusEditor'
-import Bold from './extensions/bold'
-import Italic from './extensions/italic/Italic'
-import TableCustom from './extensions/table'
+import { Bold } from './extensions/bold'
+import { Italic } from './extensions/italic/Italic'
+import { Strike } from './extensions/strike/strike'
+import { Subscript } from './extensions/subscript/subscript'
+import { Superscript } from './extensions/superscript/superscript'
+import { TableCustom } from './extensions/table/table'
+import { TextAlign } from './extensions/textAlign'
+import { Underline } from './extensions/underline/underline'
 
 ExitusEditor.extensions = [
   Blockquote,
@@ -41,6 +44,8 @@ ExitusEditor.extensions = [
   Paragraph,
   OrderedList,
   Text,
+  Subscript,
+  Superscript,
   Bold,
   Image.configure({
     inline: true,
@@ -55,7 +60,8 @@ ExitusEditor.extensions = [
   TableCell,
   TextAlign.configure({
     types: ['heading', 'paragraph', 'table']
-  })
+  }),
+  Underline
 ]
 
 export default ExitusEditor
