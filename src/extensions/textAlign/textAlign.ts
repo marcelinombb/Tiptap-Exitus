@@ -1,4 +1,3 @@
-import { type Editor } from '@tiptap/core'
 import { TextAlign as TextAlignBase } from '@tiptap/extension-text-align'
 
 import centertIcon from '../../assets/icons/Editor/align-center.svg'
@@ -7,10 +6,12 @@ import alignLeftIcon from '../../assets/icons/Editor/align-left.svg'
 import alignRightIcon from '../../assets/icons/Editor/align-right.svg'
 import arrowDropDown from '../../assets/icons/Editor/arrow-drop-down-line.svg'
 import { Button, createDropDown, type EventProps } from '../../editor/ui'
+import type ExitusEditor from '../../ExitusEditor'
 
-function createAlignmentButton(editor: Editor, icon: string, alignment: string) {
+function createAlignmentButton(editor: ExitusEditor, icon: string, alignment: string) {
   return new Button(editor, {
     icon: icon,
+    classList: ['ex-mr-0'],
     events: {
       click: ({ editor }) => {
         editor.chain().focus().setTextAlign(alignment).run()
@@ -20,8 +21,8 @@ function createAlignmentButton(editor: Editor, icon: string, alignment: string) 
   }).generateButton()
 }
 
-function initializeDropDown(editor: Editor) {
-  const dropdown = createDropDown('textAlign', ['ex-dropdown-alignments'])
+function initializeDropDown(editor: ExitusEditor) {
+  const dropdown = createDropDown('textAlign' + editor.editorInstance, ['ex-dropdown-alignments'])
   const dropdownContent = dropdown.querySelector('.ex-dropdown-content')
 
   const alignLeft = createAlignmentButton(editor, alignLeftIcon, 'left')
@@ -48,8 +49,7 @@ function initializeDropDown(editor: Editor) {
 
 function showDropdown({ event, editor, button }: EventProps) {
   event.stopPropagation()
-
-  const dropdown = document.getElementById('textAlign') || initializeDropDown(editor)
+  const dropdown = document.getElementById('textAlign' + editor.editorInstance) || initializeDropDown(editor)
 
   if (dropdown.style.display === 'block') {
     dropdown.style.display = 'none'

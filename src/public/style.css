@@ -82,6 +82,10 @@
     outline: 3px solid #ffc83d;
   }
 
+  .ex-selected {
+    outline-color: hsl(218,81.8%,56.9%);
+  }
+
   .tiptap-widget {
       outline-color: transparent;
       outline-style: solid;
@@ -103,9 +107,17 @@
     border-radius: 5px;
   }
 
+  .ex-mr-0 {
+    margin-right: 0px;
+  }
+
   .ex-button-active {
     color: hsl(218,81.8%,56.9%);;
     background-color: #cae1fc;
+  }
+
+  .ex-hidden {
+    display: none!important;
   }
 
   .ex-toolbar-button:hover {
@@ -215,4 +227,14 @@
   .ex-grid-button-hover {
     background: #cae1fc;
     border-color: hsl(218,81.8%,56.9%);
+  }
+
+  .ex-image {
+    clear: both;
+    display: table;
+    max-width: 100%;
+  }
+
+  .ex-image-block-middle {
+    margin: 0.9em auto;
   }

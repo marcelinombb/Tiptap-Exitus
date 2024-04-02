@@ -1,7 +1,7 @@
-import { type Editor } from '@tiptap/core'
+import type ExitusEditor from '../../ExitusEditor'
 
 export interface EventProps {
-  editor: Editor
+  editor: ExitusEditor
   button: HTMLButtonElement
   event: Event
 }
@@ -10,6 +10,7 @@ export interface ButtonConfig {
   icon: string
   label?: string
   attributes?: object[]
+  classList?: string[]
   events?: {
     [key: string]: (obj: EventProps) => void
   }
@@ -17,26 +18,27 @@ export interface ButtonConfig {
 }
 
 const defaultConfig: ButtonConfig = {
-  icon: ''
+  icon: '',
+  classList: []
 }
 
 export class Button {
   config: ButtonConfig
   button: HTMLButtonElement
-  editor: Editor
-  constructor(editor: Editor, config: ButtonConfig) {
+  editor: ExitusEditor
+  constructor(editor: ExitusEditor, config: ButtonConfig) {
     this.config = { ...defaultConfig, ...config }
     this.editor = editor
     this.button = this.createButton()
   }
 
-  setEditor(editor: Editor) {
+  setEditor(editor: ExitusEditor) {
     this.editor = editor
   }
 
   createButton() {
     const button = document.createElement('button')
-    button.className = 'ex-toolbar-button'
+    button.classList.add('ex-toolbar-button', ...(this.config.classList as string[]))
     button.setAttribute('id', `${Math.floor(Math.random() * 100) + 1}`)
     return button
   }
@@ -44,7 +46,7 @@ export class Button {
   bindEvents() {
     const events = this.config.events
     for (const key in events) {
-      const currying = (editor: Editor, button: HTMLButtonElement) => {
+      const currying = (editor: ExitusEditor, button: HTMLButtonElement) => {
         return (event: any) => {
           events[key]({
             event,

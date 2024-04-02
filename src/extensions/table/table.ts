@@ -4,6 +4,7 @@ import Table from '@tiptap/extension-table'
 
 import arrowDropDown from '../../assets/icons/Editor/arrow-drop-down-line.svg'
 import { type EventProps } from '../../editor/ui'
+import type ExitusEditor from '../../ExitusEditor'
 
 import table from './../../assets/icons/Editor/table-2.svg'
 import { TableView } from './TableView'
@@ -24,7 +25,7 @@ function onSelectTableRowColumn(event): EventListener {
   })
 }
 
-function insertTableRowColumn(editor: Editor): EventListener {
+function insertTableRowColumn(editor: ExitusEditor): EventListener {
   return event => {
     const target = event.target as HTMLElement
     const columns = parseInt(target.getAttribute('data-column') as string)
@@ -33,10 +34,10 @@ function insertTableRowColumn(editor: Editor): EventListener {
   }
 }
 
-function createDropDown(editor: Editor) {
+function createDropDown(editor: ExitusEditor) {
   const dropdown = document.createElement('div')
   dropdown.className = 'ex-dropdown'
-  dropdown.setAttribute('id', 'ex-dropdown')
+  dropdown.setAttribute('id', 'ex-dropdown' + editor.editorInstance)
 
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdown-content ex-dropdown-table-cells'
@@ -83,7 +84,7 @@ function removeSelectionFromGridButtons(dropdown: HTMLElement) {
 
 function showTableGridDropdown({ event, editor, button }: EventProps) {
   event.stopPropagation()
-  const dropdown = document.getElementById('ex-dropdown') || createDropDown(editor)
+  const dropdown = document.getElementById('ex-dropdown' + editor.editorInstance) || createDropDown(editor)
 
   if (dropdown.style.display === 'block') {
     removeSelectionFromGridButtons(dropdown)

@@ -1,11 +1,10 @@
-import { Editor } from '@tiptap/core'
+import { type AnyExtension, Editor, type EditorOptions } from '@tiptap/core'
 
 import Toolbar from './editor/toolbar'
 
-export interface options {
-  container: HTMLElement
+export interface ExitusEditorOptions extends EditorOptions {
+  container: Element
   toolbar: string[]
-  defaultContent: string
 }
 
 function generateUUID() {
@@ -16,19 +15,20 @@ function generateUUID() {
   })
 }
 
-class ExitusEditor {
-  options: options
-  editor: Editor
+class ExitusEditor extends Editor {
+  editorInstance!: string
   toolbar: Toolbar
   toolbarItemsDiv!: HTMLDivElement
   editorMainDiv!: HTMLDivElement
 
-  static extensions: any
+  static extensions: AnyExtension[]
 
-  constructor(options: options) {
-    this.options = options
-    this.editor = this._createEditor()
-    this.toolbar = new Toolbar(this)
+  constructor(options: Partial<ExitusEditorOptions> = {}) {
+    super({ ...options, extensions: ExitusEditor.extensions })
+    this._createUI(options.container as Element)
+    this.editorMainDiv.append(this.options.element)
+    this.editorInstance = generateUUID()
+    this.toolbar = new Toolbar(this, options.toolbar as string[])
     this.toolbar.createToolbar()
   }
 
@@ -61,22 +61,9 @@ class ExitusEditor {
     return editorShell
   }
 
-  _createEditor() {
+  _createUI(container: Element) {
     const editorUI = this._generateEditorUI()
-
-    this.options.container.appendChild(editorUI)
-
-    const editor = new Editor({
-      element: this.editorMainDiv,
-      extensions: ExitusEditor.extensions,
-      content: this.options.defaultContent
-    })
-
-    return editor
-  }
-
-  getEditor() {
-    return this.editor
+    container.appendChild(editorUI)
   }
 }
 

@@ -13,13 +13,13 @@ function isEmptyObject(obj: object) {
 }
 
 class Toolbar {
-  editor: Editor
+  editor: ExitusEditor
   toolbarItems: string[]
   toolbarItemsDiv: HTMLDivElement
 
-  constructor(exitusEditor: ExitusEditor) {
-    this.editor = exitusEditor.getEditor()
-    this.toolbarItems = exitusEditor.options.toolbar
+  constructor(exitusEditor: ExitusEditor, toolbar: string[]) {
+    this.editor = exitusEditor
+    this.toolbarItems = toolbar
     this.toolbarItemsDiv = exitusEditor.toolbarItemsDiv
   }
 
