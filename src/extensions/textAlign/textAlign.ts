@@ -5,60 +5,65 @@ import justifyIcon from '../../assets/icons/Editor/align-justify.svg'
 import alignLeftIcon from '../../assets/icons/Editor/align-left.svg'
 import alignRightIcon from '../../assets/icons/Editor/align-right.svg'
 import arrowDropDown from '../../assets/icons/Editor/arrow-drop-down-line.svg'
-import { Button, createDropDown, type EventProps } from '../../editor/ui'
+import { Button, Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
-function createAlignmentButton(editor: ExitusEditor, icon: string, alignment: string) {
-  return new Button(editor, {
+function createAlignmentButton(editor: ExitusEditor, dropdown: Dropdown, icon: string, alignment: string) {
+  const button = new Button(editor, {
     icon: icon,
     classList: ['ex-mr-0'],
-    events: {
-      click: ({ editor }) => {
-        editor.chain().focus().setTextAlign(alignment).run()
-      }
-    },
     checkActive: { textAlign: alignment }
-  }).generateButton()
+  })
+
+  button.bind('click', () => {
+    editor.chain().focus().setTextAlign(alignment).run()
+    dropdown.off()
+  })
+
+  return button.render()
 }
 
-function initializeDropDown(editor: ExitusEditor) {
-  const dropdown = createDropDown('textAlign' + editor.editorInstance, ['ex-dropdown-alignments'])
-  const dropdownContent = dropdown.querySelector('.ex-dropdown-content')
+function createDropDownContent(editor: ExitusEditor, dropdown: Dropdown) {
+  const dropdownContent = document.createElement('div')
+  dropdownContent.className = 'ex-dropdown-content'
 
-  const alignLeft = createAlignmentButton(editor, alignLeftIcon, 'left')
-  const alignRight = createAlignmentButton(editor, alignRightIcon, 'right')
-  const justify = createAlignmentButton(editor, justifyIcon, 'justify')
-  const center = createAlignmentButton(editor, centertIcon, 'center')
+  const alignLeft = createAlignmentButton(editor, dropdown, alignLeftIcon, 'left')
+  const alignRight = createAlignmentButton(editor, dropdown, alignRightIcon, 'right')
+  const justify = createAlignmentButton(editor, dropdown, justifyIcon, 'justify')
+  const center = createAlignmentButton(editor, dropdown, centertIcon, 'center')
 
   dropdownContent?.append(alignLeft, alignRight, justify, center)
+
+  return dropdownContent
+}
+
+function showDropdown({ event, dropdown }: any) {
+  event.stopPropagation()
+  if (dropdown.isOpen) {
+    dropdown.off()
+  } else {
+    dropdown.on()
+  }
+}
+
+function textAlignDropDown({ editor }: any) {
+  const dropdown = new Dropdown(editor, {
+    events: {
+      open: showDropdown
+    },
+    classes: ['ex-dropdown-alignments']
+  })
+
+  dropdown.setDropDownContent(createDropDownContent(editor, dropdown))
 
   window.addEventListener('click', function (event: Event) {
     const target = event.target as HTMLElement
     if (!target.matches('.dropdown')) {
-      const dropdowns = document.getElementsByClassName('ex-dropdown')
-      Array.from(dropdowns as HTMLCollectionOf<HTMLElement>).forEach(openDropdown => {
-        if (openDropdown.style.display === 'block') {
-          openDropdown.style.display = 'none'
-        }
-      })
+      dropdown.off()
     }
   })
 
   return dropdown
-}
-
-function showDropdown({ event, editor, button }: EventProps) {
-  event.stopPropagation()
-  const dropdown = document.getElementById('textAlign' + editor.editorInstance) || initializeDropDown(editor)
-
-  if (dropdown.style.display === 'block') {
-    dropdown.style.display = 'none'
-  } else {
-    dropdown.style.display = 'block'
-    const buttonRect = button.getBoundingClientRect()
-    dropdown.style.top = buttonRect.top + buttonRect.height + 'px'
-    dropdown.style.left = buttonRect.left + 'px'
-  }
 }
 
 export const TextAlign = TextAlignBase.extend({
@@ -66,9 +71,7 @@ export const TextAlign = TextAlignBase.extend({
     return {
       toolbarButtonConfig: {
         icon: alignLeftIcon + arrowDropDown,
-        events: {
-          click: showDropdown
-        }
+        dropdown: textAlignDropDown
       }
     }
   }

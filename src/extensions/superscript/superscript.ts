@@ -1,14 +1,13 @@
 import { Superscript as SuperscriptBase } from '@tiptap/extension-superscript'
 
 import superscript from '../../assets/icons/Editor/superscript.svg'
-import { type EventProps } from '../../editor/ui'
 
-function togglesuperscript({ editor, button }: EventProps) {
+function togglesuperscript({ editor, button }: any) {
   editor.chain().focus().toggleSuperscript().run()
   if (editor.isActive('superscript')) {
-    button.classList.add('ex-button-active')
+    button.on()
   } else {
-    button.classList.remove('ex-button-active')
+    button.off()
   }
 }
 

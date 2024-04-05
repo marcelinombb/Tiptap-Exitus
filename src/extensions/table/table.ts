@@ -1,9 +1,8 @@
 // @ts-nocheck
-import { type Editor } from '@tiptap/core'
 import Table from '@tiptap/extension-table'
 
 import arrowDropDown from '../../assets/icons/Editor/arrow-drop-down-line.svg'
-import { type EventProps } from '../../editor/ui'
+import { Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
 import table from './../../assets/icons/Editor/table-2.svg'
@@ -34,11 +33,7 @@ function insertTableRowColumn(editor: ExitusEditor): EventListener {
   }
 }
 
-function createDropDown(editor: ExitusEditor) {
-  const dropdown = document.createElement('div')
-  dropdown.className = 'ex-dropdown'
-  dropdown.setAttribute('id', 'ex-dropdown' + editor.editorInstance)
-
+function createDropDownContent(editor: ExitusEditor) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdown-content ex-dropdown-table-cells'
   dropdownContent.setAttribute('id', 'ex-dropdown-content')
@@ -55,46 +50,42 @@ function createDropDown(editor: ExitusEditor) {
     }
   }
 
-  dropdown.appendChild(dropdownContent)
-  document.body.appendChild(dropdown)
-
-  window.addEventListener('click', function (event) {
-    const target = event.target as HTMLElement
-    if (!target.matches('.dropdown')) {
-      const dropdowns = document.getElementsByClassName('ex-dropdown')
-
-      Array.from(dropdowns as HTMLCollectionOf<HTMLElement>).forEach(openDropdown => {
-        if (openDropdown.style.display === 'block') {
-          removeSelectionFromGridButtons(dropdown)
-          openDropdown.style.display = 'none'
-        }
-      })
-    }
-  })
-
-  return dropdown
+  return dropdownContent
 }
 
-function removeSelectionFromGridButtons(dropdown: HTMLElement) {
-  const buttons = dropdown.querySelectorAll('.ex-grid-button')
+function removeSelectionFromGridButtons(dropdown: Dropdown) {
+  const buttons = dropdown.dropdownContent.querySelectorAll('.ex-grid-button')
   buttons.forEach(element => {
     element.classList.remove('ex-grid-button-hover')
   })
 }
 
-function showTableGridDropdown({ event, editor, button }: EventProps) {
-  event.stopPropagation()
-  const dropdown = document.getElementById('ex-dropdown' + editor.editorInstance) || createDropDown(editor)
-
-  if (dropdown.style.display === 'block') {
+function showTableGridDropdown({ dropdown }) {
+  if (dropdown.isOpen) {
     removeSelectionFromGridButtons(dropdown)
-    dropdown.style.display = 'none'
+    dropdown.off()
   } else {
-    dropdown.style.display = 'block'
-    const buttonRect = button.getBoundingClientRect()
-    dropdown.style.top = buttonRect.top + buttonRect.height + 'px'
-    dropdown.style.left = buttonRect.left + 'px'
+    dropdown.on()
   }
+}
+
+function tableDropDown({ editor }) {
+  const dropdown = new Dropdown(editor, {
+    events: {
+      open: showTableGridDropdown
+    }
+  })
+
+  dropdown.setDropDownContent(createDropDownContent(editor))
+
+  window.addEventListener('click', function (event) {
+    const target = event.target as HTMLElement
+    if (!target.matches('.dropdown')) {
+      dropdown.off()
+    }
+  })
+
+  return dropdown
 }
 
 export const TableCustom = Table.extend({
@@ -102,9 +93,7 @@ export const TableCustom = Table.extend({
     return {
       toolbarButtonConfig: {
         icon: table + arrowDropDown,
-        events: {
-          click: showTableGridDropdown
-        }
+        dropdown: tableDropDown
       }
     }
   },

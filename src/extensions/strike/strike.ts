@@ -1,14 +1,13 @@
 import { Strike as StrikeBase } from '@tiptap/extension-strike'
 
 import strike from '../../assets/icons/Editor/strikethrough.svg'
-import { type EventProps } from '../../editor/ui'
 
-function toggleStrike({ editor, button }: EventProps) {
+function toggleStrike({ editor, button }: any) {
   editor.chain().focus().toggleStrike().run()
   if (editor.isActive('strike')) {
-    button.classList.add('ex-button-active')
+    button.on()
   } else {
-    button.classList.remove('ex-button-active')
+    button.off()
   }
 }
 

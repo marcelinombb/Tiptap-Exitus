@@ -26,7 +26,6 @@ class ExitusEditor extends Editor {
   constructor(options: Partial<ExitusEditorOptions> = {}) {
     super({ ...options, extensions: ExitusEditor.extensions })
     this._createUI(options.container as Element)
-    this.editorMainDiv.append(this.options.element)
     this.editorInstance = generateUUID()
     this.toolbar = new Toolbar(this, options.toolbar as string[])
     this.toolbar.createToolbar()
@@ -47,7 +46,7 @@ class ExitusEditor extends Editor {
     const editorScroller = document.createElement('div')
     editorScroller.className = 'editor-scroller'
 
-    const editorMain = document.createElement('div')
+    const editorMain = this.options.element
     editorMain.className = 'editor-main'
     editorMain.setAttribute('id', generateUUID())
 
@@ -56,7 +55,7 @@ class ExitusEditor extends Editor {
     editorShell.append(toolbarEditor, editorScroller)
 
     this.toolbarItemsDiv = toolbarItems
-    this.editorMainDiv = editorMain
+    //this.editorMainDiv = editorMain
 
     return editorShell
   }

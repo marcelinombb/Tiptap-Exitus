@@ -6,9 +6,9 @@ import subscript from '../../assets/icons/Editor/subscript.svg'
 function togglesubscript({ editor, button }) {
   editor.chain().focus().toggleSubscript().run()
   if (editor.isActive('subscript')) {
-    button.classList.add('ex-button-active')
+    button.on()
   } else {
-    button.classList.remove('ex-button-active')
+    button.off()
   }
 }
 

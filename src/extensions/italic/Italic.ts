@@ -6,9 +6,9 @@ import italic from '../../assets/icons/Editor/italic.svg'
 function toggleItalic({ editor, button }) {
   editor.chain().focus().toggleItalic().run()
   if (editor.isActive('italic')) {
-    button.classList.add('ex-button-active')
+    button.on()
   } else {
-    button.classList.remove('ex-button-active')
+    button.off()
   }
 }
 

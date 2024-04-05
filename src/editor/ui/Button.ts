@@ -1,6 +1,9 @@
 import type ExitusEditor from '../../ExitusEditor'
+import { type Tool } from '../toolbar/Tool'
 
-export interface EventProps {
+import { type Dropdown } from '.'
+
+export interface ButtonEventProps {
   editor: ExitusEditor
   button: HTMLButtonElement
   event: Event
@@ -12,7 +15,7 @@ export interface ButtonConfig {
   attributes?: object[]
   classList?: string[]
   events?: {
-    [key: string]: (obj: EventProps) => void
+    [key: string]: (obj: ButtonEventProps) => void
   }
   checkActive?: string | object
 }
@@ -22,10 +25,11 @@ const defaultConfig: ButtonConfig = {
   classList: []
 }
 
-export class Button {
+export class Button implements Tool {
   config: ButtonConfig
   button: HTMLButtonElement
   editor: ExitusEditor
+  dropdown!: Dropdown
   constructor(editor: ExitusEditor, config: ButtonConfig) {
     this.config = { ...defaultConfig, ...config }
     this.editor = editor
@@ -46,33 +50,43 @@ export class Button {
   bindEvents() {
     const events = this.config.events
     for (const key in events) {
-      const currying = (editor: ExitusEditor, button: HTMLButtonElement) => {
-        return (event: any) => {
-          events[key]({
-            event,
-            editor,
-            button
-          })
-        }
-      }
-      this.button.addEventListener(key, currying(this.editor, this.button) as EventListener)
+      this.bind(key, events[key])
     }
+  }
+
+  bind(eventName: string, callback: (obj: any) => void) {
+    this.button.addEventListener(eventName, event => {
+      event.stopPropagation()
+      event.preventDefault()
+      callback({
+        editor: this.editor,
+        button: this,
+        event
+      })
+    })
+  }
+
+  on() {
+    this.button.classList.add('ex-button-active')
+  }
+
+  off() {
+    this.button.classList.remove('ex-button-active')
   }
 
   checkActive() {
     if (this.config.checkActive != undefined) {
-      this.editor.on('selectionUpdate', () => {
+      this.editor.on('transaction', () => {
         if (this.editor.isActive(this.config?.checkActive as string | object)) {
-          this.button.classList.add('ex-button-active')
+          this.on()
         } else {
-          this.button.classList.remove('ex-button-active')
+          this.off()
         }
       })
     }
   }
 
-  generateButton() {
-    this.bindEvents()
+  render() {
     this.checkActive()
     this.button.innerHTML = this.config.icon
     return this.button
