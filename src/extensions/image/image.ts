@@ -1,8 +1,10 @@
 import { Image as ImageBase } from '@tiptap/extension-image'
 
 import imageAdd from '../../assets/icons/Editor/image-add-fill.svg'
-import { type EventProps } from '../../editor/ui'
+import { type ButtonEventProps } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
+
+import { ImageView } from './imageView'
 
 const inputID = 'editorImagePicker'
 
@@ -52,7 +54,7 @@ function createFileInput(editor: ExitusEditor) {
   return inputElement
 }
 
-function addImage({ editor }: EventProps) {
+function addImage({ editor }: ButtonEventProps) {
   const inputElement = (document.querySelector(`#${inputID + editor.editorInstance}`) || createFileInput(editor)) as HTMLInputElement
   inputElement.click()
 }
@@ -69,34 +71,24 @@ export const Image = ImageBase.extend({
       }
     }
   },
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      selectedClass: {
+        default: ''
+      },
+      width: {
+        default: null,
+        parseHTML: element => {
+          if ((element!.parentNode as HTMLElement).tagName.toUpperCase() !== 'FIGURE') return null
+          return (element!.parentNode as HTMLElement).style.width
+        }
+      }
+    }
+  },
   addNodeView() {
     return ({ node }) => {
-      const container = document.createElement('div')
-
-      const content = document.createElement('div')
-      content.className = 'ex-image ex-image-block-middle tiptap-widget'
-
-      content.addEventListener('click', event => {
-        //console.log(node.attrs)
-
-        //event.currentTarget.classList.add('ex-selected')
-        console.log(event.currentTarget)
-      })
-
-      const image = document.createElement('img')
-      //image.setAttribute
-      Object.entries(node.attrs).forEach(([key, value]) => {
-        if (value == null) return
-        image.setAttribute(key, value)
-      })
-
-      content.append(image)
-      container.append(content)
-
-      return {
-        dom: container,
-        contentDOM: content
-      }
+      return new ImageView(node)
     }
   }
 })
