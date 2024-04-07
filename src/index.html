@@ -1,14 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div class="element"></div>
-    <div class="element2"></div>
-    <script type="module" src="/devmain.ts"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite App</title>
+</head>
+
+<body>
+  <style>
+    .baloon-menu {
+      width: 100px;
+    }
+
+    .baloon-panel {
+      width: 100%;
+      height: 30px;
+      border-radius: 5px;
+      background-color: red;
+    }
+
+    .baloon-arrow {
+      background-color: transparent;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid red;
+      margin: 0 auto;
+    }
+  </style>
+  <div class="baloon-menu">
+    <div class="baloon-panel"></div>
+    <div class="baloon-arrow"></div>
+  </div>
+  <div class="element"></div>
+  <div class="element2"></div>
+
+  <script type="module" src="/devmain.ts"></script>
+</body>
+
 </html>

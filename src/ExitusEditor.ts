@@ -55,7 +55,6 @@ class ExitusEditor extends Editor {
     editorShell.append(toolbarEditor, editorScroller)
 
     this.toolbarItemsDiv = toolbarItems
-    //this.editorMainDiv = editorMain
 
     return editorShell
   }
