@@ -31,21 +31,22 @@ class Toolbar {
       const tool = getExtensionStorage(this.editor, item)
 
       if (!isEmptyObject(tool)) {
-        const toolbarButtonConfig = tool.toolbarButtonConfig
+        const toolbarButtonConfig = Array.isArray(tool.toolbarButtonConfig) ? tool.toolbarButtonConfig : [tool.toolbarButtonConfig]
 
-        if (toolbarButtonConfig?.dropdown) {
-          const dropdown = toolbarButtonConfig?.dropdown({ editor: this.editor })
-          const button = new Button(this.editor, toolbarButtonConfig)
-          dropdown.setButton(button)
-
-          this.tools.push(dropdown)
-          this.toolbarItemsDiv?.append(dropdown.render())
-        } else {
-          const button = new Button(this.editor, toolbarButtonConfig)
-          this.tools.push(button)
-          button.bind('click', toolbarButtonConfig.events['click'])
-          this.toolbarItemsDiv?.append(button.render())
-        }
+        toolbarButtonConfig.forEach((config: any) => {
+          if (config?.dropdown) {
+            const dropdown = config?.dropdown({ editor: this.editor })
+            const button = new Button(this.editor, config)
+            dropdown.setButton(button)
+            this.tools.push(dropdown)
+            this.toolbarItemsDiv?.append(dropdown.render())
+          } else {
+            const button = new Button(this.editor, config)
+            this.tools.push(button)
+            button.bind('click', config.events['click'])
+            this.toolbarItemsDiv?.append(button.render())
+          }
+        })
       }
     })
   }
