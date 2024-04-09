@@ -6,7 +6,6 @@ import { Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
 import table from './../../assets/icons/Editor/table-2.svg'
-import table3 from './../../assets/icons/Editor/table-3.svg'
 import { TableView } from './TableView'
 
 function onSelectTableRowColumn(event): EventListener {
@@ -95,10 +94,6 @@ export const TableCustom = Table.extend({
       toolbarButtonConfig: [
         {
           icon: table + arrowDropDown,
-          dropdown: tableDropDown
-        },
-        {
-          icon: table3 + arrowDropDown,
           dropdown: tableDropDown
         }
       ]
