@@ -1,6 +1,5 @@
+import superscript from '@icons/superscript.svg'
 import { Superscript as SuperscriptBase } from '@tiptap/extension-superscript'
-
-import superscript from '../../assets/icons/Editor/superscript.svg'
 
 function togglesuperscript({ editor, button }: any) {
   editor.chain().focus().toggleSuperscript().run()

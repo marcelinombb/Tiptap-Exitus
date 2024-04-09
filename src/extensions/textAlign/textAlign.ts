@@ -1,10 +1,10 @@
+import centertIcon from '@icons/align-center.svg'
+import justifyIcon from '@icons/align-justify.svg'
+import alignLeftIcon from '@icons/align-left.svg'
+import alignRightIcon from '@icons/align-right.svg'
+import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import { TextAlign as TextAlignBase } from '@tiptap/extension-text-align'
 
-import centertIcon from '../../assets/icons/Editor/align-center.svg'
-import justifyIcon from '../../assets/icons/Editor/align-justify.svg'
-import alignLeftIcon from '../../assets/icons/Editor/align-left.svg'
-import alignRightIcon from '../../assets/icons/Editor/align-right.svg'
-import arrowDropDown from '../../assets/icons/Editor/arrow-drop-down-line.svg'
 import { Button, Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 

@@ -1,6 +1,6 @@
+import imageAdd from '@icons/image-add-fill.svg'
 import { Image as ImageBase } from '@tiptap/extension-image'
 
-import imageAdd from '../../assets/icons/Editor/image-add-fill.svg'
 import { type ButtonEventProps } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 

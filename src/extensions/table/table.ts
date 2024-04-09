@@ -1,11 +1,11 @@
 // @ts-nocheck
+import arrowDropDown from '@icons/arrow-drop-down-line.svg'
+import table from '@icons/table-2.svg'
 import Table from '@tiptap/extension-table'
 
-import arrowDropDown from '../../assets/icons/Editor/arrow-drop-down-line.svg'
 import { Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
-import table from './../../assets/icons/Editor/table-2.svg'
 import { TableView } from './TableView'
 
 function onSelectTableRowColumn(event): EventListener {
