@@ -30,6 +30,7 @@ import { Underline } from './extensions/underline/underline'
 import { Blockquote } from './extensions/blockquote/blockquote'
 import { History } from './extensions/history/history'
 import { ListItem } from './extensions/listitem/listItem'
+import { Indent } from './extensions/indent/indent'
 
 ExitusEditor.extensions = [
   Blockquote,
@@ -64,7 +65,8 @@ ExitusEditor.extensions = [
   TextAlign.configure({
     types: ['heading', 'paragraph']
   }),
-  Underline
+  Underline,
+  Indent
 ]
 
 export default ExitusEditor
