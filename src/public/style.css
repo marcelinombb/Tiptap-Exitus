@@ -1,60 +1,63 @@
 
 .tiptap {
-    box-sizing: border-box;
-    padding: 1rem;
-    table {
-      border-collapse: collapse;
-      table-layout: fixed;
-      width: 100%;
-      overflow: hidden;
-      max-width: 600px;
-      td,
-      th {
-        min-width: 1em;
-        border: 2px solid #ced4da;
-        padding: 3px 5px;
-        vertical-align: top;
-        box-sizing: border-box;
-        position: relative;
+  box-sizing: border-box;
+  padding: 1rem;
+}
 
-        > * {
-          margin-bottom: 0;
-        }
-      }
+.tiptap blockquote {
+  border-left: 3px solid rgba(13, 13, 13, 0.1);
+  padding-left: 1rem;
+}
 
-      th {
-        font-weight: bold;
-        text-align: left;
-        background-color: #f1f3f5;
-      }
+ table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  overflow: hidden;
+  max-width: 600px;
+}
 
-      .selectedCell:after {
-        z-index: 2;
-        position: absolute;
-        content: "";
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        background: rgba(200, 200, 255, 0.4);
-        pointer-events: none;
-      }
+ td,
+ th {
+  min-width: 1em;
+  border: 2px solid #ced4da;
+  padding: 3px 5px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
 
-      .column-resize-handle {
-        position: absolute;
-        right: -2px;
-        top: 0;
-        bottom: -2px;
-        width: 4px;
-        background-color: #adf;
-        pointer-events: none;
-      }
+ th {
+  font-weight: bold;
+  text-align: left;
+  background-color: #f1f3f5;
+}
 
-      p {
-        margin: 0;
-      }
-    }
-  }
+ .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(200, 200, 255, 0.4);
+  pointer-events: none;
+}
+
+ .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: -2px;
+  width: 4px;
+  background-color: #adf;
+  pointer-events: none;
+}
+
+ p {
+  margin: 0;
+}
 
   .tableWrapper {
     overflow-x: auto;
@@ -196,8 +199,14 @@
 
   .ex-dropdown-content {
     display: flex;
-    flex-wrap: wrap;
+   flex-wrap: wrap;
   }
+
+  .ex-dropdownList-content {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
 
   .ex-dropdown-table-cells {
     flex-direction: row;
@@ -206,6 +215,11 @@
 
   .ex-dropdown-alignments {
     flex-direction: column;
+  }
+
+  .ex-dropdown-listItem {
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
 
   .ex-grid-button {

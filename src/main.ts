@@ -1,15 +1,15 @@
 import './public/style.css'
 
-import { Blockquote } from '@tiptap/extension-blockquote'
+
 import { BulletList } from '@tiptap/extension-bullet-list'
 import { Document } from '@tiptap/extension-document'
 import { Dropcursor } from '@tiptap/extension-dropcursor'
 import { Gapcursor } from '@tiptap/extension-gapcursor'
 import { HardBreak } from '@tiptap/extension-hard-break'
 import { Heading } from '@tiptap/extension-heading'
-import { History } from '@tiptap/extension-history'
+
 import { HorizontalRule } from '@tiptap/extension-horizontal-rule'
-import { ListItem } from '@tiptap/extension-list-item'
+
 import { OrderedList } from '@tiptap/extension-ordered-list'
 import { Paragraph } from '@tiptap/extension-paragraph'
 import TableCell from '@tiptap/extension-table-cell'
@@ -27,6 +27,9 @@ import { Superscript } from './extensions/superscript/superscript'
 import { TableCustom } from './extensions/table/table'
 import { TextAlign } from './extensions/textAlign'
 import { Underline } from './extensions/underline/underline'
+import { Blockquote } from './extensions/blockquote/blockquote'
+import { History } from './extensions/history/history'
+import { ListItem } from './extensions/listitem/listItem'
 
 ExitusEditor.extensions = [
   Blockquote,
