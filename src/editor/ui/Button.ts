@@ -5,7 +5,7 @@ import { type Dropdown } from '.'
 
 export interface ButtonEventProps {
   editor: ExitusEditor
-  button: HTMLButtonElement
+  button: Button
   event: Event
 }
 
