@@ -4,6 +4,8 @@ import { Node } from '@tiptap/core'
 
 function addTab ({ editor }) {
     document.addEventListener('keydown', (event) => {
+        if (event.key === 'Tab') {
+         
             event.preventDefault();
             editor.commands.insertContentAt(editor.view.state.selection.$anchor.pos, `<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`, {
                 updateSelection: true,
@@ -11,7 +13,7 @@ function addTab ({ editor }) {
                   preserveWhitespace: 'full'
                 }
               })
-            
+            }
         })
     }
 
@@ -46,7 +48,6 @@ addKeyboardShortcuts() {
     return {
       Tab: () => { if (!(this.editor.isActive('bulletList') || this.editor.isActive('orderedList'))) return this.editor.commands.tabIndent() },
       'Shift-Tab': () => { if (!(this.editor.isActive('bulletList') || this.editor.isActive('orderedList'))) return this.editor.commands.tabOutdent() },
-      //Backspace: () => { if (!(this.editor.isActive('bulletList') || this.editor.isActive('orderedList'))) return this.editor.commands.outdent() },
     }
   },
 
