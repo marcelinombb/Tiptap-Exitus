@@ -180,6 +180,7 @@ export const Indent = Extension.create({
 
                 return false
             },
+            
             outdent: () => ({ tr, state, dispatch, editor }) => {
                 const { selection } = state
                 tr = tr.setSelection(selection)
@@ -196,12 +197,5 @@ export const Indent = Extension.create({
                 return false
             },
         }
-    },
-    addKeyboardShortcuts() {
-        return {
-          Tab: () => { if (!(this.editor.isActive('bulletList') || this.editor.isActive('orderedList'))) return this.editor.commands.indent() },
-          'Shift-Tab': () => { if (!(this.editor.isActive('bulletList') || this.editor.isActive('orderedList'))) return this.editor.commands.outdent() },
-          Backspace: () => { if (!(this.editor.isActive('bulletList') || this.editor.isActive('orderedList'))) return this.editor.commands.outdent() },
-        }
-      },
+    }
 })

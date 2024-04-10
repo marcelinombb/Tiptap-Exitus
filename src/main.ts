@@ -31,10 +31,13 @@ import { Blockquote } from './extensions/blockquote/blockquote'
 import { History } from './extensions/history/history'
 import { ListItem } from './extensions/listitem/listItem'
 import { Indent } from './extensions/indent/indent'
+import { Tab } from './extensions/tab/tab'
+
 
 ExitusEditor.extensions = [
   Blockquote,
   ListItem,
+  Tab,
   Gapcursor,
   HorizontalRule,
   Italic,
