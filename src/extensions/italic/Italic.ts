@@ -1,7 +1,6 @@
 // @ts-nocheck
+import italic from '@icons/italic.svg'
 import { Italic as ItalicBase } from '@tiptap/extension-italic'
-
-import italic from '../../assets/icons/Editor/italic.svg'
 
 function toggleItalic({ editor, button }) {
   editor.chain().focus().toggleItalic().run()

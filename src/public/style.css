@@ -90,10 +90,11 @@
   }
 
   .tiptap-widget {
-      outline-color: transparent;
-      outline-style: solid;
-      outline-width: 3px;
-      transition: outline-color 200ms ease;
+    position: relative;
+    outline-color: transparent;
+    outline-style: solid;
+    outline-width: 3px;
+    transition: outline-color 200ms ease;
   }
 
   .ex-toolbar-button {
@@ -249,4 +250,8 @@
 
   .ex-image-block-middle {
     margin: 0.9em auto;
+  }
+
+  .math-tex {
+    display: inline;
   }

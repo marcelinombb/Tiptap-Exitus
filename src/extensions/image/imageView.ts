@@ -5,8 +5,6 @@ export function clickHandler(imageWrapper: HTMLElement) {
   imageWrapper.addEventListener('click', event => {
     event.stopPropagation()
     imageWrapper.classList.add('ex-selected')
-    //const { width } = imageWrapper.getBoundingClientRect()
-    //imageWrapper.style.width = `${width + 20}px`
 
     window.addEventListener('click', function (event) {
       const target = event.target as HTMLElement
@@ -29,6 +27,7 @@ export class ImageView implements NodeView {
 
   constructor(node: Node) {
     this.node = node
+
     this.dom = document.createElement('div')
     this.imageWrapper = this.dom.appendChild(document.createElement('div'))
     this.imageWrapper.className = 'ex-image-wrapper ex-image-block-middle tiptap-widget'

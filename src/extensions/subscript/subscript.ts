@@ -1,7 +1,6 @@
 // @ts-nocheck
+import subscript from '@icons/subscript.svg'
 import { Subscript as SubscriptBase } from '@tiptap/extension-subscript'
-
-import subscript from '../../assets/icons/Editor/subscript.svg'
 
 function togglesubscript({ editor, button }) {
   editor.chain().focus().toggleSubscript().run()

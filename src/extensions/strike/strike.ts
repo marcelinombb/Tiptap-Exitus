@@ -1,6 +1,5 @@
+import strike from '@icons/strikethrough.svg'
 import { Strike as StrikeBase } from '@tiptap/extension-strike'
-
-import strike from '../../assets/icons/Editor/strikethrough.svg'
 
 function toggleStrike({ editor, button }: any) {
   editor.chain().focus().toggleStrike().run()

@@ -1,7 +1,6 @@
 // @ts-nocheck
+import underline from '@icons/underline.svg'
 import { Underline as UnderlineBase } from '@tiptap/extension-underline'
-
-import underline from '../../assets/icons/Editor/underline.svg'
 
 function toggleUnderline({ editor, button }) {
   editor.chain().focus().toggleUnderline().run()

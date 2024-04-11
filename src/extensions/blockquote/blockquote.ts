@@ -1,8 +1,7 @@
-import { Blockquote as BlockquoteBase} from "@tiptap/extension-blockquote";
+import quote from '@icons/double-quotes-l.svg'
+import { Blockquote as BlockquoteBase } from '@tiptap/extension-blockquote'
 
-
-import quote from '../../assets/icons/Editor/double-quotes-l.svg'
-import { ButtonEventProps } from "../../editor/ui";
+import { type ButtonEventProps } from '../../editor/ui'
 
 function toggleBlockQuote({ editor, button }: ButtonEventProps) {
   editor.chain().focus().toggleBlockquote().run()
@@ -14,15 +13,15 @@ function toggleBlockQuote({ editor, button }: ButtonEventProps) {
 }
 
 export const Blockquote = BlockquoteBase.extend({
-    addStorage() {
-        return {
-            toolbarButtonConfig: {
-                icon: quote,
-                events: {
-                    click: toggleBlockQuote
-                },
-                checkActive: this.name
-            }
-        }
+  addStorage() {
+    return {
+      toolbarButtonConfig: {
+        icon: quote,
+        events: {
+          click: toggleBlockQuote
+        },
+        checkActive: this.name
+      }
     }
+  }
 })

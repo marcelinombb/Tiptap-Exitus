@@ -1,9 +1,9 @@
-// @ts-nocheck
+import bold from '@icons/bold.svg'
 import { Bold as BoldBase } from '@tiptap/extension-bold'
 
-import bold from '../../assets/icons/Editor/bold.svg'
+import { type ButtonEventProps } from '../../editor/ui'
 
-function toggleBold({ editor, button }) {
+function toggleBold({ editor, button }: ButtonEventProps) {
   editor.chain().focus().toggleBold().run()
   if (editor.isActive('bold')) {
     button.on()
