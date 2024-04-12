@@ -14,6 +14,7 @@ const toolbar = [
   'textAlign',
   'image',
   'blockquote',
+  'katex',
   'history',
   'listItem',
   'indent'
