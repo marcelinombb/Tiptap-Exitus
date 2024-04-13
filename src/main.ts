@@ -19,12 +19,14 @@ import { Blockquote } from './extensions/blockquote/blockquote'
 import { Bold } from './extensions/bold'
 import { History } from './extensions/history/history'
 import { Image } from './extensions/image/image'
+import { Indent } from './extensions/indent/indent'
 import { Italic } from './extensions/italic/Italic'
 import { Katex } from './extensions/katex/katex'
 import { ListItem } from './extensions/listitem/listItem'
 import { Strike } from './extensions/strike/strike'
 import { Subscript } from './extensions/subscript/subscript'
 import { Superscript } from './extensions/superscript/superscript'
+import { Tab } from './extensions/tab/tab'
 import { TableCustom } from './extensions/table/table'
 import { TextAlign } from './extensions/textAlign'
 import { Underline } from './extensions/underline/underline'
@@ -32,6 +34,7 @@ import { Underline } from './extensions/underline/underline'
 ExitusEditor.extensions = [
   Blockquote,
   ListItem,
+  Tab,
   Gapcursor,
   HorizontalRule,
   Italic,
@@ -63,7 +66,8 @@ ExitusEditor.extensions = [
     types: ['heading', 'paragraph']
   }),
   Underline,
-  Katex
+  Katex,
+  Indent
 ]
 
 export default ExitusEditor

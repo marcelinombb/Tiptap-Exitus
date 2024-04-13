@@ -1,7 +1,11 @@
 // @ts-nocheck
 import ExitusEditor from './main'
 
-const defaultText = `<p style="text-align:justify;"><span class="math-tex">\\(\\sqrt{2}\\)</span>&nbsp;e&nbsp;<span class="math-tex">\\(\\mathsf{B=3x+2}\\)</span> Analise o modelo atômico representado pela imagem abaixo.</p><p>&nbsp;</p>`
+const defaultText = `<span class= "ex-tab"></span>The editor instance will provide a bunch of public methods. Methods are regular functions and can return anything. They’ll help you to work with the editor.
+
+Don’t confuse methods with commands. Commands are used to change the state of editor (content, selection, and so on) and only return true or false.
+
+#`
 
 const toolbar = [
   'bold',
@@ -14,9 +18,10 @@ const toolbar = [
   'textAlign',
   'image',
   'blockquote',
+  'katex',
   'history',
   'listItem',
-  'katex'
+  'indent'
 ]
 
 const editor = new ExitusEditor({
