@@ -32,7 +32,6 @@ export const Tab = Node.create({
           tr = addTab(editor)
 
           if (tr.docChanged) {
-            // eslint-disable-next-line no-unused-expressions
             dispatch && dispatch(tr)
             return true
           }
@@ -53,6 +52,13 @@ export const Tab = Node.create({
         tag: 'span',
         getAttrs: node => {
           return (node as HTMLElement).className === 'ex-tab' && null
+        },
+        priority: 9999
+      },
+      {
+        tag: 'span',
+        getAttrs: node => {
+          return (node as HTMLElement).className === 'tabIndent' && null
         },
         priority: 9999
       }
@@ -81,15 +87,15 @@ export const Tab = Node.create({
         if (!(this.editor.isActive('bulletList') || this.editor.isActive('orderedList'))) {
           const selection = this.editor.view.state.selection
           if (selection && selection.$anchor) {
-            const pos = selection.$anchor
+            const position = selection.$anchor
 
-            if (pos.nodeBefore && pos.nodeBefore.type.name === 'teclatab') {
-              this.editor.commands.clearContent(pos.nodeBefore)
-              return false
+            if (position.nodeBefore && position.nodeBefore.type.name === 'teclatab') {
+              const from = position.pos - position.nodeBefore.nodeSize
+              const to = position.pos - 1
+
+              this.editor.commands.deleteRange({ from, to })
+              return true
             }
-
-            console.log(pos)
-            console.log(this.editor.isActive('teclatab'))
           }
         }
         return false

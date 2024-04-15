@@ -27,8 +27,8 @@ class ExitusEditor extends Editor {
     super({ ...options, extensions: ExitusEditor.extensions })
     this._createUI(options.container as Element)
     this.editorInstance = generateUUID()
-    this.toolbar = new Toolbar(this, options.toolbar as string[])
-    this.toolbar.createToolbar()
+    this.toolbar = new Toolbar(this, this.toolbarItemsDiv, options.toolbar as string[])
+    this.toolbar.createToolbar(this.extensionStorage)
   }
 
   _generateEditorUI() {
