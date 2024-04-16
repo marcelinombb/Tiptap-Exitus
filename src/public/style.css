@@ -257,33 +257,33 @@
   }
 
   .baloon-menu {
-    width: 100px;
+   
     position: absolute;
     display: none;
-    top: -40px;
-    left: 397px;
+    top: 0;
+   
+    transform: translate(25%,-100%);
   }
 
-  .baloon-panel {
-    width: 100%;
+ .baloon-panel {
+    position: relative; /* Adicionando posição relativa */
+    
     height: 30px;
     border-radius: 5px;
     background-color: rgb(255, 255, 255);
     box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.3);
-
-  }
-
-  .baloon-arrow {
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-top: 10px solid transparent;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid #ffffff;
-    bottom: -20px;
-    left: 42%;
-    transform: translateX(-50%);
-    transform: rotate(180deg);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* sombra fraca */
 }
+
+.baloon-arrow {
+  background-color: transparent;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid white;
+  margin: 0 auto;
+  filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.1));
+}
+
+

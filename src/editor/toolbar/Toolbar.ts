@@ -1,5 +1,3 @@
-import { type Editor } from '@tiptap/core'
-
 import type ExitusEditor from '../../ExitusEditor'
 import { Button } from '../ui'
 
