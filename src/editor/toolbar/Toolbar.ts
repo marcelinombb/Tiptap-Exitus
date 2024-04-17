@@ -29,8 +29,6 @@ class Toolbar {
   }
 
   createToolbar(configStorage: ConfigStorage) {
-    //console.log(this.editor.extensionStorage)
-
     this.toolbarItems.forEach(item => {
       const tool = getExtensionStorage(configStorage, item)
 

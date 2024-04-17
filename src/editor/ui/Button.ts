@@ -44,6 +44,7 @@ export class Button implements Tool {
     const button = document.createElement('button')
     button.classList.add('ex-toolbar-button', ...(this.config.classList as string[]))
     button.setAttribute('id', `${Math.floor(Math.random() * 100) + 1}`)
+    button.title = this.config?.label ?? ''
     return button
   }
 

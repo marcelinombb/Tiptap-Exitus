@@ -261,13 +261,26 @@
     position: absolute;
     display: none;
     top: 0;
-   
     transform: translate(25%,-100%);
   }
 
+  .ex-direita{
+    margin-right: 0;
+    margin-left: auto;
+  }
+
+  .ex-esquerda{
+    margin-right: auto;
+    margin-left: 0;
+  }
+
+  .ex-meio{
+    margin-right: auto;
+    margin-left: auto;
+  }
+
  .baloon-panel {
-    position: relative; /* Adicionando posição relativa */
-    
+    position: relative; 
     height: 30px;
     border-radius: 5px;
     background-color: rgb(255, 255, 255);

@@ -1,3 +1,4 @@
+import textDm from '@icons/align-vertically.svg'
 import textDl from '@icons/text-direction-l.svg'
 import textDr from '@icons/text-direction-r.svg'
 import { type Editor } from '@tiptap/core'
@@ -6,13 +7,13 @@ import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
 
 import Toolbar from '../../editor/toolbar/Toolbar'
+import { Button, type ButtonEventProps } from '../../editor/ui'
 
 function clickHandler(imageWrapper: HTMLElement) {
   imageWrapper.addEventListener('click', event => {
     event.stopPropagation()
     imageWrapper.classList.add('ex-selected')
     const balloonMenu = imageWrapper.querySelector('.baloon-menu') as HTMLElement
-    console.log(balloonMenu)
 
     if (balloonMenu) {
       if (balloonMenu.style.display === 'none') {
@@ -30,11 +31,52 @@ function clickHandler(imageWrapper: HTMLElement) {
   })
 }
 
+function alinhaDireita(image: HTMLElement, toolbar: Toolbar) {
+  return ({ button }: ButtonEventProps) => {
+    if (!image.classList.contains('ex-direita')) {
+      toolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      button.on()
+      image.classList.add('ex-direita')
+      image.classList.remove('ex-meio', 'ex-esquerda')
+    } else {
+      button.off()
+      image.classList.remove('ex-direita')
+    }
+  }
+}
+function alinhaEsquerda(image: HTMLElement, toolbar: Toolbar) {
+  return ({ button }: ButtonEventProps) => {
+    if (!image.classList.contains('ex-esquerda')) {
+      toolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      button.on()
+      image.classList.add('ex-esquerda')
+      image.classList.remove('ex-meio', 'ex-direita')
+    } else {
+      button.off()
+      image.classList.remove('ex-esquerda')
+    }
+  }
+}
+
+function alinhaMeio(image: HTMLElement, toolbar: Toolbar) {
+  return ({ button }: ButtonEventProps) => {
+    if (!image.classList.contains('ex-meio')) {
+      toolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      button.on()
+      image.classList.add('ex-meio')
+      image.classList.remove('ex-esquerda', 'ex-direita')
+    } else {
+      button.off()
+      image.classList.remove('ex-meio')
+    }
+  }
+}
+
 export class ImageView implements NodeView {
   node: Node
   dom: Element
-  image: Element
-  imageWrapper: Element
+  image: HTMLElement
+  imageWrapper: HTMLElement
   ballonMenu: HTMLElement
   ballonPanel: HTMLDivElement
   ballonArrow: HTMLElement
@@ -54,37 +96,32 @@ export class ImageView implements NodeView {
 
     this.ballonPanel = this.ballonMenu.appendChild(document.createElement('div'))
     this.ballonPanel.className = 'baloon-panel ex-toolbar-editor'
-    const toolbar = new Toolbar(editor as ExitusEditor, this.ballonPanel, ['btn1', 'btn2', 'btn3', 'btn4'])
+    const toolbar = new Toolbar(editor as ExitusEditor, this.ballonPanel, ['alinhaEsquerda', 'alinhaDireita', 'alinhaMeio'])
     toolbar.createToolbar({
-      btn1: {
+      alinhaDireita: {
         toolbarButtonConfig: {
           icon: textDr,
+          label: 'direita',
           events: {
-            click: () => {}
+            click: alinhaDireita(this.imageWrapper, toolbar)
           }
         }
       },
-      btn2: {
+      alinhaEsquerda: {
         toolbarButtonConfig: {
           icon: textDl,
+          label: 'esquerda',
           events: {
-            click: () => {}
+            click: alinhaEsquerda(this.imageWrapper, toolbar)
           }
         }
       },
-      btn3: {
+      alinhaMeio: {
         toolbarButtonConfig: {
-          icon: textDl,
+          icon: textDm,
+          label: 'meio',
           events: {
-            click: () => {}
-          }
-        }
-      },
-      btn4: {
-        toolbarButtonConfig: {
-          icon: textDl,
-          events: {
-            click: () => {}
+            click: alinhaMeio(this.imageWrapper, toolbar)
           }
         }
       }

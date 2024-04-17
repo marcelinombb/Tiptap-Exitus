@@ -87,8 +87,8 @@ export const Image = ImageBase.extend({
     }
   },
   addNodeView() {
-    return ({ node }) => {
-      return new ImageView(node)
+    return ({ node, editor }) => {
+      return new ImageView(node, editor)
     }
   }
 })
