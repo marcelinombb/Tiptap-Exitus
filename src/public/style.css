@@ -223,6 +223,11 @@
     flex-wrap: nowrap;
   }
 
+  .ex-dropdown-baloon {
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
   .ex-grid-button {
     width: 12px;
     height: 11px;
@@ -299,4 +304,14 @@
   filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.1));
 }
 
+.ex-pequeno{
+  width: 300px;
+}
 
+.ex-medio{
+  width: 400px;
+}
+
+.ex-grande{
+  width: 700px
+}
