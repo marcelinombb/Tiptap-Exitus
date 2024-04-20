@@ -223,6 +223,11 @@
     flex-wrap: nowrap;
   }
 
+  .ex-dropdown-baloon {
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
   .ex-grid-button {
     width: 12px;
     height: 11px;
@@ -255,3 +260,58 @@
   .math-tex {
     display: inline;
   }
+
+  .baloon-menu {
+   
+    position: absolute;
+    display: none;
+    top: 0;
+    transform: translate(25%,-100%);
+  }
+
+  .ex-direita{
+    margin-right: 0;
+    margin-left: auto;
+  }
+
+  .ex-esquerda{
+    margin-right: auto;
+    margin-left: 0;
+  }
+
+  .ex-meio{
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+ .baloon-panel {
+    position: relative; 
+    height: 30px;
+    border-radius: 5px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.3);
+}
+
+.baloon-arrow {
+  background-color: transparent;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid white;
+  margin: 0 auto;
+  filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.1));
+}
+
+.ex-pequeno{
+  width: 300px;
+}
+
+.ex-medio{
+  width: 400px;
+}
+
+.ex-grande{
+  width: 700px
+}

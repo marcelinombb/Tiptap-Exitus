@@ -1,17 +1,19 @@
-import { type Editor } from '@tiptap/core'
-
 import type ExitusEditor from '../../ExitusEditor'
 import { Button } from '../ui'
 
 import { type Tool } from './Tool'
 
-function getExtensionStorage(editor: Editor, name: string) {
-  const storage = editor.extensionStorage[name]
+function getExtensionStorage(configStorage: ConfigStorage, name: string) {
+  const storage = configStorage[name]
   return storage
 }
 
 function isEmptyObject(obj: object) {
   return Object.keys(obj).length === 0
+}
+
+type ConfigStorage = {
+  [key: string]: { toolbarButtonConfig: object | object[] }
 }
 
 class Toolbar {
@@ -20,15 +22,15 @@ class Toolbar {
   toolbarItemsDiv: HTMLDivElement
   tools: Tool[] = []
 
-  constructor(exitusEditor: ExitusEditor, toolbar: string[]) {
+  constructor(exitusEditor: ExitusEditor, toolbarItemsDiv: HTMLDivElement, toolbar: string[]) {
     this.editor = exitusEditor
     this.toolbarItems = toolbar
-    this.toolbarItemsDiv = exitusEditor.toolbarItemsDiv
+    this.toolbarItemsDiv = toolbarItemsDiv
   }
 
-  createToolbar() {
+  createToolbar(configStorage: ConfigStorage) {
     this.toolbarItems.forEach(item => {
-      const tool = getExtensionStorage(this.editor, item)
+      const tool = getExtensionStorage(configStorage, item)
 
       if (!isEmptyObject(tool)) {
         const toolbarButtonConfig = Array.isArray(tool.toolbarButtonConfig) ? tool.toolbarButtonConfig : [tool.toolbarButtonConfig]

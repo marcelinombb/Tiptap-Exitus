@@ -7,7 +7,6 @@ import '../../../node_modules/katex/dist/katex.css'
 import { type ButtonEventProps } from '../../editor/ui'
 
 function click({ editor }: ButtonEventProps) {
-  console.log(editor.view.coordsAtPos(editor.view.state.selection.$anchor.pos))
   editor.commands.insertContentAt(editor.view.state.selection.$anchor.pos, `<span class="math-tex">\\(\\sqrt{2}\\)</span>`, {
     updateSelection: true,
     parseOptions: {
@@ -45,8 +44,6 @@ export const Katex = Node.create({
       {
         tag: 'span',
         getAttrs: node => {
-          console.log(node)
-
           return (node as HTMLElement).className === 'math-tex' && null
         },
         priority: 9999
