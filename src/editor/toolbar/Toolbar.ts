@@ -1,5 +1,5 @@
 import type ExitusEditor from '../../ExitusEditor'
-import { Button } from '../ui'
+import { Button, type ButtonConfig } from '../ui'
 
 import { type Tool } from './Tool'
 
@@ -16,20 +16,31 @@ type ConfigStorage = {
   [key: string]: { toolbarButtonConfig: object | object[] }
 }
 
-class Toolbar {
+export interface ToolbarConfig {
+  toolbarOrder: string[]
+  configStorage: {
+    [key: string]: { toolbarButtonConfig: ButtonConfig | ButtonConfig[] }
+  }
+}
+export class Toolbar {
   editor: ExitusEditor
-  toolbarItems: string[]
-  toolbarItemsDiv: HTMLDivElement
+  toolbarConfig: ToolbarConfig
+  toolbarItemsDiv!: HTMLDivElement
   tools: Tool[] = []
 
-  constructor(exitusEditor: ExitusEditor, toolbarItemsDiv: HTMLDivElement, toolbar: string[]) {
+  constructor(exitusEditor: ExitusEditor, toolbarConfig: ToolbarConfig) {
     this.editor = exitusEditor
-    this.toolbarItems = toolbar
-    this.toolbarItemsDiv = toolbarItemsDiv
+    this.toolbarConfig = toolbarConfig
   }
 
-  createToolbar(configStorage: ConfigStorage) {
-    this.toolbarItems.forEach(item => {
+  setToolbarConfig(toolbarConfig: ToolbarConfig) {
+    this.toolbarConfig = toolbarConfig
+  }
+
+  createToolbar(toolbarItemsDiv: HTMLDivElement) {
+    this.toolbarItemsDiv = toolbarItemsDiv
+    const { configStorage, toolbarOrder } = this.toolbarConfig
+    toolbarOrder.forEach(item => {
       const tool = getExtensionStorage(configStorage, item)
 
       if (!isEmptyObject(tool)) {
@@ -39,11 +50,13 @@ class Toolbar {
           if (config?.dropdown) {
             const dropdown = config?.dropdown({ editor: this.editor })
             const button = new Button(this.editor, config)
+            button.setParentToolbar(this)
             dropdown.setButton(button)
             this.tools.push(dropdown)
             this.toolbarItemsDiv?.append(dropdown.render())
           } else {
             const button = new Button(this.editor, config)
+            button.setParentToolbar(this)
             this.tools.push(button)
             button.bind('click', config.events['click'])
             this.toolbarItemsDiv?.append(button.render())
@@ -53,5 +66,3 @@ class Toolbar {
     })
   }
 }
-
-export default Toolbar

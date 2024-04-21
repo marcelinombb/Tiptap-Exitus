@@ -1,6 +1,5 @@
+import { Toolbar } from '@editor/toolbar'
 import { type AnyExtension, Editor, type EditorOptions } from '@tiptap/core'
-
-import Toolbar from './editor/toolbar'
 
 export interface ExitusEditorOptions extends EditorOptions {
   container: Element
@@ -27,8 +26,11 @@ class ExitusEditor extends Editor {
     super({ ...options, extensions: ExitusEditor.extensions })
     this._createUI(options.container as Element)
     this.editorInstance = generateUUID()
-    this.toolbar = new Toolbar(this, this.toolbarItemsDiv, options.toolbar as string[])
-    this.toolbar.createToolbar(this.extensionStorage)
+    this.toolbar = new Toolbar(this, {
+      toolbarOrder: options.toolbar as string[],
+      configStorage: this.extensionStorage
+    })
+    this.toolbar.createToolbar(this.toolbarItemsDiv)
   }
 
   _generateEditorUI() {

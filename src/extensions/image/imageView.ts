@@ -1,3 +1,4 @@
+import { Toolbar } from '@editor/toolbar'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
@@ -6,9 +7,10 @@ import imgSize from '@icons/image-size.svg'
 import { type Editor } from '@tiptap/core'
 import { type Node } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
+import type ExitusEditor from 'src/ExitusEditor'
 
-import { Button, type ButtonEventProps, Dropdown } from '../../editor/ui'
-import { type BallonnEventProps, Balloon } from '../../editor/ui/Balloon'
+import { Button, type ButtonEventProps } from '../../editor/ui'
+import { Balloon } from '../../editor/ui/Balloon'
 
 function clickHandler(imageWrapper: HTMLElement) {
   imageWrapper.addEventListener('click', event => {
@@ -33,64 +35,57 @@ function clickHandler(imageWrapper: HTMLElement) {
 }
 
 function alinhaDireita(image: HTMLElement) {
-  return (ballonConfig: BallonnEventProps) => {
-    return ({ button }: ButtonEventProps) => {
-      if (!image.classList.contains('ex-direita')) {
-        ballonConfig.toolbar.tools.forEach(tool => tool instanceof Button && tool.off())
-        button.on()
-        image.classList.add('ex-direita')
-        image.classList.remove('ex-meio', 'ex-esquerda')
-      } else {
-        button.off()
-        image.classList.remove('ex-direita')
-      }
+  return ({ button }: ButtonEventProps) => {
+    if (!image.classList.contains('ex-direita')) {
+      button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      button.on()
+      image.classList.add('ex-direita')
+      image.classList.remove('ex-meio', 'ex-esquerda')
+    } else {
+      button.off()
+      image.classList.remove('ex-direita')
     }
   }
 }
+
 function alinhaEsquerda(image: HTMLElement) {
-  return (ballonConfig: BallonnEventProps) => {
-    return ({ button }: ButtonEventProps) => {
-      if (!image.classList.contains('ex-esquerda')) {
-        ballonConfig.toolbar.tools.forEach(tool => tool instanceof Button && tool.off())
-        button.on()
-        image.classList.add('ex-esquerda')
-        image.classList.remove('ex-meio', 'ex-direita')
-      } else {
-        button.off()
-        image.classList.remove('ex-esquerda')
-      }
+  return ({ button }: ButtonEventProps) => {
+    if (!image.classList.contains('ex-esquerda')) {
+      button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      button.on()
+      image.classList.add('ex-esquerda')
+      image.classList.remove('ex-meio', 'ex-direita')
+    } else {
+      button.off()
+      image.classList.remove('ex-esquerda')
     }
   }
 }
 
 function alinhaMeio(image: HTMLElement) {
-  return (ballonConfig: BallonnEventProps) => {
-    return ({ button }: ButtonEventProps) => {
-      if (!image.classList.contains('ex-meio')) {
-        ballonConfig.toolbar.tools.forEach(tool => tool instanceof Button && tool.off())
-        button.on()
-        image.classList.add('ex-meio')
-        image.classList.remove('ex-esquerda', 'ex-direita')
-      } else {
-        button.off()
-        image.classList.remove('ex-meio')
-      }
+  return ({ button }: ButtonEventProps) => {
+    if (!image.classList.contains('ex-meio')) {
+      button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      button.on()
+      image.classList.add('ex-meio')
+      image.classList.remove('ex-esquerda', 'ex-direita')
+    } else {
+      button.off()
+      image.classList.remove('ex-meio')
     }
   }
 }
 
 function aumentaDiminui(image: HTMLElement) {
-  return (ballonConfig: BallonnEventProps) => {
-    return ({ button }: ButtonEventProps) => {
-      if (!image.classList.contains('ex-grande')) {
-        ballonConfig.toolbar.tools.forEach(tool => tool instanceof Button && tool.off())
-        button.on()
-        image.classList.add('ex-grande')
-        image.classList.remove('ex-pequeno')
-      } else {
-        button.off()
-        image.classList.remove('ex-grande')
-      }
+  return ({ button }: ButtonEventProps) => {
+    if (!image.classList.contains('ex-grande')) {
+      button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      button.on()
+      image.classList.add('ex-grande')
+      image.classList.remove('ex-pequeno')
+    } else {
+      button.off()
+      image.classList.remove('ex-grande')
     }
   }
 }
@@ -150,10 +145,12 @@ export class ImageView implements NodeView {
       }
     }
 
-    this.balloon = new Balloon(editor, {
+    const toolbar = new Toolbar(editor as ExitusEditor, {
       toolbarOrder: ['alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'],
       configStorage
     })
+
+    this.balloon = new Balloon(editor, toolbar)
 
     this.imageWrapper.appendChild(this.balloon.render())
 

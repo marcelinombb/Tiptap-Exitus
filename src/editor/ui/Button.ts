@@ -1,3 +1,5 @@
+import { type Toolbar } from '@editor/toolbar'
+
 import type ExitusEditor from '../../ExitusEditor'
 import { type Tool } from '../toolbar/Tool'
 
@@ -30,6 +32,7 @@ export class Button implements Tool {
   button: HTMLButtonElement
   editor: ExitusEditor
   dropdown!: Dropdown
+  parentToolbar!: Toolbar
   constructor(editor: ExitusEditor, config: ButtonConfig) {
     this.config = { ...defaultConfig, ...config }
     this.editor = editor
@@ -46,6 +49,10 @@ export class Button implements Tool {
     button.setAttribute('id', `${Math.floor(Math.random() * 100) + 1}`)
     button.title = this.config?.label ?? ''
     return button
+  }
+
+  setParentToolbar(toolbar: Toolbar) {
+    this.parentToolbar = toolbar
   }
 
   bindEvents() {
