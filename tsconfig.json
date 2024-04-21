@@ -20,7 +20,8 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@icons/*": ["src/assets/icons/Editor/*"]
+      "@icons/*": ["src/assets/icons/Editor/*"],
+      "@editor/*": ["src/editor/*"]
     },
   },
   "include": ["src", "declaration.d.ts"],

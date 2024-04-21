@@ -8,7 +8,11 @@ export default defineConfig({
   base: './',
   root: 'src',
   resolve: {
-    alias: [{ find: '@icons', replacement: fileURLToPath(new URL('./src/assets/icons/Editor', import.meta.url)) }]
+    extensions: ['.ts', '.svg'],
+    alias: [
+      { find: '@icons', replacement: fileURLToPath(new URL('./src/assets/icons/Editor', import.meta.url)) },
+      { find: '@editor', replacement: fileURLToPath(new URL('./src/editor', import.meta.url)) }
+    ]
   },
   build: {
     sourcemap: true,
