@@ -109,6 +109,7 @@
     transition: box-shadow .2s ease-in-out,border .2s;
     border: 1px solid transparent;
     border-radius: 5px;
+    
   }
 
   .ex-mr-0 {

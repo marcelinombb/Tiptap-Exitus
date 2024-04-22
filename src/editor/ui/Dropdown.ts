@@ -1,3 +1,5 @@
+import { type Toolbar } from '@editor/toolbar'
+
 import type ExitusEditor from '../../ExitusEditor'
 import { type Tool } from '../toolbar/Tool'
 
@@ -25,6 +27,7 @@ export class Dropdown implements Tool {
   }
   button!: Button
   editor: ExitusEditor
+  parentToolbar!: Toolbar
 
   constructor(editor: ExitusEditor, config: DropdownConfig) {
     this.config = { ...this.config, ...config }
@@ -45,6 +48,10 @@ export class Dropdown implements Tool {
 
   setDropDownContent(contents: HTMLElement) {
     this.dropdownContent = contents
+  }
+
+  setParentToolbar(toolbar: Toolbar) {
+    this.parentToolbar = toolbar
   }
 
   on() {

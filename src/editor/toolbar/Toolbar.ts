@@ -50,7 +50,7 @@ export class Toolbar {
           if (config?.dropdown) {
             const dropdown = config?.dropdown({ editor: this.editor })
             const button = new Button(this.editor, config)
-            button.setParentToolbar(this)
+            dropdown.setParentToolbar(this)
             dropdown.setButton(button)
             this.tools.push(dropdown)
             this.toolbarItemsDiv?.append(dropdown.render())
