@@ -180,6 +180,7 @@
     width: 100%;
     min-height: 200px;
     display: flex;
+    flex-direction: column;
   }
 
   .ProseMirror {
@@ -262,11 +263,11 @@
   }
 
   .baloon-menu {
-   
     position: absolute;
     display: none;
     top: 0;
-    transform: translate(25%,-100%);
+    left: 50%;
+    transform: translate(-50%,-100%);
   }
 
   .ex-direita{
