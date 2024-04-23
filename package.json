@@ -48,6 +48,7 @@
     "@tiptap/extension-text-align": "^2.2.5",
     "@tiptap/extension-underline": "^2.2.5",
     "@tiptap/pm": "^2.2.5",
+    "@types/resize-observer-browser": "^0.1.11",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.57.0",

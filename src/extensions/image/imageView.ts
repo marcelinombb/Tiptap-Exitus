@@ -2,7 +2,7 @@ import { Toolbar } from '@editor/toolbar'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
-import textDr from '@icons/image-rigth.svg'
+import textDr from '@icons/image-right.svg'
 import imgSize from '@icons/image-size.svg'
 import { type Editor } from '@tiptap/core'
 import { type Node } from '@tiptap/pm/model'
@@ -12,23 +12,76 @@ import type ExitusEditor from 'src/ExitusEditor'
 import { Button, type ButtonEventProps, Dropdown } from '../../editor/ui'
 import { Balloon } from '../../editor/ui/Balloon'
 
+class ResizableImage {
+  private element: HTMLElement
+  private isResizing: boolean = false
+  private initialX: number = 0
+  // private initialY: number = 0
+  private initialWidth: number = 0
+  // private initialHeight: number = 0
+
+  constructor(element: HTMLElement) {
+    this.element = element
+
+    this.initResize()
+  }
+
+  private initResize() {
+    this.element.style.position = 'relative'
+
+    this.element.addEventListener('mousedown', this.startResize.bind(this))
+    document.addEventListener('mousemove', this.resize.bind(this))
+    document.addEventListener('mouseup', this.stopResize.bind(this))
+  }
+
+  private startResize(event: MouseEvent) {
+    event.preventDefault()
+    this.isResizing = true
+    this.initialX = event.clientX
+    //this.initialY = event.clientY
+    this.initialWidth = this.element.offsetWidth
+    // this.initialHeight = this.element.offsetHeight
+  }
+
+  private resize(event: MouseEvent) {
+    if (!this.isResizing) return
+
+    const deltaX = event.clientX - this.initialX
+    // const deltaY = event.clientY - this.initialY
+
+    this.element.style.width = `${this.initialWidth + deltaX}px`
+    //this.element.style.height = `${this.initialHeight + deltaY}px`
+  }
+
+  private stopResize() {
+    this.isResizing = false
+  }
+}
+
 function clickHandler(imageWrapper: HTMLElement) {
   imageWrapper.addEventListener('click', event => {
     event.stopPropagation()
     imageWrapper.classList.add('ex-selected')
     const balloonMenu = imageWrapper.querySelector('.baloon-menu') as HTMLElement
-
+    const quadrados = imageWrapper.querySelectorAll('.quadrado')
     if (balloonMenu) {
-      if (balloonMenu.style.display === 'none') {
+      if (balloonMenu.style.display === 'none' && 'quadrado') {
         balloonMenu.style.display = 'block'
+        quadrados.forEach(quadrado => {
+          ;(quadrado as HTMLElement).style.display = 'block'
+        })
       }
     }
+
     window.addEventListener('click', function (event) {
       const target = event.target as HTMLElement
 
       if (!target.matches('.ex-image-wrapper')) {
         balloonMenu.style.display = 'none'
         imageWrapper.classList.remove('ex-selected')
+        quadrados.forEach(quadrado => {
+          ;(quadrado as HTMLElement).style.display = 'none'
+        })
       }
     })
   })
@@ -224,6 +277,10 @@ export class ImageView implements NodeView {
   image: HTMLElement
   imageWrapper: HTMLElement
   balloon: Balloon
+  quadradoTopEsquerda: HTMLElement
+  quadradoTopDireita: HTMLElement
+  quadradoBaixoEsquerda: HTMLElement
+  quadradoBaixoDireita: HTMLElement
 
   constructor(node: Node, editor: Editor) {
     this.node = node
@@ -232,7 +289,27 @@ export class ImageView implements NodeView {
     this.imageWrapper = this.dom.appendChild(document.createElement('div'))
     this.imageWrapper.className = 'ex-image-wrapper ex-image-block-middle tiptap-widget'
     this.image = this.imageWrapper.appendChild(document.createElement('img'))
+
+    // Quadrado no canto superior esquerdo
+    this.quadradoTopEsquerda = this.imageWrapper.appendChild(document.createElement('div'))
+    this.quadradoTopEsquerda.className = 'quadrado canto-superior-esquerdo'
+
+    // Quadrado no canto superior direito
+    this.quadradoTopDireita = this.imageWrapper.appendChild(document.createElement('div'))
+    this.quadradoTopDireita.className = 'quadrado canto-superior-direito'
+
+    // Quadrado no canto inferior esquerdo
+    this.quadradoBaixoEsquerda = this.imageWrapper.appendChild(document.createElement('div'))
+    this.quadradoBaixoEsquerda.className = 'quadrado canto-inferior-esquerdo'
+
+    // Quadrado no canto inferior direito
+    this.quadradoBaixoDireita = this.imageWrapper.appendChild(document.createElement('div'))
+    this.quadradoBaixoDireita.className = 'quadrado canto-inferior-direito'
+
     this.setImageAttributes(this.image, node)
+
+    // Adiciona redimensionamento de imagens
+    new ResizableImage(this.imageWrapper)
 
     const configStorage = {
       alinhaDireita: {
@@ -266,7 +343,6 @@ export class ImageView implements NodeView {
         toolbarButtonConfig: {
           icon: imgSize + arrowDropDown,
           label: 'Aumenta e diminui',
-
           dropdown: balloonDropDown(this.imageWrapper)
         }
       }
