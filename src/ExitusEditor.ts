@@ -15,9 +15,6 @@ function generateUUID() {
 }
 
 class ExitusEditor extends Editor {
-  updateAttrs(nodeId: string | undefined, arg1: { width: number; height: number }) {
-    throw new Error('Method not implemented.')
-  }
   editorInstance!: string
   toolbar: Toolbar
   toolbarItemsDiv!: HTMLDivElement
