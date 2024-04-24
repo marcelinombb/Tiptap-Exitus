@@ -247,7 +247,12 @@
   .ex-image-wrapper {
     clear: both;
     display: table;
+    padding: 0.08em;
     max-width: 100%;
+  }
+
+  .icon-arrow {
+    width: 12px !important;
   }
 
   .ex-image-wrapper img {

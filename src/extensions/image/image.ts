@@ -15,7 +15,18 @@ function convertToBase64(input: HTMLInputElement, editor: ExitusEditor) {
     reader.onload = function (e) {
       const img = document.createElement('img') as HTMLImageElement
       img.onload = function () {
+        const maxHeight = img.height > 700 ? 700 : img.height
+        const maxWidth = img.width > 700 ? 700 : img.width
+        //let newHeight, newWidth;
+        const newDimension =
+          img.width > img.height
+            ? { width: maxWidth, height: Math.round(maxWidth / (img.width / img.height)) }
+            : { width: maxHeight * (img.width / img.height), height: maxHeight }
+
+        console.log(img.width, img.height, newDimension)
+
         const canvas = document.createElement('canvas')
+
         canvas.width = img.width
         canvas.height = img.height
 
@@ -71,6 +82,11 @@ export const Image = ImageBase.extend({
       }
     }
   },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['div', { style: HTMLAttributes.style, class: HTMLAttributes.classes }, ['img', { src: HTMLAttributes.src }]]
+  },
+
   addAttributes() {
     return {
       ...this.parent?.(),
@@ -83,12 +99,18 @@ export const Image = ImageBase.extend({
           if ((element!.parentNode as HTMLElement).tagName.toUpperCase() !== 'FIGURE') return null
           return (element!.parentNode as HTMLElement).style.width
         }
+      },
+      classes: {
+        default: ''
+      },
+      style: {
+        default: ''
       }
     }
   },
   addNodeView() {
-    return ({ node, editor }) => {
-      return new ImageView(node, editor)
+    return ({ node, editor, getPos }) => {
+      return new ImageView(node, editor, getPos)
     }
   }
 })

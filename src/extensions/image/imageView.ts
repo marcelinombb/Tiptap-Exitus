@@ -13,48 +13,83 @@ import { Button, type ButtonEventProps, Dropdown } from '../../editor/ui'
 import { Balloon } from '../../editor/ui/Balloon'
 
 class ResizableImage {
-  private element: HTMLElement
+  //private element: HTMLElement
+  imageView: ImageView
   private isResizing: boolean = false
   private initialX: number = 0
   // private initialY: number = 0
   private initialWidth: number = 0
   // private initialHeight: number = 0
+  quadradoTopEsquerda!: HTMLElement
+  quadradoTopDireita!: HTMLElement
+  quadradoBaixoEsquerda!: HTMLElement
+  quadradoBaixoDireita!: HTMLElement
+  bindResizeEvent: (event: PointerEvent) => void
+  bindStopResizeEvent: () => void
 
-  constructor(element: HTMLElement) {
-    this.element = element
-
+  constructor(imageView: ImageView) {
+    this.imageView = imageView
+    this.bindResizeEvent = this.resize.bind(this)
+    this.bindStopResizeEvent = this.stopResize.bind(this)
     this.initResize()
   }
 
   private initResize() {
-    this.element.style.position = 'relative'
+    const element = this.imageView.imageWrapper
+    element.style.position = 'relative'
 
-    this.element.addEventListener('mousedown', this.startResize.bind(this))
-    document.addEventListener('mousemove', this.resize.bind(this))
-    document.addEventListener('mouseup', this.stopResize.bind(this))
+    // Quadrado no canto superior esquerdo
+    this.quadradoTopEsquerda = element.appendChild(document.createElement('div'))
+    this.quadradoTopEsquerda.className = 'quadrado canto-superior-esquerdo'
+    this.addResizeEvent(this.quadradoTopEsquerda)
+    // Quadrado no canto superior direito
+    this.quadradoTopDireita = element.appendChild(document.createElement('div'))
+    this.quadradoTopDireita.className = 'quadrado canto-superior-direito'
+    this.addResizeEvent(this.quadradoTopDireita)
+    // Quadrado no canto inferior esquerdo
+    this.quadradoBaixoEsquerda = element.appendChild(document.createElement('div'))
+    this.quadradoBaixoEsquerda.className = 'quadrado canto-inferior-esquerdo'
+    this.addResizeEvent(this.quadradoBaixoEsquerda)
+    // Quadrado no canto inferior direito
+    this.quadradoBaixoDireita = element.appendChild(document.createElement('div'))
+    this.quadradoBaixoDireita.className = 'quadrado canto-inferior-direito'
+    this.addResizeEvent(this.quadradoBaixoDireita)
   }
 
-  private startResize(event: MouseEvent) {
-    event.preventDefault()
-    this.isResizing = true
-    this.initialX = event.clientX
-    //this.initialY = event.clientY
-    this.initialWidth = this.element.offsetWidth
-    // this.initialHeight = this.element.offsetHeight
+  private addResizeEvent(element: HTMLElement) {
+    element.addEventListener('pointerdown', (event: PointerEvent) => {
+      event.preventDefault()
+      event.stopPropagation()
+      this.isResizing = true
+      this.initialX = event.screenX
+      //console.log(event)
+
+      //this.initialY = event.clientY
+      this.initialWidth = this.imageView.imageWrapper.offsetWidth
+      document.addEventListener('pointermove', this.bindResizeEvent)
+      document.addEventListener('pointerup', this.bindStopResizeEvent)
+    })
   }
 
-  private resize(event: MouseEvent) {
+  private resize(event: PointerEvent) {
     if (!this.isResizing) return
 
-    const deltaX = event.clientX - this.initialX
+    const deltaX = event.screenX - this.initialX
     // const deltaY = event.clientY - this.initialY
 
-    this.element.style.width = `${this.initialWidth + deltaX}px`
+    this.imageView.imageWrapper.style.width = `${this.initialWidth + deltaX}px`
     //this.element.style.height = `${this.initialHeight + deltaY}px`
   }
 
   private stopResize() {
     this.isResizing = false
+    document.removeEventListener('pointermove', this.bindResizeEvent)
+    document.removeEventListener('pointerup', this.bindStopResizeEvent)
+
+    const { editor, node } = this.imageView
+    editor.commands.updateAttributes(node.type, {
+      style: `width: ${this.imageView.imageWrapper.style.width}`
+    })
   }
 }
 
@@ -87,44 +122,57 @@ function clickHandler(imageWrapper: HTMLElement) {
   })
 }
 
-function alinhaDireita(image: HTMLElement) {
+function alinhaDireita(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
-    if (!image.classList.contains('ex-direita')) {
+    const { editor, node, imageWrapper } = imageView
+    if (!imageWrapper.classList.contains('ex-direita')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
-      image.classList.add('ex-direita')
-      image.classList.remove('ex-meio', 'ex-esquerda')
+      imageWrapper.classList.add('ex-direita')
+      imageWrapper.classList.remove('ex-meio', 'ex-esquerda')
+
+      editor.commands.updateAttributes(node.type, {
+        classes: imageWrapper.className
+      })
     } else {
       button.off()
-      image.classList.remove('ex-direita')
+      imageWrapper.classList.remove('ex-direita')
     }
   }
 }
 
-function alinhaEsquerda(image: HTMLElement) {
+function alinhaEsquerda(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
-    if (!image.classList.contains('ex-esquerda')) {
+    const { editor, node, imageWrapper } = imageView
+    if (!imageWrapper.classList.contains('ex-esquerda')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
-      image.classList.add('ex-esquerda')
-      image.classList.remove('ex-meio', 'ex-direita')
+      imageWrapper.classList.add('ex-esquerda')
+      imageWrapper.classList.remove('ex-meio', 'ex-direita')
+      editor.commands.updateAttributes(node.type, {
+        classes: imageWrapper.className
+      })
     } else {
       button.off()
-      image.classList.remove('ex-esquerda')
+      imageWrapper.classList.remove('ex-esquerda')
     }
   }
 }
 
-function alinhaMeio(image: HTMLElement) {
+function alinhaMeio(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
-    if (!image.classList.contains('ex-meio')) {
+    const { editor, node, imageWrapper } = imageView
+    if (!imageWrapper.classList.contains('ex-meio')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
-      image.classList.add('ex-meio')
-      image.classList.remove('ex-esquerda', 'ex-direita')
+      imageWrapper.classList.add('ex-meio')
+      imageWrapper.classList.remove('ex-esquerda', 'ex-direita')
+      editor.commands.updateAttributes(node.type, {
+        classes: imageWrapper.className
+      })
     } else {
       button.off()
-      image.classList.remove('ex-meio')
+      imageWrapper.classList.remove('ex-meio')
     }
   }
 }
@@ -277,39 +325,22 @@ export class ImageView implements NodeView {
   image: HTMLElement
   imageWrapper: HTMLElement
   balloon: Balloon
-  quadradoTopEsquerda: HTMLElement
-  quadradoTopDireita: HTMLElement
-  quadradoBaixoEsquerda: HTMLElement
-  quadradoBaixoDireita: HTMLElement
+  getPos: boolean | (() => number)
+  editor: Editor
 
-  constructor(node: Node, editor: Editor) {
+  constructor(node: Node, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
-
+    this.getPos = getPos
+    this.editor = editor
     this.dom = document.createElement('div')
     this.imageWrapper = this.dom.appendChild(document.createElement('div'))
     this.imageWrapper.className = 'ex-image-wrapper ex-image-block-middle tiptap-widget'
     this.image = this.imageWrapper.appendChild(document.createElement('img'))
 
-    // Quadrado no canto superior esquerdo
-    this.quadradoTopEsquerda = this.imageWrapper.appendChild(document.createElement('div'))
-    this.quadradoTopEsquerda.className = 'quadrado canto-superior-esquerdo'
-
-    // Quadrado no canto superior direito
-    this.quadradoTopDireita = this.imageWrapper.appendChild(document.createElement('div'))
-    this.quadradoTopDireita.className = 'quadrado canto-superior-direito'
-
-    // Quadrado no canto inferior esquerdo
-    this.quadradoBaixoEsquerda = this.imageWrapper.appendChild(document.createElement('div'))
-    this.quadradoBaixoEsquerda.className = 'quadrado canto-inferior-esquerdo'
-
-    // Quadrado no canto inferior direito
-    this.quadradoBaixoDireita = this.imageWrapper.appendChild(document.createElement('div'))
-    this.quadradoBaixoDireita.className = 'quadrado canto-inferior-direito'
-
     this.setImageAttributes(this.image, node)
 
     // Adiciona redimensionamento de imagens
-    new ResizableImage(this.imageWrapper)
+    new ResizableImage(this)
 
     const configStorage = {
       alinhaDireita: {
@@ -317,7 +348,7 @@ export class ImageView implements NodeView {
           icon: textDr,
           label: 'direita',
           events: {
-            click: alinhaDireita(this.imageWrapper)
+            click: alinhaDireita(this)
           }
         }
       },
@@ -326,7 +357,7 @@ export class ImageView implements NodeView {
           icon: textDm,
           label: 'meio',
           events: {
-            click: alinhaMeio(this.imageWrapper)
+            click: alinhaMeio(this)
           }
         }
       },
@@ -335,7 +366,7 @@ export class ImageView implements NodeView {
           icon: textDl,
           label: 'esquerda',
           events: {
-            click: alinhaEsquerda(this.imageWrapper)
+            click: alinhaEsquerda(this)
           }
         }
       },
@@ -358,6 +389,16 @@ export class ImageView implements NodeView {
     this.imageWrapper.appendChild(this.balloon.render())
 
     clickHandler(this.imageWrapper as HTMLElement)
+  }
+
+  update(node: Node) {
+    if (node.type !== this.node.type) {
+      return false
+    }
+    // console.log(this.node, node)
+    this.node = node
+
+    return true
   }
 
   setImageAttributes(image: Element, node: Node) {
