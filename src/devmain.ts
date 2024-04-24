@@ -61,4 +61,4 @@ const editor2 = new ExitusEditor({
   content: defaultText
 })
 
-//window.editor = editor
+window.editor = editor
