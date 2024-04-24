@@ -16,9 +16,7 @@ class ResizableImage {
   private element: HTMLElement
   private isResizing: boolean = false
   private initialX: number = 0
-  // private initialY: number = 0
   private initialWidth: number = 0
-  // private initialHeight: number = 0
 
   constructor(element: HTMLElement) {
     this.element = element
@@ -38,9 +36,8 @@ class ResizableImage {
     event.preventDefault()
     this.isResizing = true
     this.initialX = event.clientX
-    //this.initialY = event.clientY
+
     this.initialWidth = this.element.offsetWidth
-    // this.initialHeight = this.element.offsetHeight
   }
 
   private resize(event: MouseEvent) {
@@ -50,7 +47,6 @@ class ResizableImage {
     // const deltaY = event.clientY - this.initialY
 
     this.element.style.width = `${this.initialWidth + deltaX}px`
-    //this.element.style.height = `${this.initialHeight + deltaY}px`
   }
 
   private stopResize() {
