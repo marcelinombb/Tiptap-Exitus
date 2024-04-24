@@ -36,7 +36,6 @@ class ResizableImage {
     event.preventDefault()
     this.isResizing = true
     this.initialX = event.clientX
-
     this.initialWidth = this.element.offsetWidth
   }
 
@@ -44,13 +43,21 @@ class ResizableImage {
     if (!this.isResizing) return
 
     const deltaX = event.clientX - this.initialX
-    // const deltaY = event.clientY - this.initialY
 
-    this.element.style.width = `${this.initialWidth + deltaX}px`
+    if (this.isResizingOnLeftSide()) {
+      this.element.style.width = `${this.initialWidth - deltaX}px`
+    } else {
+      this.element.style.width = `${this.initialWidth + deltaX}px`
+    }
   }
 
   private stopResize() {
     this.isResizing = false
+  }
+
+  private isResizingOnLeftSide(): boolean {
+    const rect = this.element.getBoundingClientRect()
+    return this.initialX < rect.left + rect.width / 2
   }
 }
 
