@@ -77,8 +77,11 @@ class ResizableImage {
     const deltaX = event.screenX - this.initialX
     // const deltaY = event.clientY - this.initialY
 
-    this.imageView.imageWrapper.style.width = `${this.initialWidth + deltaX}px`
-    //this.element.style.height = `${this.initialHeight + deltaY}px`
+    if (this.isResizingOnLeftSide()) {
+      this.imageView.imageWrapper.style.width = `${this.initialWidth - deltaX}px`
+    } else {
+      this.imageView.imageWrapper.style.width = `${this.initialWidth + deltaX}px`
+    }
   }
 
   private stopResize() {
@@ -90,6 +93,10 @@ class ResizableImage {
     editor.commands.updateAttributes(node.type, {
       style: `width: ${this.imageView.imageWrapper.style.width}`
     })
+  }
+  private isResizingOnLeftSide(): boolean {
+    const rect = this.imageView.imageWrapper.getBoundingClientRect()
+    return this.initialX < rect.left + rect.width / 2
   }
 }
 
