@@ -84,7 +84,8 @@ export const Image = ImageBase.extend({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', { style: HTMLAttributes.style, class: HTMLAttributes.classes }, ['img', { src: HTMLAttributes.src }]]
+    const { style, classes, src } = HTMLAttributes
+    return ['div', { style, class: classes }, ['img', { src }]]
   },
 
   addAttributes() {
@@ -93,24 +94,25 @@ export const Image = ImageBase.extend({
       selectedClass: {
         default: ''
       },
-      width: {
-        default: null,
-        parseHTML: element => {
-          if ((element!.parentNode as HTMLElement).tagName.toUpperCase() !== 'FIGURE') return null
-          return (element!.parentNode as HTMLElement).style.width
-        }
-      },
       classes: {
-        default: ''
+        default: 'ex-image-wrapper ex-image-block-middle tiptap-widget'
       },
       style: {
-        default: ''
+        default: '',
+        parseHTML: element => {
+          const parent = element!.parentNode as HTMLElement
+          if (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure') {
+            return `width: ${parent.style.width}`
+          } else {
+            return null
+          }
+        }
       }
     }
   },
   addNodeView() {
-    return ({ node, editor, getPos }) => {
-      return new ImageView(node, editor, getPos)
+    return ({ node, editor }) => {
+      return new ImageView(node, editor)
     }
   }
 })

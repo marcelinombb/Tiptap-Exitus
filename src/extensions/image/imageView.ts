@@ -1,4 +1,6 @@
 import { Toolbar } from '@editor/toolbar'
+import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
+import { Balloon } from '@editor/ui/Balloon'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
@@ -8,9 +10,6 @@ import { type Editor } from '@tiptap/core'
 import { type Node } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
-
-import { Button, type ButtonEventProps, Dropdown } from '../../editor/ui'
-import { Balloon } from '../../editor/ui/Balloon'
 
 class ResizableImage {
   //private element: HTMLElement
@@ -86,8 +85,7 @@ class ResizableImage {
     document.removeEventListener('pointermove', this.bindResizeEvent)
     document.removeEventListener('pointerup', this.bindStopResizeEvent)
 
-    const { editor, node } = this.imageView
-    editor.commands.updateAttributes(node.type, {
+    this.imageView.updateAttributes({
       style: `width: ${this.imageView.imageWrapper.style.width}`
     })
   }
@@ -124,56 +122,55 @@ function clickHandler(imageWrapper: HTMLElement) {
 
 function alinhaDireita(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
-    const { editor, node, imageWrapper } = imageView
+    const { imageWrapper } = imageView
     if (!imageWrapper.classList.contains('ex-direita')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
       imageWrapper.classList.add('ex-direita')
       imageWrapper.classList.remove('ex-meio', 'ex-esquerda')
-
-      editor.commands.updateAttributes(node.type, {
-        classes: imageWrapper.className
-      })
     } else {
       button.off()
       imageWrapper.classList.remove('ex-direita')
     }
+    imageView.updateAttributes({
+      classes: imageWrapper.className
+    })
   }
 }
 
 function alinhaEsquerda(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
-    const { editor, node, imageWrapper } = imageView
+    const { imageWrapper } = imageView
     if (!imageWrapper.classList.contains('ex-esquerda')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
       imageWrapper.classList.add('ex-esquerda')
       imageWrapper.classList.remove('ex-meio', 'ex-direita')
-      editor.commands.updateAttributes(node.type, {
-        classes: imageWrapper.className
-      })
     } else {
       button.off()
       imageWrapper.classList.remove('ex-esquerda')
     }
+    imageView.updateAttributes({
+      classes: imageWrapper.className
+    })
   }
 }
 
 function alinhaMeio(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
-    const { editor, node, imageWrapper } = imageView
+    const { imageWrapper } = imageView
     if (!imageWrapper.classList.contains('ex-meio')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
       imageWrapper.classList.add('ex-meio')
       imageWrapper.classList.remove('ex-esquerda', 'ex-direita')
-      editor.commands.updateAttributes(node.type, {
-        classes: imageWrapper.className
-      })
     } else {
       button.off()
       imageWrapper.classList.remove('ex-meio')
     }
+    imageView.updateAttributes({
+      classes: imageWrapper.className
+    })
   }
 }
 
@@ -187,8 +184,8 @@ function ativaBotao(button: Button) {
   botaoAtivo = button
 }
 
-function originalPx(image: HTMLElement, editor: ExitusEditor, dropdown: Dropdown, icon: string) {
-  const button = new Button(editor, {
+function originalPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
+  const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
@@ -208,8 +205,8 @@ function originalPx(image: HTMLElement, editor: ExitusEditor, dropdown: Dropdown
   return button.render()
 }
 
-function trezentosPx(image: HTMLElement, editor: ExitusEditor, dropdown: Dropdown, icon: string) {
-  const button = new Button(editor, {
+function trezentosPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
+  const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
@@ -230,8 +227,8 @@ function trezentosPx(image: HTMLElement, editor: ExitusEditor, dropdown: Dropdow
   return button.render()
 }
 
-function quatrocentosPx(image: HTMLElement, editor: ExitusEditor, dropdown: Dropdown, icon: string) {
-  const button = new Button(editor, {
+function quatrocentosPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
+  const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
@@ -252,8 +249,8 @@ function quatrocentosPx(image: HTMLElement, editor: ExitusEditor, dropdown: Drop
   return button.render()
 }
 
-function setecentosPx(image: HTMLElement, editor: ExitusEditor, dropdown: Dropdown, icon: string) {
-  const button = new Button(editor, {
+function setecentosPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
+  const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
@@ -274,14 +271,14 @@ function setecentosPx(image: HTMLElement, editor: ExitusEditor, dropdown: Dropdo
   return button.render()
 }
 
-function criarDropDown(editor: ExitusEditor, dropdown: Dropdown, image: HTMLElement) {
+function criarDropDown(dropdown: Dropdown, image: HTMLElement) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
 
-  const original = originalPx(image, editor, dropdown, 'Original')
-  const pequeno = trezentosPx(image, editor, dropdown, '300px')
-  const medio = quatrocentosPx(image, editor, dropdown, '400px')
-  const grande = setecentosPx(image, editor, dropdown, '700px')
+  const original = originalPx(image, dropdown, 'Original')
+  const pequeno = trezentosPx(image, dropdown, '300px')
+  const medio = quatrocentosPx(image, dropdown, '400px')
+  const grande = setecentosPx(image, dropdown, '700px')
 
   dropdownContent?.append(original, pequeno, medio, grande)
 
@@ -306,7 +303,7 @@ function balloonDropDown(image: HTMLElement) {
       classes: ['ex-dropdown-listItem']
     })
 
-    dropdown.setDropDownContent(criarDropDown(editor, dropdown, image))
+    dropdown.setDropDownContent(criarDropDown(dropdown, image))
 
     window.addEventListener('click', function (event: Event) {
       const target = event.target as HTMLElement
@@ -325,16 +322,15 @@ export class ImageView implements NodeView {
   image: HTMLElement
   imageWrapper: HTMLElement
   balloon: Balloon
-  getPos: boolean | (() => number)
   editor: Editor
 
-  constructor(node: Node, editor: Editor, getPos: boolean | (() => number)) {
+  constructor(node: Node, editor: Editor) {
     this.node = node
-    this.getPos = getPos
     this.editor = editor
     this.dom = document.createElement('div')
     this.imageWrapper = this.dom.appendChild(document.createElement('div'))
-    this.imageWrapper.className = 'ex-image-wrapper ex-image-block-middle tiptap-widget'
+    this.imageWrapper.className = node.attrs.classes
+
     this.image = this.imageWrapper.appendChild(document.createElement('img'))
 
     this.setImageAttributes(this.image, node)
@@ -391,18 +387,23 @@ export class ImageView implements NodeView {
     clickHandler(this.imageWrapper as HTMLElement)
   }
 
+  updateAttributes(attributes: Record<string, any>) {
+    this.editor.commands.updateAttributes(this.node.type, attributes)
+  }
+
   update(node: Node) {
     if (node.type !== this.node.type) {
       return false
     }
-    // console.log(this.node, node)
+    //console.log(node)
     this.node = node
 
     return true
   }
 
   setImageAttributes(image: Element, node: Node) {
-    ;(this.imageWrapper as HTMLElement).style.width = node.attrs.width
-    Object.entries(node.attrs).forEach(([key, value]) => value && image.setAttribute(key, value))
+    ;(this.imageWrapper as HTMLElement).setAttribute('style', node.attrs.style)
+    image.setAttribute('src', node.attrs.src)
+    //Object.entries(node.attrs).forEach(([key, value]) => value && image.setAttribute(key, value))
   }
 }
