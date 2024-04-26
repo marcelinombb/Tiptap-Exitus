@@ -99,10 +99,22 @@ export const TableCustom = Table.extend({
       ]
     }
   },
-  addOptions() {
+  addAttributes() {
     return {
       ...this.parent?.(),
-      View: TableView
+      ballonActive: {
+        default: false
+      }
+    }
+  },
+  addOptions() {
+    return {
+      ...this.parent?.()
+    }
+  },
+  addNodeView() {
+    return ({ node, editor }) => {
+      return new TableView(node, editor)
     }
   }
 })

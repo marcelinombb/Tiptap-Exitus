@@ -1,6 +1,45 @@
-// @ts-nocheck
+import { Toolbar } from '@editor/toolbar'
+import arrowDropDown from '@icons/arrow-drop-down-line.svg'
+import tableCell from '@icons/merge-tableCells.svg'
+import starredCell from '@icons/starred-cell.svg'
+import starredTable from '@icons/starred-table.svg'
+import tableColumns from '@icons/table-columns.svg'
+import tableRow from '@icons/table-lines.svg'
+import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
+import type ExitusEditor from 'src/ExitusEditor'
+
+import { Button, type ButtonEventProps, Dropdown } from '../../editor/ui'
+import { Balloon } from '../../editor/ui/Balloon'
+
+function clickHandler(table: TableView) {
+  table.tableWrapper.addEventListener('click', event => {
+    //event.stopPropagation()
+    console.log('jkadfs')
+    table.updateAttributes({
+      ballonActive: true
+    })
+    ///table.classList.add('ex-selected')
+    /*    const balloonMenu = table.querySelector('.baloon-menu') as HTMLElement
+    console.log(balloonMenu)
+
+    if (balloonMenu) {
+      if (balloonMenu.style.display === 'none') {
+        balloonMenu.style.display = 'block'
+      }
+    }
+
+    window.addEventListener('click', function (event) {
+      const target = event.target as HTMLElement
+
+      if (!target.matches('.tableWrapper')) {
+        balloonMenu.style.display = 'none'
+        table.classList.remove('ex-selected')
+      }
+    }) */
+  })
+}
 
 export function updateColumns(
   node: ProseMirrorNode,
@@ -58,35 +97,103 @@ export function updateColumns(
 
 export class TableView implements NodeView {
   node: ProseMirrorNode
-
-  cellMinWidth: number
-
   dom: Element
-
-  table: Element
-
+  table: HTMLElement
   colgroup: Element
-
+  balloon: Balloon
+  editor: Editor
+  tableWrapper: HTMLElement
   contentDOM: Element
 
-  constructor(node: ProseMirrorNode, cellMinWidth: number) {
+  constructor(node: ProseMirrorNode, editor: Editor) {
     this.node = node
-    this.cellMinWidth = cellMinWidth
+    this.editor = editor
     this.dom = document.createElement('div')
-    this.dom.classList.add('tableWrapper', 'tiptap-widget')
-    this.table = this.dom.appendChild(document.createElement('table'))
+    this.tableWrapper = document.createElement('div')
+    this.tableWrapper.classList.add('tableWrapper', 'tiptap-widget')
+
+    this.table = this.tableWrapper.appendChild(document.createElement('table'))
     this.colgroup = this.table.appendChild(document.createElement('colgroup'))
-    updateColumns(node, this.colgroup, this.table, cellMinWidth)
-    this.contentDOM = this.table.appendChild(document.createElement('tbody'))
+    this.contentDOM = this.table.appendChild(document.createElement('tbody')) as HTMLElement
+    console.log('sdlkfd')
+
+    const configStorage = {
+      celumnsTable: {
+        toolbarButtonConfig: {
+          icon: tableColumns,
+          label: 'coluna',
+          events: {
+            click: null
+          }
+        }
+      },
+      RowTable: {
+        toolbarButtonConfig: {
+          icon: tableRow,
+          label: 'linha',
+          events: {
+            click: null
+          }
+        }
+      },
+      cellTable: {
+        toolbarButtonConfig: {
+          icon: tableCell,
+          label: 'mesclar células',
+          events: {
+            click: null
+          }
+        }
+      },
+      tableStarred: {
+        toolbarButtonConfig: {
+          icon: starredTable + arrowDropDown,
+          label: 'Aumentar e diminuir imagem',
+          events: {
+            click: null
+          }
+        }
+      },
+      cellStarred: {
+        toolbarButtonConfig: {
+          icon: starredCell + arrowDropDown,
+          label: 'Aumentar e diminuir imagem',
+          events: {
+            click: null
+          }
+        }
+      }
+    }
+
+    const toolbar = new Toolbar(editor as ExitusEditor, {
+      toolbarOrder: ['celumnsTable', 'RowTable', 'cellTable', 'tableStarred', 'cellStarred'],
+      configStorage
+    })
+
+    this.balloon = new Balloon(editor, toolbar)
+
+    this.tableWrapper.appendChild(this.balloon.render())
+    const balloonMenu = this.tableWrapper.querySelector('.baloon-menu') as HTMLElement
+    console.log(node)
+
+    balloonMenu.style.display = node.attrs.ballonActive ? 'block' : 'none'
+    this.dom.appendChild(this.tableWrapper)
+
+    clickHandler(this)
+  }
+
+  updateAttributes(attributes: Record<string, any>) {
+    this.editor.commands.updateAttributes(this.node.type, attributes)
   }
 
   update(node: ProseMirrorNode) {
     if (node.type !== this.node.type) {
       return false
     }
+    //console.log(node.attrs)
 
     this.node = node
-    updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
+    //updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
 
     return true
   }

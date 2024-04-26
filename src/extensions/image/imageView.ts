@@ -312,7 +312,6 @@ export class ImageView implements NodeView {
     if (node.type !== this.node.type) {
       return false
     }
-    // console.log(this.node, node)
     this.node = node
 
     return true

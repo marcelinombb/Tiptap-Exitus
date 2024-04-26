@@ -26,6 +26,14 @@ export class Balloon {
     this.toolbar = toolbar
   }
 
+  on() {
+    this.ballonMenu.style.display = 'block'
+  }
+
+  off() {
+    this.ballonMenu.style.display = 'none'
+  }
+
   render() {
     this.ballonMenu = document.createElement('div')
     this.ballonMenu.className = 'baloon-menu'
