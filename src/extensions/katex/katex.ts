@@ -51,12 +51,18 @@ export const Katex = Node.create({
     ]
   },
   renderHTML({ HTMLAttributes }) {
-    return ['span', HTMLAttributes, 0]
+    return ['span', { class: 'math-tex' }, 0]
   },
   addAttributes() {
     return {
       class: {
         default: ''
+      },
+      contentLatex: {
+        default: 'none'
+      },
+      renderedLatex: {
+        default: 'inline'
       }
     }
   },
@@ -70,15 +76,24 @@ export const Katex = Node.create({
 
       const latexFormula = matches.join('')
 
-      dom.title = latexFormula
+      const contentLatex = document.createElement('div')
+      const renderedLatex = document.createElement('div')
+      renderedLatex.style.display = 'inline'
+      renderedLatex.contentEditable = 'false'
 
-      dom.innerHTML = katex.renderToString(latexFormula, {
+      contentLatex.innerText = latexFormula
+      contentLatex.style.display = 'none'
+
+      renderedLatex.innerHTML = katex.renderToString(latexFormula, {
         output: 'html'
       })
 
-      dom.addEventListener('click', event => {
+      dom.addEventListener('dblclick', event => {
         event.stopPropagation()
-        dom.classList.add('ex-selected')
+        //dom.classList.add('ex-selected')
+        console.log('dblclick')
+        //contentLatex.style.display = 'inline-block'
+        //renderedLatex.style.display = 'none'
 
         window.addEventListener('click', function (event) {
           const target = event.target as HTMLElement
@@ -89,8 +104,17 @@ export const Katex = Node.create({
         })
       })
 
+      dom.append(contentLatex, renderedLatex)
+
       return {
-        dom
+        dom,
+        contentDOM: contentLatex,
+        update(newNode) {
+          if (newNode.type !== node.type) {
+            return false
+          }
+          return true
+        }
       }
     }
   }

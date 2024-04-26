@@ -1,9 +1,11 @@
 // @ts-nocheck
+import { Dropdown } from '@editor/ui'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import table from '@icons/table-2.svg'
+import { mergeAttributes } from '@tiptap/core'
 import Table from '@tiptap/extension-table'
+import { createColGroup } from '@tiptap/extension-table'
 
-import { Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
 import { TableView } from './TableView'
@@ -98,6 +100,20 @@ export const TableCustom = Table.extend({
         }
       ]
     }
+  },
+  renderHTML({ node, HTMLAttributes }) {
+    const { colgroup, tableWidth, tableMinWidth } = createColGroup(node, this.options.cellMinWidth)
+
+    const table: DOMOutputSpec = [
+      'table',
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
+        style: tableWidth ? `width: ${tableWidth}` : `minWidth: ${tableMinWidth}`
+      }),
+      colgroup,
+      ['tbody', 0]
+    ]
+
+    return ['div', { class: 'tableWrapper' }, table]
   },
   addOptions() {
     return {
