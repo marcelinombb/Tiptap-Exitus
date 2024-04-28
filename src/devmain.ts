@@ -29,12 +29,6 @@ const editor = new ExitusEditor({
   content: defaultText
 })
 
-const editor2 = new ExitusEditor({
-  container: document.querySelector('.element2') as HTMLElement,
-  toolbar,
-  content: defaultText
-})
-
 editor.on('create', ({ editor }) => {
   const htmlContent = document.querySelector('.html-content') as Element
   htmlContent.innerHTML = editor.getHTML()
@@ -48,6 +42,9 @@ function parseLatex(text: string) {
   while ((match = regex.exec(text)) !== null) {
     matches.push(match[1])
   }
+
+  if (matches.length == 0) return [text]
+
   return matches
 }
 

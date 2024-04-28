@@ -83,6 +83,11 @@
 
   .tiptap-widget:hover {
     outline-color: #ffc83d;
+    cursor: pointer
+  }
+
+  .tiptap-widget-isEditing {
+    cursor: text;
   }
 
   .ex-selected {
@@ -263,10 +268,6 @@
     margin: 0.9em auto;
   }
 
-  .math-tex {
-    display: inline;
-  }
-
   .baloon-menu {
     position: absolute;
     display: none;
@@ -358,3 +359,21 @@
   transform: translate(50%, 50%);
   cursor: nwse-resize;
 }
+
+.ProseMirror .latex-editor {
+  border-radius: .25rem;
+  background: #202020;
+  color: #fff;
+  caret-color: white;
+  font-family: monospace;
+  padding: .2rem .5rem;
+  min-width: 30px;
+}
+
+.ProseMirror .latex-editor:hover {
+  cursor: text;
+}
+
+ .math-tex {
+   display: inline-block;
+ }

@@ -23,12 +23,10 @@ function convertToBase64(input: HTMLInputElement, editor: ExitusEditor) {
             ? { width: maxWidth, height: Math.round(maxWidth / (img.width / img.height)) }
             : { width: maxHeight * (img.width / img.height), height: maxHeight }
 
-        console.log(img.width, img.height, newDimension)
-
         const canvas = document.createElement('canvas')
 
-        canvas.width = img.width
-        canvas.height = img.height
+        canvas.width = newDimension.width
+        canvas.height = newDimension.height
 
         const ctx = canvas.getContext('2d')
         ctx!.fillStyle = '#FFFFFF'
