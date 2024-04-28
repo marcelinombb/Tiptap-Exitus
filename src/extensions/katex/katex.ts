@@ -28,15 +28,11 @@ export const Katex = Node.create({
 
   group: 'inline',
 
-  //draggable: true,
+  draggable: true,
 
   inline: true,
 
-  //isolating: true,
-
   content: 'inline*',
-
-  //atom: true,
 
   addStorage() {
     return {
@@ -60,8 +56,8 @@ export const Katex = Node.create({
       }
     ]
   },
-  renderHTML({}) {
-    return ['span', { class: 'math-tex' }, 0]
+  renderHTML({ HTMLAttributes }) {
+    return ['span', { class: 'math-tex' }, HTMLAttributes.latexFormula]
   },
   addAttributes() {
     return {
@@ -70,6 +66,12 @@ export const Katex = Node.create({
       },
       isEditing: {
         default: false
+      },
+      latexFormula: {
+        default: '',
+        parseHTML(element) {
+          return parseLatex(element.innerText)
+        }
       }
     }
   },
@@ -79,11 +81,11 @@ export const Katex = Node.create({
       dom.className = 'math-tex tiptap-widget '
       const contentLatex = document.createElement('div')
       contentLatex.className = 'latex-editor'
-      const renderedLatex = document.createElement('div')
-
       contentLatex.contentEditable = 'true'
 
-      updateLatexDisply(node, contentLatex, renderedLatex)
+      const renderedLatex = document.createElement('div')
+
+      updateLatexDisplay(node.textContent, node, contentLatex, renderedLatex)
 
       dom.addEventListener('click', event => {
         event.stopPropagation()
@@ -96,7 +98,8 @@ export const Katex = Node.create({
           const target = event.target as HTMLElement
           if (target.classList.contains('math-tex') || target.parentElement?.classList?.contains('math-tex')) return
           updateAttributes(editor, getPos, {
-            isEditing: false
+            isEditing: false,
+            latexFormula: contentLatex.innerText
           })
           window.removeEventListener('click', outsideClick)
         }
@@ -108,35 +111,38 @@ export const Katex = Node.create({
 
       return {
         dom,
-        contentDOM: contentLatex,
         update(newNode) {
           if (newNode.type !== node.type) {
             return false
           }
-          updateLatexDisply(newNode, contentLatex, renderedLatex)
-          node = newNode
+
+          updateLatexDisplay(contentLatex.innerText, newNode, contentLatex, renderedLatex)
 
           return true
         },
-        selectNode() {
-          console.log('selected')
-        },
         ignoreMutation(mutation) {
-          return true
+          console.log(mutation)
+
+          if (mutation.type == 'characterData') {
+            return true
+          }
+          return false
         }
       }
     }
   }
 })
 
-function updateLatexDisply(node: ProseMirrorNode, contentLatex: HTMLElement, renderLatex: HTMLElement) {
+function updateLatexDisplay(latex: string, node: ProseMirrorNode, contentLatex: HTMLElement, renderLatex: HTMLElement) {
   contentLatex.style.display = node.attrs.isEditing ? 'inline-block' : 'none'
   renderLatex.style.display = !node.attrs.isEditing ? 'inline' : 'none'
-  const formula = node.textContent as string
+  const formula = latex
 
   const matches = parseLatex(formula)
 
-  const latexFormula = matches.join('')
+  contentLatex.innerText = matches
+
+  const latexFormula = matches
 
   try {
     renderLatex.innerHTML = katex.renderToString(latexFormula, {
@@ -144,19 +150,20 @@ function updateLatexDisply(node: ProseMirrorNode, contentLatex: HTMLElement, ren
     })
   } catch (error) {
     renderLatex.innerHTML = formula
+    renderLatex.classList.add('math-tex-error')
   }
 }
 
 function parseLatex(text: string) {
   const regex = /\\\((.*?)\\\)/g
-  const matches = []
+  //const matches = []
   let match
 
+  let parsedData = text
   while ((match = regex.exec(text)) !== null) {
-    matches.push(match[1])
+    parsedData = parsedData.replace(match[0], match[1])
+    //matches.push(match[1])
   }
 
-  if (matches.length == 0) return [text]
-
-  return matches
+  return parsedData
 }

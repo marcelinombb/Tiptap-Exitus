@@ -374,6 +374,10 @@
   cursor: text;
 }
 
+.math-tex-error {
+  color: red;
+}
+
  .math-tex {
    display: inline-block;
  }

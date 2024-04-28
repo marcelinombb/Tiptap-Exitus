@@ -35,11 +35,13 @@ editor.on('create', ({ editor }) => {
 })
 
 function parseLatex(text: string) {
-  const regex = /\\\((.*?)\\\)/g
+  const regex = new RegExp('<span class="math-tex">(.*?)<\\/span>', 'g')
   const matches = []
   let match
 
   while ((match = regex.exec(text)) !== null) {
+    console.log(match)
+
     matches.push(match[1])
   }
 
@@ -55,9 +57,11 @@ editor.on('update', ({ editor }) => {
 
   let content = editor.getHTML()
 
-  latexMatches.forEach(latex => {
-    content = content.replace(`\\(${latex}\\)`, `<span class="latex">${katex.renderToString(latex, { output: 'html' })}</span>`)
-  })
+  try {
+    latexMatches.forEach(latex => {
+      content = content.replace(`\\(${latex}\\)`, `<span class="latex">${katex.renderToString(latex, { output: 'html' })}</span>`)
+    })
+  } catch (error) {}
 
   htmlContent.innerHTML = content
 })
