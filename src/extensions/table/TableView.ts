@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Toolbar } from '@editor/toolbar'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import tableCell from '@icons/merge-tableCells.svg'
@@ -15,14 +16,12 @@ import { Balloon } from '../../editor/ui/Balloon'
 
 function clickHandler(table: TableView) {
   table.tableWrapper.addEventListener('click', event => {
-    //event.stopPropagation()
-    console.log('jkadfs')
+    const balloonMenu = table.tableWrapper.querySelector('.baloon-menu') as HTMLElement
+    console.log(balloonMenu)
+
     table.updateAttributes({
       ballonActive: true
     })
-    ///table.classList.add('ex-selected')
-    /*    const balloonMenu = table.querySelector('.baloon-menu') as HTMLElement
-    console.log(balloonMenu)
 
     if (balloonMenu) {
       if (balloonMenu.style.display === 'none') {
@@ -33,18 +32,22 @@ function clickHandler(table: TableView) {
     window.addEventListener('click', function (event) {
       const target = event.target as HTMLElement
 
-      if (!target.matches('.tableWrapper')) {
-        balloonMenu.style.display = 'none'
-        table.classList.remove('ex-selected')
+      if (target.closest('.tableWrapper') == null) {
+        console.log(target.closest('.tableWrapper'))
+
+        table.updateAttributes({
+          ballonActive: false
+        })
+        table.tableWrapper.classList.remove('ex-selected')
       }
-    }) */
+    })
   })
 }
 
 export function updateColumns(
   node: ProseMirrorNode,
   colgroup: Element,
-  table: Element,
+  table: HTMLElement,
   cellMinWidth: number,
   overrideCol?: number,
   overrideValue?: any
@@ -70,8 +73,8 @@ export function updateColumns(
       if (!nextDOM) {
         colgroup.appendChild(document.createElement('col')).style.width = cssWidth
       } else {
-        if (nextDOM.style.width !== cssWidth) {
-          nextDOM.style.width = cssWidth
+        if ((nextDOM as HTMLElement).style.width !== cssWidth) {
+          ;(nextDOM as HTMLElement).style.width = cssWidth
         }
 
         nextDOM = nextDOM.nextSibling
@@ -103,7 +106,7 @@ export class TableView implements NodeView {
   balloon: Balloon
   editor: Editor
   tableWrapper: HTMLElement
-  contentDOM: Element
+  contentDOM: HTMLElement
 
   constructor(node: ProseMirrorNode, editor: Editor) {
     this.node = node
@@ -114,8 +117,8 @@ export class TableView implements NodeView {
 
     this.table = this.tableWrapper.appendChild(document.createElement('table'))
     this.colgroup = this.table.appendChild(document.createElement('colgroup'))
-    this.contentDOM = this.table.appendChild(document.createElement('tbody')) as HTMLElement
-    console.log('sdlkfd')
+    this.contentDOM = this.table.appendChild(document.createElement('tbody'))
+    console.log('TableView')
 
     const configStorage = {
       celumnsTable: {
@@ -148,7 +151,7 @@ export class TableView implements NodeView {
       tableStarred: {
         toolbarButtonConfig: {
           icon: starredTable + arrowDropDown,
-          label: 'Aumentar e diminuir imagem',
+          label: 'editar tabela',
           events: {
             click: null
           }
@@ -157,7 +160,7 @@ export class TableView implements NodeView {
       cellStarred: {
         toolbarButtonConfig: {
           icon: starredCell + arrowDropDown,
-          label: 'Aumentar e diminuir imagem',
+          label: 'editar celula',
           events: {
             click: null
           }
@@ -173,10 +176,7 @@ export class TableView implements NodeView {
     this.balloon = new Balloon(editor, toolbar)
 
     this.tableWrapper.appendChild(this.balloon.render())
-    const balloonMenu = this.tableWrapper.querySelector('.baloon-menu') as HTMLElement
-    console.log(node)
 
-    balloonMenu.style.display = node.attrs.ballonActive ? 'block' : 'none'
     this.dom.appendChild(this.tableWrapper)
 
     clickHandler(this)
@@ -190,15 +190,21 @@ export class TableView implements NodeView {
     if (node.type !== this.node.type) {
       return false
     }
-    //console.log(node.attrs)
+    console.log(node.attrs)
+    this.balloon.ballonMenu.style.display = node.attrs.ballonActive ? 'block' : 'none'
 
     this.node = node
-    //updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
 
     return true
   }
 
   ignoreMutation(mutation: MutationRecord | { type: 'selection'; target: Element }) {
     return mutation.type === 'attributes' && (mutation.target === this.table || this.colgroup.contains(mutation.target))
+  }
+}
+
+export class baloesTable extends TableView {
+  constructor(node: ProseMirrorNode, editor: Editor) {
+    super(node, editor)
   }
 }
