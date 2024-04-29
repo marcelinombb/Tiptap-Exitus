@@ -53,15 +53,15 @@ function parseLatex(text: string) {
 editor.on('update', ({ editor }) => {
   const htmlContent = document.querySelector('.html-content') as Element
 
-  const latexMatches = parseLatex(editor.getHTML())
+  //const latexMatches = parseLatex(editor.getHTML())
 
-  let content = editor.getHTML()
+  const content = editor.getHTML()
 
-  try {
+  /*   try {
     latexMatches.forEach(latex => {
       content = content.replace(`\\(${latex}\\)`, `<span class="latex">${katex.renderToString(latex, { output: 'html' })}</span>`)
     })
-  } catch (error) {}
+  } catch (error) {} */
 
   htmlContent.innerHTML = content
 })

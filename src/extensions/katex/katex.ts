@@ -1,14 +1,15 @@
+import { type ButtonEventProps } from '@editor/ui'
 import formula from '@icons/formula.svg'
-import { type Editor, Node } from '@tiptap/core'
-import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
-import katex from 'katex'
+import { Node } from '@tiptap/core'
+import { Fragment } from '@tiptap/pm/model'
+//import katex from 'katex'
+
 // -disable-next-line import/no-unresolved
 import '../../../node_modules/katex/dist/katex.css'
-
-import { type ButtonEventProps } from '@editor/ui'
+import { KatexView } from './katexView'
 
 function click({ editor }: ButtonEventProps) {
-  editor.commands.insertContentAt(editor.view.state.selection.$anchor.pos, `<span class="math-tex"></span>`, {
+  editor.commands.insertContentAt(editor.view.state.selection.$anchor.pos, `<span class="math-tex" isEditing='true' >\\sqrt{2}</span>`, {
     updateSelection: true,
     parseOptions: {
       preserveWhitespace: 'full'
@@ -16,12 +17,14 @@ function click({ editor }: ButtonEventProps) {
   })
 }
 
-function updateAttributes(editor: Editor, getPos: boolean | (() => number), attributes: Record<string, any>) {
+/* function updateAttributes(editor: Editor, getPos: boolean | (() => number), attributes: Record<string, any>) {
   if (typeof getPos === 'function') {
     const { view } = editor
-    view.dispatch(view.state.tr.setNodeMarkup(getPos(), undefined, attributes))
+    const transaction = view.state.tr
+    transaction.setNodeMarkup(getPos(), undefined, attributes)
+    view.dispatch(transaction)
   }
-}
+} */
 
 export const Katex = Node.create({
   name: 'katex',
@@ -31,6 +34,8 @@ export const Katex = Node.create({
   draggable: true,
 
   inline: true,
+
+  atom: true,
 
   content: 'inline*',
 
@@ -52,6 +57,10 @@ export const Katex = Node.create({
         getAttrs: node => {
           return (node as HTMLElement).className === 'math-tex' && null
         },
+        getContent: (dom, schema) => {
+          const data = dom.textContent as string
+          return Fragment.from(schema.text(parseLatex(data)))
+        },
         priority: 9999
       }
     ]
@@ -65,17 +74,25 @@ export const Katex = Node.create({
         default: ''
       },
       isEditing: {
-        default: false
+        default: false,
+        parseHTML(element) {
+          return element.getAttribute('isEditing') !== null
+        }
       },
       latexFormula: {
         default: '',
         parseHTML(element) {
-          return parseLatex(element.innerText)
+          return element.innerText
         }
       }
     }
   },
   addNodeView() {
+    return ({ node, editor, getPos }) => {
+      return new KatexView(node, editor, getPos)
+    }
+  }
+  /* addNodeView() {
     return ({ node, editor, getPos }) => {
       const dom = document.createElement('div')
       dom.className = 'math-tex tiptap-widget '
@@ -84,15 +101,18 @@ export const Katex = Node.create({
       contentLatex.contentEditable = 'true'
 
       const renderedLatex = document.createElement('div')
+      renderedLatex.contentEditable = 'false'
 
       updateLatexDisplay(node.textContent, node, contentLatex, renderedLatex)
 
       dom.addEventListener('click', event => {
         event.stopPropagation()
 
+        //if (node.attrs.isEditing) {
         updateAttributes(editor, getPos, {
           isEditing: true
         })
+        //}
 
         function outsideClick(event: Event) {
           const target = event.target as HTMLElement
@@ -115,25 +135,21 @@ export const Katex = Node.create({
           if (newNode.type !== node.type) {
             return false
           }
-
+          //console.log(newNode.attrs, node.attrs)
+          node = newNode
           updateLatexDisplay(contentLatex.innerText, newNode, contentLatex, renderedLatex)
 
           return true
         },
-        ignoreMutation(mutation) {
-          console.log(mutation)
-
-          if (mutation.type == 'characterData') {
-            return true
-          }
-          return false
+        stopEvent(event) {
+          return node.attrs.isEditing
         }
       }
     }
-  }
+  } */
 })
 
-function updateLatexDisplay(latex: string, node: ProseMirrorNode, contentLatex: HTMLElement, renderLatex: HTMLElement) {
+/* function updateLatexDisplay(latex: string, node: ProseMirrorNode, contentLatex: HTMLElement, renderLatex: HTMLElement) {
   contentLatex.style.display = node.attrs.isEditing ? 'inline-block' : 'none'
   renderLatex.style.display = !node.attrs.isEditing ? 'inline' : 'none'
   const formula = latex
@@ -148,13 +164,15 @@ function updateLatexDisplay(latex: string, node: ProseMirrorNode, contentLatex: 
     renderLatex.innerHTML = katex.renderToString(latexFormula, {
       output: 'html'
     })
+    renderLatex.title = latexFormula
+    renderLatex.classList.remove('math-tex-error')
   } catch (error) {
     renderLatex.innerHTML = formula
     renderLatex.classList.add('math-tex-error')
   }
-}
+} */
 
-function parseLatex(text: string) {
+export function parseLatex(text: string) {
   const regex = /\\\((.*?)\\\)/g
   //const matches = []
   let match
