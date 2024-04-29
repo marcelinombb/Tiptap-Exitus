@@ -18,10 +18,10 @@ function convertToBase64(input: HTMLInputElement, editor: ExitusEditor) {
         const maxHeight = img.height > 700 ? 700 : img.height
         const maxWidth = img.width > 700 ? 700 : img.width
         //let newHeight, newWidth;
-        const newDimension =
-          img.width > img.height
-            ? { width: maxWidth, height: Math.round(maxWidth / (img.width / img.height)) }
-            : { width: maxHeight * (img.width / img.height), height: maxHeight }
+        // const newDimension =
+        img.width > img.height
+          ? { width: maxWidth, height: Math.round(maxWidth / (img.width / img.height)) }
+          : { width: maxHeight * (img.width / img.height), height: maxHeight }
 
         const canvas = document.createElement('canvas')
 
