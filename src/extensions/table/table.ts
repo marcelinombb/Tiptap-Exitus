@@ -113,8 +113,8 @@ export const TableCustom = Table.extend({
     }
   },
   addNodeView() {
-    return ({ node, editor }) => {
-      return new TableView(node, editor)
+    return ({ node, editor, getPos }) => {
+      return new TableView(node, editor, getPos)
     }
   }
 })

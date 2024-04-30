@@ -34,7 +34,6 @@
 }
 
  .selectedCell:after {
-  z-index: 2;
   position: absolute;
   content: "";
   left: 0;
@@ -224,6 +223,13 @@
     flex-wrap: nowrap;
   }
 
+  .ex-dropdown-balloonTable {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    z-index: 3 !important;
+    min-width: 200px;
+  }
+ 
   .ex-dropdown-baloon {
     flex-direction: row;
     flex-wrap: nowrap;
