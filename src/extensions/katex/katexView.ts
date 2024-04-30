@@ -1,57 +1,37 @@
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
+import { TextSelection } from '@tiptap/pm/state'
 import { type NodeView } from '@tiptap/pm/view'
 import katex from 'katex'
 
 import { parseLatex } from './katex'
 
 export class KatexView implements NodeView {
-  dom: Element
+  dom: HTMLElement
   node: ProseMirrorNode
   contentLatex: HTMLElement
   renderedLatex: HTMLElement
   contentDOM?: HTMLElement | null | undefined
   editor: Editor
   getPos: boolean | (() => number)
-  bindClickOutside: (event: Event) => void
   constructor(node: ProseMirrorNode, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
     this.editor = editor
     this.getPos = getPos
-    this.bindClickOutside = this.outsideClick.bind(this)
 
-    this.dom = document.createElement('div')
+    this.dom = document.createElement('span')
+    this.dom.contentEditable = 'false'
     this.dom.className = 'math-tex tiptap-widget '
-    this.contentLatex = document.createElement('div')
+    this.contentLatex = document.createElement('span')
     this.contentLatex.className = 'latex-editor'
     this.contentLatex.contentEditable = 'true'
     this.contentDOM = this.contentLatex
-    this.renderedLatex = document.createElement('div')
+    this.renderedLatex = document.createElement('span')
     this.renderedLatex.contentEditable = 'false'
 
     this.updateLatexDisplay(this.node.textContent, this.contentLatex, this.renderedLatex)
 
-    this.dom.addEventListener('click', event => {
-      event.stopPropagation()
-
-      this.updateAttributes({
-        isEditing: true
-      })
-
-      window.addEventListener('click', this.bindClickOutside)
-    })
-
     this.dom.append(this.contentLatex, this.renderedLatex)
-  }
-
-  private outsideClick(event: Event) {
-    const target = event.target as HTMLElement
-    if (target.classList.contains('math-tex') || target.parentElement?.classList?.contains('math-tex')) return
-    this.updateAttributes({
-      isEditing: false,
-      latexFormula: this.contentLatex.innerText
-    })
-    window.removeEventListener('click', this.bindClickOutside)
   }
 
   updateAttributes(attributes: Record<string, any>) {
@@ -86,7 +66,35 @@ export class KatexView implements NodeView {
     }
   }
 
+  selectNode() {
+    console.log('selected')
+    const { tr } = this.editor.view.state
+    const pos = this.getPos()
+    const resolvedPos = tr.doc.resolve(pos + 1) // Adjust for node start position
+
+    //if (!tr.selection.) {
+    // Set the selection to the start of the node content
+    tr.setSelection(TextSelection.near(resolvedPos))
+    this.editor.view.dispatch(tr)
+    //}
+
+    this.updateAttributes({
+      isEditing: true
+    })
+  }
+
+  deselectNode() {
+    console.log('deselected')
+    if (this.node.attrs.isEditing) {
+      this.updateAttributes({
+        isEditing: false,
+        latexFormula: this.contentLatex.innerText
+      })
+    }
+  }
+
   update(newNode: ProseMirrorNode) {
+    console.log('update')
     if (newNode.type !== this.node.type) {
       return false
     }
@@ -99,10 +107,14 @@ export class KatexView implements NodeView {
   }
 
   ignoreMutation(mutation: MutationRecord | { type: 'selection'; target: Element }) {
-    return mutation.type === 'selection' || mutation.type === 'childList'
+    console.log(mutation)
+
+    return mutation.type === 'characterData' || mutation.type === 'selection' || mutation.type === 'childList'
   }
 
-  stopEvent() {
+  stopEvent(event: Event) {
+    console.log(event)
+
     return this.node.attrs.isEditing
   }
 }

@@ -6,25 +6,27 @@ import { Fragment } from '@tiptap/pm/model'
 
 // -disable-next-line import/no-unresolved
 import '../../../node_modules/katex/dist/katex.css'
+import { TextSelection } from '@tiptap/pm/state'
+
 import { KatexView } from './katexView'
 
 function click({ editor }: ButtonEventProps) {
-  editor.commands.insertContentAt(editor.view.state.selection.$anchor.pos, `<span class="math-tex" isEditing='true' >\\sqrt{2}</span>`, {
-    updateSelection: true,
-    parseOptions: {
-      preserveWhitespace: 'full'
-    }
-  })
+  editor
+    .chain()
+    .focus()
+    .insertContent(`<span class="math-tex" isEditing='true' >\\sqrt{2}</span>`)
+    .command(({ tr, dispatch }) => {
+      if (dispatch) {
+        let position = tr.selection.to
+        position = position - 1 // Adjust this depending on where you want the cursor within the node
+        const selection = TextSelection.create(tr.doc, position)
+        tr.setSelection(selection)
+        dispatch(tr)
+      }
+      return true
+    })
+    .run()
 }
-
-/* function updateAttributes(editor: Editor, getPos: boolean | (() => number), attributes: Record<string, any>) {
-  if (typeof getPos === 'function') {
-    const { view } = editor
-    const transaction = view.state.tr
-    transaction.setNodeMarkup(getPos(), undefined, attributes)
-    view.dispatch(transaction)
-  }
-} */
 
 export const Katex = Node.create({
   name: 'katex',
@@ -92,85 +94,7 @@ export const Katex = Node.create({
       return new KatexView(node, editor, getPos)
     }
   }
-  /* addNodeView() {
-    return ({ node, editor, getPos }) => {
-      const dom = document.createElement('div')
-      dom.className = 'math-tex tiptap-widget '
-      const contentLatex = document.createElement('div')
-      contentLatex.className = 'latex-editor'
-      contentLatex.contentEditable = 'true'
-
-      const renderedLatex = document.createElement('div')
-      renderedLatex.contentEditable = 'false'
-
-      updateLatexDisplay(node.textContent, node, contentLatex, renderedLatex)
-
-      dom.addEventListener('click', event => {
-        event.stopPropagation()
-
-        //if (node.attrs.isEditing) {
-        updateAttributes(editor, getPos, {
-          isEditing: true
-        })
-        //}
-
-        function outsideClick(event: Event) {
-          const target = event.target as HTMLElement
-          if (target.classList.contains('math-tex') || target.parentElement?.classList?.contains('math-tex')) return
-          updateAttributes(editor, getPos, {
-            isEditing: false,
-            latexFormula: contentLatex.innerText
-          })
-          window.removeEventListener('click', outsideClick)
-        }
-
-        window.addEventListener('click', outsideClick)
-      })
-
-      dom.append(contentLatex, renderedLatex)
-
-      return {
-        dom,
-        update(newNode) {
-          if (newNode.type !== node.type) {
-            return false
-          }
-          //console.log(newNode.attrs, node.attrs)
-          node = newNode
-          updateLatexDisplay(contentLatex.innerText, newNode, contentLatex, renderedLatex)
-
-          return true
-        },
-        stopEvent(event) {
-          return node.attrs.isEditing
-        }
-      }
-    }
-  } */
 })
-
-/* function updateLatexDisplay(latex: string, node: ProseMirrorNode, contentLatex: HTMLElement, renderLatex: HTMLElement) {
-  contentLatex.style.display = node.attrs.isEditing ? 'inline-block' : 'none'
-  renderLatex.style.display = !node.attrs.isEditing ? 'inline' : 'none'
-  const formula = latex
-
-  const matches = parseLatex(formula)
-
-  contentLatex.innerText = matches
-
-  const latexFormula = matches
-
-  try {
-    renderLatex.innerHTML = katex.renderToString(latexFormula, {
-      output: 'html'
-    })
-    renderLatex.title = latexFormula
-    renderLatex.classList.remove('math-tex-error')
-  } catch (error) {
-    renderLatex.innerHTML = formula
-    renderLatex.classList.add('math-tex-error')
-  }
-} */
 
 export function parseLatex(text: string) {
   const regex = /\\\((.*?)\\\)/g
