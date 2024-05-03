@@ -1,19 +1,19 @@
 import { type ButtonEventProps } from '@editor/ui'
 import formula from '@icons/formula.svg'
 import { Node } from '@tiptap/core'
+// eslint-disable-next-line import-helpers/order-imports
 import { Fragment } from '@tiptap/pm/model'
-//import katex from 'katex'
 
-// -disable-next-line import/no-unresolved
 import '../../../node_modules/katex/dist/katex.css'
 import { TextSelection } from '@tiptap/pm/state'
 
 import { KatexView } from './katexView'
 
 function click({ editor }: ButtonEventProps) {
+  console.log(editor.view.coordsAtPos(editor.view.state.selection.$anchor.pos))
+
   editor
     .chain()
-    .focus()
     .insertContent(`<span class="math-tex" isEditing='true' >\\sqrt{2}</span>`)
     .command(({ tr, dispatch }) => {
       if (dispatch) {
@@ -25,7 +25,16 @@ function click({ editor }: ButtonEventProps) {
       }
       return true
     })
+    .focus()
     .run()
+}
+
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    katex: {
+      addLatexInput: () => ReturnType
+    }
+  }
 }
 
 export const Katex = Node.create({
@@ -70,6 +79,22 @@ export const Katex = Node.create({
   renderHTML({ HTMLAttributes }) {
     return ['span', { class: 'math-tex' }, HTMLAttributes.latexFormula]
   },
+  /* addCommands() {
+    return {
+      addLatexInput:
+        () =>
+        ({ tr, dispatch }) => {
+          if (dispatch) {
+            let position = tr.selection.to
+            position = position - 1 // Adjust this depending on where you want the cursor within the node
+            const selection = TextSelection.create(tr.doc, position)
+            tr.setSelection(selection)
+            dispatch(tr)
+          }
+          return true
+        }
+    }
+  }, */
   addAttributes() {
     return {
       class: {

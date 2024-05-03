@@ -30,7 +30,9 @@ export class KatexView implements NodeView {
     this.renderedLatex.contentEditable = 'false'
 
     this.updateLatexDisplay(this.node.textContent, this.contentLatex, this.renderedLatex)
-
+    if (this.isEditing()) {
+      //this.contentDOM.focus()
+    }
     this.dom.append(this.contentLatex, this.renderedLatex)
   }
 
@@ -43,26 +45,32 @@ export class KatexView implements NodeView {
     }
   }
 
+  isEditing() {
+    return this.node.attrs.isEditing
+  }
+
   updateLatexDisplay(latex: string, contentLatex: HTMLElement, renderLatex: HTMLElement) {
-    contentLatex.style.display = this.node.attrs.isEditing ? 'inline-block' : 'none'
-    renderLatex.style.display = !this.node.attrs.isEditing ? 'inline' : 'none'
+    contentLatex.style.display = this.isEditing() ? 'inline-block' : 'none'
+    renderLatex.style.display = !this.isEditing() ? 'inline' : 'none'
     const formula = latex
 
     const matches = parseLatex(formula)
 
     contentLatex.innerText = matches
 
-    const latexFormula = matches
+    if (!this.isEditing()) {
+      const latexFormula = matches
 
-    try {
-      renderLatex.innerHTML = katex.renderToString(latexFormula, {
-        output: 'html'
-      })
-      renderLatex.title = latexFormula
-      renderLatex.classList.remove('math-tex-error')
-    } catch (error) {
-      renderLatex.innerHTML = formula
-      renderLatex.classList.add('math-tex-error')
+      try {
+        renderLatex.innerHTML = katex.renderToString(latexFormula, {
+          output: 'html'
+        })
+        renderLatex.title = latexFormula
+        renderLatex.classList.remove('math-tex-error')
+      } catch (error) {
+        renderLatex.innerHTML = formula
+        renderLatex.classList.add('math-tex-error')
+      }
     }
   }
 
@@ -72,20 +80,19 @@ export class KatexView implements NodeView {
     const pos = this.getPos()
     const resolvedPos = tr.doc.resolve(pos + 1) // Adjust for node start position
 
-    //if (!tr.selection.) {
-    // Set the selection to the start of the node content
     tr.setSelection(TextSelection.near(resolvedPos))
     this.editor.view.dispatch(tr)
-    //}
 
-    this.updateAttributes({
-      isEditing: true
-    })
+    if (!this.isEditing()) {
+      this.updateAttributes({
+        isEditing: true
+      })
+    }
   }
 
   deselectNode() {
     console.log('deselected')
-    if (this.node.attrs.isEditing) {
+    if (this.isEditing()) {
       this.updateAttributes({
         isEditing: false,
         latexFormula: this.contentLatex.innerText
@@ -94,12 +101,18 @@ export class KatexView implements NodeView {
   }
 
   update(newNode: ProseMirrorNode) {
-    console.log('update')
     if (newNode.type !== this.node.type) {
       return false
     }
+    /*   console.log(this.node.attrs, newNode.attrs)
 
+    if (!newNode.attrs.isEditing) {
+      return false
+    }
+ */
     this.node = newNode
+
+    console.log('updated')
 
     this.updateLatexDisplay(this.contentLatex.innerText, this.contentLatex, this.renderedLatex)
 
@@ -114,7 +127,6 @@ export class KatexView implements NodeView {
 
   stopEvent(event: Event) {
     console.log(event)
-
-    return this.node.attrs.isEditing
+    return this.isEditing()
   }
 }
