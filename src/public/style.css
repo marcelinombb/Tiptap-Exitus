@@ -227,7 +227,14 @@
     flex-direction: row;
     flex-wrap: nowrap;
     z-index: 3 !important;
-    min-width: 200px;
+    min-width: 240px;
+  }
+
+  .ex-dropdown-balloonModal{
+    flex-direction: row;
+    flex-wrap: nowrap;
+    z-index: 3 !important;
+    width: 360px;
   }
  
   .ex-dropdown-baloon {
@@ -279,6 +286,13 @@
     top: 0;
     left: 50%;
     transform: translate(-50%,-100%);
+  }
+  .custom-modal{
+      position: absolute;
+      display: none;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%,-100%);
   }
 
   .ex-direita{
@@ -351,4 +365,126 @@
   right: 0;
   transform: translate(50%, 50%);
   cursor: nwse-resize;
+}
+
+.bloco1{
+  display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    /* justify-content: space-between; */
+}
+
+.bloco2{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  /* justify-content: space-between; */
+  margin-top: 10px;
+}
+
+.bloco3{
+  display: flex;
+  align-items: center;
+    flex-wrap: wrap;
+    width: 40%;
+}
+
+.bloco4{
+  display: flex;
+  align-items: center;
+    flex-wrap: wrap;
+    width: 60%;
+}
+
+.bloco5{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between; 
+  width: 100%;
+  margin-top: 10px;
+}
+
+.bloco6{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 32%;
+}
+
+.bloco7{
+  display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: 10px;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-left: 10px;
+    margin-left: 20px;
+}
+
+.bloco8{
+  display: flex;
+}
+
+.labels{
+  min-width: 100%;
+    width: 100%;
+}
+
+
+.colorInput{
+  margin-left: 14.4px;
+  flex-grow: 1;
+  min-width: auto;
+}
+.colorInput2{
+  flex-grow: 1;
+  min-width: auto;
+}
+
+.largura1{
+  width: 73px;
+  margin-left: 14.4px;
+}
+
+.inputDimensoes{
+  min-width: 100%;
+  width: 0;
+}
+
+.botaoSalvar,
+.botaoCancela {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.botaoSalvar:hover,
+.botaoCancela:hover {
+  text-decoration: underline; 
+}
+
+.icone-confirmacao::after {
+  content: '\2714';
+    font-family: Arial, sans-serif;
+    color: green;
+    font-size: 28px;
+    right: 72px;
+    position: relative;
+    top: 3px;
+}
+
+.icone-cancelamento::after {
+  content: '\2716'; 
+  font-family: Arial, sans-serif; 
+  color: red;
+  font-size: 24px;
+    right: 91px;
+    position: relative;
+    top: 3px;
 }
