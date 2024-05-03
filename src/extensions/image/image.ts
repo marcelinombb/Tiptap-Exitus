@@ -59,12 +59,11 @@ function createFileInput(editor: ExitusEditor) {
     convertToBase64(this, editor)
   })
 
-  document.body.appendChild(inputElement)
   return inputElement
 }
 
 function addImage({ editor }: ButtonEventProps) {
-  const inputElement = (document.querySelector(`#${inputID + editor.editorInstance}`) || createFileInput(editor)) as HTMLInputElement
+  const inputElement = createFileInput(editor) as HTMLInputElement
   inputElement.click()
 }
 
