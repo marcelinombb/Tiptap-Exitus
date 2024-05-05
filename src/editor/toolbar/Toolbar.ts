@@ -37,8 +37,10 @@ export class Toolbar {
     this.toolbarConfig = toolbarConfig
   }
 
-  createToolbar(toolbarItemsDiv: HTMLDivElement) {
-    this.toolbarItemsDiv = toolbarItemsDiv
+  createToolbar() {
+    this.toolbarItemsDiv = document.createElement('div')
+    this.toolbarItemsDiv.className = 'ex-toolbar-items'
+
     const { configStorage, toolbarOrder } = this.toolbarConfig
     toolbarOrder.forEach(item => {
       const tool = getExtensionStorage(configStorage, item)
@@ -64,5 +66,7 @@ export class Toolbar {
         })
       }
     })
+
+    return this.toolbarItemsDiv
   }
 }

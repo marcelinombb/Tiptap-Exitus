@@ -5,28 +5,11 @@ import { Node } from '@tiptap/core'
 import { Fragment } from '@tiptap/pm/model'
 
 import '../../../node_modules/katex/dist/katex.css'
-import { TextSelection } from '@tiptap/pm/state'
 
 import { KatexView } from './katexView'
 
 function click({ editor }: ButtonEventProps) {
-  console.log(editor.view.coordsAtPos(editor.view.state.selection.$anchor.pos))
-
-  editor
-    .chain()
-    .insertContent(`<span class="math-tex" isEditing='true' >\\sqrt{2}</span>`)
-    .command(({ tr, dispatch }) => {
-      if (dispatch) {
-        let position = tr.selection.to
-        position = position - 1 // Adjust this depending on where you want the cursor within the node
-        const selection = TextSelection.create(tr.doc, position)
-        tr.setSelection(selection)
-        dispatch(tr)
-      }
-      return true
-    })
-    .focus()
-    .run()
+  editor.chain().insertContent(`<span class="math-tex" isEditing='true' > </span>`).focus().run()
 }
 
 declare module '@tiptap/core' {

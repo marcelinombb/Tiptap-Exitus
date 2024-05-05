@@ -79,6 +79,7 @@
 
   .ex-toolbar-items {
     align-items: center;
+    border-radius: 5px;
   }
 
   .tiptap-widget:hover {
@@ -229,7 +230,7 @@
     flex-wrap: nowrap;
   }
 
-  .ex-dropdown-baloon {
+  .ex-dropdown-balloon {
     flex-direction: row;
     flex-wrap: nowrap;
   }
@@ -268,14 +269,6 @@
     margin: 0.9em auto;
   }
 
-  .baloon-menu {
-    position: absolute;
-    display: none;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%,-100%);
-  }
-
   .ex-direita{
     margin-right: 0;
     margin-left: auto;
@@ -291,25 +284,41 @@
     margin-left: auto;
   }
 
- .baloon-panel {
+  .balloon-menu {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, calc(-100% - 10px));
+    box-shadow: 0px 2px 20px 1px rgba(0, 0, 0, 0.3);
+  }
+
+ .balloon-panel {
     position: relative; 
-    height: 30px;
+    min-height: 30px;
+    padding: 1px;
     border-radius: 5px;
+    /* border: 1px solid black; */
     background-color: rgb(255, 255, 255);
-    box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.3);
+
     align-items: center;
+  }
+
+.balloon-menu::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  /* Position the arrow at the bottom of the balloon */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px 10px 0px 10px;
+  border-style: solid;
+  
+  border-color: white transparent transparent transparent;
 }
 
-.baloon-arrow {
-  background-color: transparent;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid white;
-  margin: 0 auto;
-  filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.1));
+.ex-hidden {
+  display: none;
 }
 
 .ex-pequeno{
@@ -329,7 +338,6 @@
   height: 10px; 
   background-color: #3779eb; 
   position: absolute; 
-  display: none;
 }
 
 .canto-superior-esquerdo {
@@ -379,7 +387,7 @@
 }
 
  .math-tex {
-   display: inline;
+   display: inline-block;
  }
 
  .math-tex .katex {

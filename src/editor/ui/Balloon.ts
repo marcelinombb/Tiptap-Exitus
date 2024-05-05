@@ -15,31 +15,40 @@ export interface BalloonConfig extends Omit<ButtonConfig, 'events'> {
 }
 
 export class Balloon {
-  toolbar!: Toolbar
   ballonMenu!: HTMLDivElement
   ballonPanel!: HTMLDivElement
-  ballonArrow!: HTMLDivElement
   editor: Editor
 
-  constructor(editor: Editor, toolbar: Toolbar) {
+  constructor(editor: Editor) {
     this.editor = editor
-    this.toolbar = toolbar
+    this.render()
   }
 
   render() {
     this.ballonMenu = document.createElement('div')
-    this.ballonMenu.className = 'baloon-menu'
-    this.ballonMenu.style.display = 'none'
+    this.ballonMenu.className = 'balloon-menu ex-hidden'
 
     this.ballonPanel = this.ballonMenu.appendChild(document.createElement('div'))
-    this.ballonPanel.className = 'baloon-panel ex-toolbar-editor'
+    this.ballonPanel.className = 'balloon-panel'
 
-    this.toolbar.createToolbar(this.ballonPanel)
+    //this.ballonPanel.append(this.toolbar.createToolbar())
 
-    this.ballonArrow = this.ballonMenu.appendChild(document.createElement('div'))
-    this.ballonArrow.className = 'baloon-arrow'
+    this.ballonMenu.append(this.ballonPanel)
+  }
 
-    this.ballonMenu.append(this.ballonPanel, this.ballonArrow)
+  getBalloon() {
     return this.ballonMenu
+  }
+
+  isOpen() {
+    return !this.ballonMenu.classList.contains('ex-hidden')
+  }
+
+  show() {
+    this.ballonMenu.classList.remove('ex-hidden')
+  }
+
+  hide() {
+    this.ballonMenu.classList.add('ex-hidden')
   }
 }

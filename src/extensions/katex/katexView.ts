@@ -1,6 +1,6 @@
+import { Balloon } from '@editor/ui'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
-import { TextSelection } from '@tiptap/pm/state'
 import { type NodeView } from '@tiptap/pm/view'
 import katex from 'katex'
 
@@ -11,9 +11,11 @@ export class KatexView implements NodeView {
   node: ProseMirrorNode
   contentLatex: HTMLElement
   renderedLatex: HTMLElement
-  contentDOM?: HTMLElement | null | undefined
   editor: Editor
   getPos: boolean | (() => number)
+  balloon: Balloon
+  input: HTMLInputElement
+
   constructor(node: ProseMirrorNode, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
     this.editor = editor
@@ -23,16 +25,26 @@ export class KatexView implements NodeView {
     this.dom.contentEditable = 'false'
     this.dom.className = 'math-tex tiptap-widget '
     this.contentLatex = document.createElement('span')
-    this.contentLatex.className = 'latex-editor'
-    this.contentLatex.contentEditable = 'true'
-    this.contentDOM = this.contentLatex
+    this.contentLatex.contentEditable = 'false'
+
+    this.balloon = new Balloon(editor)
+    this.input = document.createElement('input')
+    this.input.type = 'text'
+    this.input.value = this.node.textContent
+    this.input.placeholder = '\\sqrt{2}'
+    this.balloon.ballonPanel.appendChild(this.input)
+
+    this.contentLatex.appendChild(this.balloon.getBalloon())
     this.renderedLatex = document.createElement('span')
     this.renderedLatex.contentEditable = 'false'
 
-    this.updateLatexDisplay(this.node.textContent, this.contentLatex, this.renderedLatex)
+    this.updateLatexDisplay(this.node.textContent, this.renderedLatex)
+
     if (this.isEditing()) {
-      //this.contentDOM.focus()
+      this.balloon.show()
+      this.input.focus()
     }
+
     this.dom.append(this.contentLatex, this.renderedLatex)
   }
 
@@ -49,18 +61,18 @@ export class KatexView implements NodeView {
     return this.node.attrs.isEditing
   }
 
-  updateLatexDisplay(latex: string, contentLatex: HTMLElement, renderLatex: HTMLElement) {
-    contentLatex.style.display = this.isEditing() ? 'inline-block' : 'none'
-    renderLatex.style.display = !this.isEditing() ? 'inline' : 'none'
+  updateLatexDisplay(latex: string, renderLatex: HTMLElement) {
+    //contentLatex.style.display = this.isEditing() ? 'inline-block' : 'none'
+    //renderLatex.style.display = !this.isEditing() ? 'inline' : 'none'
     const formula = latex
 
     const matches = parseLatex(formula)
 
-    contentLatex.innerText = matches
+    //contentLatex.innerText = matches
 
     if (!this.isEditing()) {
       const latexFormula = matches
-
+      //this.balloon.hide()
       try {
         renderLatex.innerHTML = katex.renderToString(latexFormula, {
           output: 'html'
@@ -75,15 +87,10 @@ export class KatexView implements NodeView {
   }
 
   selectNode() {
-    console.log('selected')
-    const { tr } = this.editor.view.state
-    const pos = this.getPos()
-    const resolvedPos = tr.doc.resolve(pos + 1) // Adjust for node start position
-
-    tr.setSelection(TextSelection.near(resolvedPos))
-    this.editor.view.dispatch(tr)
+    //console.log('selected')
 
     if (!this.isEditing()) {
+      this.balloon.show()
       this.updateAttributes({
         isEditing: true
       })
@@ -91,11 +98,11 @@ export class KatexView implements NodeView {
   }
 
   deselectNode() {
-    console.log('deselected')
+    this.balloon.hide()
     if (this.isEditing()) {
       this.updateAttributes({
-        isEditing: false,
-        latexFormula: this.contentLatex.innerText
+        isEditing: false
+        //latexFormula: this.contentLatex.innerText
       })
     }
   }
@@ -104,29 +111,26 @@ export class KatexView implements NodeView {
     if (newNode.type !== this.node.type) {
       return false
     }
-    /*   console.log(this.node.attrs, newNode.attrs)
 
-    if (!newNode.attrs.isEditing) {
-      return false
-    }
- */
     this.node = newNode
 
-    console.log('updated')
+    //console.log('updated')
 
-    this.updateLatexDisplay(this.contentLatex.innerText, this.contentLatex, this.renderedLatex)
+    this.updateLatexDisplay(this.input.value, this.renderedLatex)
 
     return true
   }
 
   ignoreMutation(mutation: MutationRecord | { type: 'selection'; target: Element }) {
-    console.log(mutation)
+    //console.log(mutation)
 
     return mutation.type === 'characterData' || mutation.type === 'selection' || mutation.type === 'childList'
   }
 
   stopEvent(event: Event) {
-    console.log(event)
+    /* console.log(event)
+    console.log(this.isEditing()) */
+
     return this.isEditing()
   }
 }

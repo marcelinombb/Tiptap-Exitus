@@ -24,13 +24,14 @@ class ExitusEditor extends Editor {
 
   constructor(options: Partial<ExitusEditorOptions> = {}) {
     super({ ...options, extensions: ExitusEditor.extensions })
-    this._createUI(options.container as Element)
     this.editorInstance = generateUUID()
+
     this.toolbar = new Toolbar(this, {
       toolbarOrder: options.toolbar as string[],
       configStorage: this.extensionStorage
     })
-    this.toolbar.createToolbar(this.toolbarItemsDiv)
+
+    this._createUI(options.container as Element)
   }
 
   _generateEditorUI() {
@@ -40,9 +41,7 @@ class ExitusEditor extends Editor {
     const toolbarEditor = document.createElement('div')
     toolbarEditor.className = 'ex-toolbar-editor'
 
-    const toolbarItems = document.createElement('div')
-    toolbarItems.className = 'ex-toolbar-items'
-
+    const toolbarItems = this.toolbar.createToolbar()
     toolbarEditor.appendChild(toolbarItems)
 
     const editorScroller = document.createElement('div')
