@@ -82,6 +82,7 @@ export const Image = ImageBase.extend({
 
   renderHTML({ HTMLAttributes }) {
     const { style, classes, src } = HTMLAttributes
+
     return ['div', { style, class: classes }, ['img', { src }]]
   },
 
@@ -108,8 +109,8 @@ export const Image = ImageBase.extend({
     }
   },
   addNodeView() {
-    return ({ node, editor }) => {
-      return new ImageView(node, editor)
+    return ({ node, editor, getPos }) => {
+      return new ImageView(node, editor, getPos)
     }
   }
 })

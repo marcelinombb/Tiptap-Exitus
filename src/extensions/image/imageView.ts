@@ -1,5 +1,5 @@
 import { Toolbar } from '@editor/toolbar'
-import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
+import { Button, type ButtonEventProps, Dropdown, type DropDownEventProps } from '@editor/ui'
 import { Balloon } from '@editor/ui/Balloon'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import textDl from '@icons/image-left.svg'
@@ -14,7 +14,7 @@ import type ExitusEditor from 'src/ExitusEditor'
 class ResizableImage {
   //private element: HTMLElement
   imageView: ImageView
-  private isResizing: boolean = false
+  private _isResizing: boolean = false
   private initialX: number = 0
   // private initialY: number = 0
   private initialWidth: number = 0
@@ -25,6 +25,7 @@ class ResizableImage {
   quadradoBaixoDireita!: HTMLElement
   bindResizeEvent: (event: PointerEvent) => void
   bindStopResizeEvent: () => void
+  resizers!: HTMLDivElement
 
   constructor(imageView: ImageView) {
     this.imageView = imageView
@@ -34,8 +35,8 @@ class ResizableImage {
   }
 
   private initResize() {
-    const element = this.imageView.imageWrapper
-    element.style.position = 'relative'
+    const element = document.createElement('div')
+    element.className = 'ex-hidden'
 
     // Quadrado no canto superior esquerdo
     this.quadradoTopEsquerda = element.appendChild(document.createElement('div'))
@@ -53,35 +54,38 @@ class ResizableImage {
     this.quadradoBaixoDireita = element.appendChild(document.createElement('div'))
     this.quadradoBaixoDireita.className = 'quadrado canto-inferior-direito'
     this.addResizeEvent(this.quadradoBaixoDireita)
+
+    this.resizers = element
+
+    this.imageView.imageWrapper.appendChild(element)
   }
 
   private addResizeEvent(element: HTMLElement) {
     element.addEventListener('pointerdown', (event: PointerEvent) => {
       event.preventDefault()
       event.stopPropagation()
-      this.isResizing = true
+      this._isResizing = true
       this.initialX = event.screenX
-      //console.log(event)
-
-      //this.initialY = event.clientY
       this.initialWidth = this.imageView.imageWrapper.offsetWidth
       document.addEventListener('pointermove', this.bindResizeEvent)
       document.addEventListener('pointerup', this.bindStopResizeEvent)
     })
   }
 
+  get isResizing() {
+    return this._isResizing
+  }
+
   private resize(event: PointerEvent) {
-    if (!this.isResizing) return
+    if (!this._isResizing) return
 
     const deltaX = event.screenX - this.initialX
-    // const deltaY = event.clientY - this.initialY
 
     this.imageView.imageWrapper.style.width = `${this.initialWidth + deltaX}px`
-    //this.element.style.height = `${this.initialHeight + deltaY}px`
   }
 
   private stopResize() {
-    this.isResizing = false
+    this._isResizing = false
     document.removeEventListener('pointermove', this.bindResizeEvent)
     document.removeEventListener('pointerup', this.bindStopResizeEvent)
 
@@ -91,30 +95,27 @@ class ResizableImage {
   }
 }
 
-function clickHandler(imageWrapper: HTMLElement) {
+function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
   imageWrapper.addEventListener('click', event => {
     event.stopPropagation()
     imageWrapper.classList.add('ex-selected')
-    const balloonMenu = imageWrapper.querySelector('.baloon-menu') as HTMLElement
-    const quadrados = imageWrapper.querySelectorAll('.quadrado')
-    if (balloonMenu) {
-      if (balloonMenu.style.display === 'none' && 'quadrado') {
-        balloonMenu.style.display = 'block'
-        quadrados.forEach(quadrado => {
-          ;(quadrado as HTMLElement).style.display = 'block'
-        })
-      }
+    //const balloonMenu = imageWrapper.querySelector('.balloon-menu') as HTMLElement
+    const resizers = resizer.resizers
+
+    if (!balloon.isOpen()) {
+      balloon.show()
+      resizers.classList.remove('ex-hidden')
     }
 
     window.addEventListener('click', function (event) {
       const target = event.target as HTMLElement
 
       if (!target.matches('.ex-image-wrapper')) {
-        balloonMenu.style.display = 'none'
+        //console.log(resizer.isResizing)
+
+        balloon.hide()
         imageWrapper.classList.remove('ex-selected')
-        quadrados.forEach(quadrado => {
-          ;(quadrado as HTMLElement).style.display = 'none'
-        })
+        resizers.classList.add('ex-hidden')
       }
     })
   })
@@ -174,16 +175,6 @@ function alinhaMeio(imageView: ImageView) {
   }
 }
 
-let botaoAtivo: Button | null = null
-
-function ativaBotao(button: Button) {
-  if (botaoAtivo) {
-    botaoAtivo.off()
-  }
-  button.on()
-  botaoAtivo = button
-}
-
 function originalPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
   const button = new Button(dropdown.editor, {
     icon: icon,
@@ -192,8 +183,8 @@ function originalPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
 
   button.bind('click', () => {
     if (!image.classList.contains('')) {
-      dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
-      ativaBotao(button)
+      //dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      button.on()
       image.classList.remove('ex-grande', 'ex-pequeno', 'ex-medio')
     } else {
       button.off()
@@ -205,21 +196,20 @@ function originalPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
   return button.render()
 }
 
-function trezentosPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
+function trezentosPx(imageWrapper: HTMLElement, dropdown: Dropdown, icon: string) {
   const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
 
   button.bind('click', () => {
-    if (!image.classList.contains('ex-pequeno')) {
-      dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
-      ativaBotao(button)
-      image.classList.add('ex-pequeno')
-      image.classList.remove('ex-grande')
+    if (imageWrapper.style.width != '300px') {
+      //dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      imageWrapper.style.width = '300px'
+      button.on()
     } else {
       button.off()
-      image.classList.remove('ex-pequeno')
+      imageWrapper.style.width = ''
       dropdown.off()
     }
   })
@@ -227,21 +217,20 @@ function trezentosPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
   return button.render()
 }
 
-function quatrocentosPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
+function quatrocentosPx(imageWrapper: HTMLElement, dropdown: Dropdown, icon: string) {
   const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
 
   button.bind('click', () => {
-    if (!image.classList.contains('ex-medio')) {
-      dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
-      ativaBotao(button)
-      image.classList.add('ex-medio')
-      image.classList.remove('ex-grande', 'ex-pequeno')
+    if (imageWrapper.style.width != '400px') {
+      //dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      imageWrapper.style.width = '400px'
+      button.on()
     } else {
       button.off()
-      image.classList.remove('ex-medio')
+      imageWrapper.style.width = ''
       dropdown.off()
     }
   })
@@ -249,21 +238,19 @@ function quatrocentosPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
   return button.render()
 }
 
-function setecentosPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
+function setecentosPx(imageWrapper: HTMLElement, dropdown: Dropdown, icon: string) {
   const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
 
   button.bind('click', () => {
-    if (!image.classList.contains('ex-grande')) {
-      dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
-      ativaBotao(button)
-      image.classList.add('ex-grande')
-      image.classList.remove('ex-pequeno')
+    if (imageWrapper.style.width != '700px') {
+      //dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+      imageWrapper.style.width = '700px'
     } else {
       button.off()
-      image.classList.remove('ex-grande')
+      imageWrapper.style.width = ''
       dropdown.off()
     }
   })
@@ -271,21 +258,21 @@ function setecentosPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
   return button.render()
 }
 
-function criarDropDown(dropdown: Dropdown, image: HTMLElement) {
+function criarDropDown(dropdown: Dropdown, imageWrapper: HTMLElement) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
 
-  const original = originalPx(image, dropdown, 'Original')
-  const pequeno = trezentosPx(image, dropdown, '300px')
-  const medio = quatrocentosPx(image, dropdown, '400px')
-  const grande = setecentosPx(image, dropdown, '700px')
+  const original = originalPx(imageWrapper, dropdown, 'Original')
+  const pequeno = trezentosPx(imageWrapper, dropdown, '300px')
+  const medio = quatrocentosPx(imageWrapper, dropdown, '400px')
+  const grande = setecentosPx(imageWrapper, dropdown, '700px')
 
   dropdownContent?.append(original, pequeno, medio, grande)
 
   return dropdownContent
 }
 
-function showDropdown({ event, dropdown }: any) {
+function showDropdown({ event, dropdown }: DropDownEventProps) {
   event.stopPropagation()
   if (dropdown.isOpen) {
     dropdown.off()
@@ -294,7 +281,7 @@ function showDropdown({ event, dropdown }: any) {
   }
 }
 
-function balloonDropDown(image: HTMLElement) {
+function balloonDropDown(imageWrapper: HTMLElement) {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
       events: {
@@ -303,7 +290,7 @@ function balloonDropDown(image: HTMLElement) {
       classes: ['ex-dropdown-listItem']
     })
 
-    dropdown.setDropDownContent(criarDropDown(dropdown, image))
+    dropdown.setDropDownContent(criarDropDown(dropdown, imageWrapper))
 
     window.addEventListener('click', function (event: Event) {
       const target = event.target as HTMLElement
@@ -323,10 +310,13 @@ export class ImageView implements NodeView {
   imageWrapper: HTMLElement
   balloon: Balloon
   editor: Editor
+  getPos: boolean | (() => number)
+  resizer: ResizableImage
 
-  constructor(node: Node, editor: Editor) {
+  constructor(node: Node, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
     this.editor = editor
+    this.getPos = getPos
     this.dom = document.createElement('div')
     this.imageWrapper = this.dom.appendChild(document.createElement('div'))
     this.imageWrapper.className = node.attrs.classes
@@ -336,7 +326,7 @@ export class ImageView implements NodeView {
     this.setImageAttributes(this.image, node)
 
     // Adiciona redimensionamento de imagens
-    new ResizableImage(this)
+    this.resizer = new ResizableImage(this)
 
     const configStorage = {
       alinhaDireita: {
@@ -380,22 +370,31 @@ export class ImageView implements NodeView {
       configStorage
     })
 
-    this.balloon = new Balloon(editor, toolbar)
+    this.balloon = new Balloon(editor)
+    this.balloon.ballonPanel.appendChild(toolbar.createToolbar())
 
-    this.imageWrapper.appendChild(this.balloon.render())
+    this.imageWrapper.appendChild(this.balloon.getBalloon())
 
-    clickHandler(this.imageWrapper as HTMLElement)
+    imageClickHandler(this)
   }
 
   updateAttributes(attributes: Record<string, any>) {
-    this.editor.commands.updateAttributes(this.node.type, attributes)
+    if (typeof this.getPos === 'function') {
+      const { view } = this.editor
+      const transaction = view.state.tr
+      transaction.setNodeMarkup(this.getPos(), undefined, {
+        ...this.node.attrs,
+        ...attributes
+      })
+      view.dispatch(transaction)
+    }
   }
 
   update(node: Node) {
     if (node.type !== this.node.type) {
       return false
     }
-    //console.log(node)
+
     this.node = node
 
     return true
@@ -404,6 +403,5 @@ export class ImageView implements NodeView {
   setImageAttributes(image: Element, node: Node) {
     ;(this.imageWrapper as HTMLElement).setAttribute('style', node.attrs.style)
     image.setAttribute('src', node.attrs.src)
-    //Object.entries(node.attrs).forEach(([key, value]) => value && image.setAttribute(key, value))
   }
 }
