@@ -15,11 +15,15 @@ export class KatexView implements NodeView {
   getPos: boolean | (() => number)
   balloon: Balloon
   input: HTMLInputElement
+  editing: boolean
+  bindDeselected: (event: Event) => void
+  isDragging: boolean = false
 
   constructor(node: ProseMirrorNode, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
     this.editor = editor
     this.getPos = getPos
+    this.editing = true
 
     this.dom = document.createElement('span')
     this.dom.contentEditable = 'false'
@@ -28,21 +32,30 @@ export class KatexView implements NodeView {
     this.contentLatex.contentEditable = 'false'
 
     this.balloon = new Balloon(editor)
+
+    this.dom.appendChild(this.contentLatex)
+
     this.input = document.createElement('input')
     this.input.type = 'text'
-    this.input.value = this.node.textContent
+    this.input.value = this.node.attrs.latexFormula.trim()
     this.input.placeholder = '\\sqrt{2}'
+    //this.input.contentEditable = 'true'
     this.balloon.ballonPanel.appendChild(this.input)
 
     this.contentLatex.appendChild(this.balloon.getBalloon())
     this.renderedLatex = document.createElement('span')
     this.renderedLatex.contentEditable = 'false'
 
-    this.updateLatexDisplay(this.node.textContent, this.renderedLatex)
+    if (!this.node.attrs.isEditing) {
+      this.editing = false
+      this.updateLatexDisplay(this.input.value)
+    }
+
+    this.bindDeselected = this.deselected.bind(this)
+    this.dom.addEventListener('click', this.selected.bind(this))
 
     if (this.isEditing()) {
-      this.balloon.show()
-      this.input.focus()
+      this.selected()
     }
 
     this.dom.append(this.contentLatex, this.renderedLatex)
@@ -58,53 +71,52 @@ export class KatexView implements NodeView {
   }
 
   isEditing() {
-    return this.node.attrs.isEditing
+    return this.editing
   }
 
-  updateLatexDisplay(latex: string, renderLatex: HTMLElement) {
-    //contentLatex.style.display = this.isEditing() ? 'inline-block' : 'none'
-    //renderLatex.style.display = !this.isEditing() ? 'inline' : 'none'
+  updateLatexDisplay(latex: string) {
     const formula = latex
 
     const matches = parseLatex(formula)
 
-    //contentLatex.innerText = matches
-
-    if (!this.isEditing()) {
-      const latexFormula = matches
-      //this.balloon.hide()
-      try {
-        renderLatex.innerHTML = katex.renderToString(latexFormula, {
-          output: 'html'
-        })
-        renderLatex.title = latexFormula
-        renderLatex.classList.remove('math-tex-error')
-      } catch (error) {
-        renderLatex.innerHTML = formula
-        renderLatex.classList.add('math-tex-error')
-      }
+    const latexFormula = matches
+    try {
+      this.renderedLatex.innerHTML = katex.renderToString(latexFormula, {
+        output: 'html'
+      })
+      this.renderedLatex.title = latexFormula
+      this.renderedLatex.classList.remove('math-tex-error')
+    } catch (error) {
+      this.renderedLatex.innerHTML = formula
+      this.renderedLatex.classList.add('math-tex-error')
     }
   }
 
-  selectNode() {
-    //console.log('selected')
+  selected() {
+    console.log('selected')
+    if (this.isDragging) return
 
-    if (!this.isEditing()) {
-      this.balloon.show()
+    this.balloon.show()
+    this.dom.classList.add('ex-selected')
+    this.editing = true
+    window.addEventListener('click', this.bindDeselected)
+  }
+
+  deselected(event: Event) {
+    const target = event.target as HTMLElement
+    if (target.closest('.math-tex') === null) {
+      this.balloon.hide()
+      this.dom.classList.remove('ex-selected')
+      window.removeEventListener('click', this.bindDeselected)
+      this.editing = false
       this.updateAttributes({
-        isEditing: true
+        latexFormula: this.input.value
       })
     }
   }
 
-  deselectNode() {
-    this.balloon.hide()
-    if (this.isEditing()) {
-      this.updateAttributes({
-        isEditing: false
-        //latexFormula: this.contentLatex.innerText
-      })
-    }
+  onDestroy() {
+    window.removeEventListener('click', this.bindDeselected)
   }
 
   update(newNode: ProseMirrorNode) {
@@ -114,22 +126,23 @@ export class KatexView implements NodeView {
 
     this.node = newNode
 
-    //console.log('updated')
-
-    this.updateLatexDisplay(this.input.value, this.renderedLatex)
+    if (!this.isEditing()) {
+      this.input.value = this.node.attrs.latexFormula
+      this.updateLatexDisplay(this.input.value)
+    }
 
     return true
   }
 
-  ignoreMutation(mutation: MutationRecord | { type: 'selection'; target: Element }) {
-    //console.log(mutation)
-
-    return mutation.type === 'characterData' || mutation.type === 'selection' || mutation.type === 'childList'
-  }
-
   stopEvent(event: Event) {
-    /* console.log(event)
-    console.log(this.isEditing()) */
+    if (event.type === 'dragstart') {
+      this.isDragging = true
+    }
+
+    if (event.type === 'dragend') {
+      this.isDragging = false
+      return false
+    }
 
     return this.isEditing()
   }

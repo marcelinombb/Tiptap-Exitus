@@ -9,7 +9,7 @@ import '../../../node_modules/katex/dist/katex.css'
 import { KatexView } from './katexView'
 
 function click({ editor }: ButtonEventProps) {
-  editor.chain().insertContent(`<span class="math-tex" isEditing='true' > </span>`).focus().run()
+  editor.chain().insertContent(`<span class="math-tex" isEditing='false' > </span>`).focus().run()
 }
 
 declare module '@tiptap/core' {
