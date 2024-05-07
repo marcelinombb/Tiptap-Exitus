@@ -62,26 +62,25 @@ export const Katex = Node.create({
   renderHTML({ HTMLAttributes }) {
     return ['span', { class: 'math-tex' }, HTMLAttributes.latexFormula]
   },
-  /* addCommands() {
+  addCommands() {
     return {
       addLatexInput:
         () =>
-        ({ tr, dispatch }) => {
-          if (dispatch) {
-            let position = tr.selection.to
-            position = position - 1 // Adjust this depending on where you want the cursor within the node
-            const selection = TextSelection.create(tr.doc, position)
-            tr.setSelection(selection)
-            dispatch(tr)
-          }
-          return true
+        ({ commands }) => {
+          return commands.insertContent({
+            type: this.name,
+            attrs: {
+              isEditing: false,
+              latexFormula: ''
+            }
+          })
         }
     }
-  }, */
+  },
   addAttributes() {
     return {
       class: {
-        default: ''
+        default: 'math-tex'
       },
       isEditing: {
         default: false,

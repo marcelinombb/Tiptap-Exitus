@@ -14,9 +14,6 @@ export default defineConfig({
       { find: '@editor', replacement: fileURLToPath(new URL('./src/editor', import.meta.url)) }
     ]
   },
-  esbuild: {
-    drop: ['console', 'debugger']
-  },
   build: {
     sourcemap: true,
     polyfill: false,
@@ -32,6 +29,9 @@ export default defineConfig({
       output: {
         entryFileNames: 'exituseditor.js'
       }
+    },
+    esbuild: {
+      drop: ['console', 'debugger']
     }
   },
   plugins: [

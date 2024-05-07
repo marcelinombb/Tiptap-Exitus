@@ -1,4 +1,12 @@
 
+:root {
+  --active-blue: hsl(218,81.8%,56.9%);
+  --border-gray: #ccced1;
+  --padding-sm: calc( 0.6em * 0.3);
+  --padding-md: calc( 0.6em * 0.5);
+  --padding-lg: calc( 0.6em * 1);
+}
+
 .tiptap {
   box-sizing: border-box;
   padding: 1rem;
@@ -73,7 +81,7 @@
   .ex-toolbar-editor {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    border: 1px solid #ccced1;
+    border: 1px solid var(--border-gray);
     padding: 0 calc(0.6em * 0.5);
   }
 
@@ -92,7 +100,7 @@
   }
 
   .ex-selected {
-    outline-color: hsl(218,81.8%,56.9%)!important;
+    outline-color: var(--active-blue)!important;
   }
 
   .tiptap-widget {
@@ -107,10 +115,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: calc(0.6em * 0.3);
-    margin-top: calc(0.6em * 0.5);
-    margin-bottom: calc(0.6em * 0.5);
-    margin-right: calc(0.6em * 0.5);
+    padding: var(--padding-sm);
+    margin-top: var(--padding-md);
+    margin-bottom: var(--padding-md);
+    margin-right: var(--padding-md);
     background: transparent;
     transition: box-shadow .2s ease-in-out,border .2s;
     border: 1px solid transparent;
@@ -122,7 +130,7 @@
   }
 
   .ex-button-active {
-    color: hsl(218,81.8%,56.9%);;
+    color: var(--active-blue);;
     background-color: #cae1fc;
   }
 
@@ -162,7 +170,7 @@
     z-index: 0;
     overflow-y: auto;
     resize: vertical;
-    border: 1px solid #ccced1;
+    border: 1px solid var(--border-gray);
     border-top: 0px;
     padding: calc(2 * calc(0.6em * 1.5));
     background: #fafafa;;
@@ -181,7 +189,7 @@
 
   .editor-main {
     background: #fff;
-    border-color: #ccced1;
+    border-color: var(--border-gray);
     box-shadow: 0 0 5px hsla(0, 0%, 0%, 0.1);
     width: 100%;
     min-height: 200px;
@@ -241,13 +249,13 @@
     border: none;
     cursor: pointer;
     margin: 1px;
-    border: 1px solid #ccced1;
+    border: 1px solid var(--border-gray);
     padding: calc( 0.6em *0.3);
   }
 
   .ex-grid-button-hover {
     background: #cae1fc;
-    border-color: hsl(218,81.8%,56.9%);
+    border-color: var(--active-blue);
   }
 
   .ex-image-wrapper {
@@ -287,9 +295,10 @@
   .balloon-menu {
     position: absolute;
     display: block;
-    top: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
     left: 50%;
-    transform: translate(-50%, calc(-100% - 10px));
     box-shadow: 0px 2px 20px 1px rgba(0, 0, 0, 0.3);
   }
 
@@ -298,39 +307,45 @@
     min-height: 30px;
     padding: 1px;
     border-radius: 5px;
-    /* border: 1px solid black; */
     background-color: rgb(255, 255, 255);
 
     align-items: center;
   }
 
-.balloon-menu::after {
+.balloon-arrow-top::after{
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0px 10px 10px 10px;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
+}
+
+.balloon-arrow-bottom::before {
   content: "";
   position: absolute;
   top: 100%;
-  /* Position the arrow at the bottom of the balloon */
   left: 50%;
   transform: translateX(-50%);
   border-width: 10px 10px 0px 10px;
   border-style: solid;
-  
   border-color: white transparent transparent transparent;
+}
+
+.balloon-menu:has(.balloon-arrow-bottom) {
+  top: 0;
+  transform: translate(-50%, calc(-100% - 10px));
+}
+
+.balloon-menu:has(.balloon-arrow-top) {
+  bottom: 0;
+  transform: translate(-50%, calc(100% + 10px));
 }
 
 .ex-hidden {
   display: none;
-}
-
-.ex-pequeno{
-  width: 300px !important;
-}
-
-.ex-medio{
-  width: 400px !important;
-}
-
-.ex-grande{
-  width: 700px !important;
 }
 
 .quadrado {
@@ -396,4 +411,41 @@
 
 .latex .katex {
   white-space: nowrap;
+}
+
+.latex-editting-container {
+  display: flex;
+  margin: 10px;
+  padding: 1px;
+  flex-direction: column;
+}
+
+.latex-editting-input {
+  display: flex;
+  flex-direction: row;
+}
+
+.latex-editting-input > input {
+  margin: 0 var(--padding-sm);
+  outline: none;
+  border: 1px solid var(--active-blue);
+}
+
+.latex-input-text {
+  min-width: 250px;
+  padding: var(--padding-lg);
+  line-height: 20px;
+}
+
+.latex-editting-preview {
+  display: flex;
+  min-height: 30px;
+  padding: var(--padding-md)
+}
+
+.latex-editting-footer {
+  display: flex;
+  flex-direction: row;
+  min-height: 30px;
+  justify-content: space-around;
 }

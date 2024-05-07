@@ -1,4 +1,4 @@
-import { Balloon } from '@editor/ui'
+import { Balloon, Button } from '@editor/ui'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
@@ -9,7 +9,6 @@ import { parseLatex } from './katex'
 export class KatexView implements NodeView {
   dom: HTMLElement
   node: ProseMirrorNode
-  contentLatex: HTMLElement
   renderedLatex: HTMLElement
   editor: Editor
   getPos: boolean | (() => number)
@@ -28,27 +27,66 @@ export class KatexView implements NodeView {
     this.dom = document.createElement('span')
     this.dom.contentEditable = 'false'
     this.dom.className = 'math-tex tiptap-widget '
-    this.contentLatex = document.createElement('span')
-    this.contentLatex.contentEditable = 'false'
 
-    this.balloon = new Balloon(editor)
-
-    this.dom.appendChild(this.contentLatex)
+    this.balloon = new Balloon(editor, {
+      arrow: 'top'
+    })
 
     this.input = document.createElement('input')
     this.input.type = 'text'
+    this.input.className = 'latex-input-text'
     this.input.value = this.node.attrs.latexFormula.trim()
     this.input.placeholder = '\\sqrt{2}'
-    //this.input.contentEditable = 'true'
-    this.balloon.ballonPanel.appendChild(this.input)
 
-    this.contentLatex.appendChild(this.balloon.getBalloon())
+    const checkboxDisplay = document.createElement('input')
+    checkboxDisplay.type = 'checkbox'
+
+    const divConteiner = document.createElement('div')
+    divConteiner.className = 'latex-editting-container'
+
+    const inputDisplay = document.createElement('div')
+    inputDisplay.className = 'latex-editting-input'
+    inputDisplay.append(this.input, checkboxDisplay)
+
+    const preview = document.createElement('div')
+    preview.className = 'latex-editting-preview'
+
+    this.input.addEventListener('keyup', (event: Event) => {
+      //console.log('changed')
+      //console.log(event.target.value)
+
+      this.updateLatexDisplay(this.input.value, preview)
+    })
+
+    const confirmButton = new Button(editor, {
+      label: 'inserir',
+      events: {
+        click: () => {}
+      }
+    })
+
+    const cancelButton = new Button(editor, {
+      label: 'cancelar',
+      events: {
+        click: () => {}
+      }
+    })
+
+    const footer = document.createElement('div')
+    footer.className = 'latex-editting-footer'
+    footer.append(confirmButton.render(), cancelButton.render())
+
+    divConteiner.append(inputDisplay, preview, footer)
+
+    this.balloon.ballonPanel.appendChild(divConteiner)
+
     this.renderedLatex = document.createElement('span')
     this.renderedLatex.contentEditable = 'false'
 
     if (!this.node.attrs.isEditing) {
       this.editing = false
-      this.updateLatexDisplay(this.input.value)
+      this.updateLatexDisplay(this.input.value, this.renderedLatex)
+      preview.innerHTML = this.renderedLatex.innerHTML
     }
 
     this.bindDeselected = this.deselected.bind(this)
@@ -58,7 +96,7 @@ export class KatexView implements NodeView {
       this.selected()
     }
 
-    this.dom.append(this.contentLatex, this.renderedLatex)
+    this.dom.append(this.balloon.getBalloon(), this.renderedLatex)
   }
 
   updateAttributes(attributes: Record<string, any>) {
@@ -74,36 +112,44 @@ export class KatexView implements NodeView {
     return this.editing
   }
 
-  updateLatexDisplay(latex: string) {
+  updateLatexDisplay(latex: string, containerDisplay: HTMLElement) {
     const formula = latex
 
     const matches = parseLatex(formula)
 
     const latexFormula = matches
     try {
-      this.renderedLatex.innerHTML = katex.renderToString(latexFormula, {
+      containerDisplay.innerHTML = katex.renderToString(latexFormula, {
         output: 'html'
       })
-      this.renderedLatex.title = latexFormula
-      this.renderedLatex.classList.remove('math-tex-error')
+      containerDisplay.title = latexFormula
+      containerDisplay.classList.remove('math-tex-error')
     } catch (error) {
-      this.renderedLatex.innerHTML = formula
-      this.renderedLatex.classList.add('math-tex-error')
+      containerDisplay.innerHTML = formula
+      containerDisplay.classList.add('math-tex-error')
     }
   }
 
+  selectNode() {
+    this.dom.classList.add('ex-selected')
+  }
+
+  deselectNode() {
+    this.dom.classList.remove('ex-selected')
+  }
+
   selected() {
-    console.log('selected')
     if (this.isDragging) return
 
     this.balloon.show()
-    this.dom.classList.add('ex-selected')
+    this.isEditing() || this.dom.classList.add('ex-selected')
     this.editing = true
     window.addEventListener('click', this.bindDeselected)
   }
 
   deselected(event: Event) {
     const target = event.target as HTMLElement
+
     if (target.closest('.math-tex') === null) {
       this.balloon.hide()
       this.dom.classList.remove('ex-selected')
@@ -128,13 +174,18 @@ export class KatexView implements NodeView {
 
     if (!this.isEditing()) {
       this.input.value = this.node.attrs.latexFormula
-      this.updateLatexDisplay(this.input.value)
+      this.updateLatexDisplay(this.input.value, this.renderedLatex)
     }
 
     return true
   }
 
   stopEvent(event: Event) {
+    /* if (event.target == this.input && event instanceof KeyboardEvent) {
+      console.log(event.type, event instanceof KeyboardEvent)
+      return false
+    } */
+
     if (event.type === 'dragstart') {
       this.isDragging = true
     }
