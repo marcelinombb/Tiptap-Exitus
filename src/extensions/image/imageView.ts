@@ -99,7 +99,6 @@ function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
   imageWrapper.addEventListener('click', event => {
     event.stopPropagation()
     imageWrapper.classList.add('ex-selected')
-    //const balloonMenu = imageWrapper.querySelector('.balloon-menu') as HTMLElement
     const resizers = resizer.resizers
 
     if (!balloon.isOpen()) {
@@ -107,17 +106,18 @@ function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
       resizers.classList.remove('ex-hidden')
     }
 
-    window.addEventListener('click', function (event) {
+    function clickOutside(event: Event) {
       const target = event.target as HTMLElement
 
       if (!target.matches('.ex-image-wrapper')) {
-        //console.log(resizer.isResizing)
-
         balloon.hide()
         imageWrapper.classList.remove('ex-selected')
         resizers.classList.add('ex-hidden')
+        window.removeEventListener('click', clickOutside)
       }
-    })
+    }
+
+    window.addEventListener('click', clickOutside)
   })
 }
 
@@ -175,14 +175,14 @@ function alinhaMeio(imageView: ImageView) {
   }
 }
 
-function originalPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
+function originalPx(dropdown: Dropdown, icon: string) {
   const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
 
   button.bind('click', () => {
-    if (!image.classList.contains('')) {
+    /* if (!image.classList.contains('')) {
       //dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
       image.classList.remove('ex-grande', 'ex-pequeno', 'ex-medio')
@@ -190,82 +190,83 @@ function originalPx(image: HTMLElement, dropdown: Dropdown, icon: string) {
       button.off()
       image.classList.remove('ex-grande', 'ex-pequeno', 'ex-medio')
       dropdown.off()
-    }
+    } */
   })
 
   return button.render()
 }
 
-function trezentosPx(imageWrapper: HTMLElement, dropdown: Dropdown, icon: string) {
+function trezentosPx(dropdown: Dropdown, icon: string) {
   const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
 
   button.bind('click', () => {
-    if (imageWrapper.style.width != '300px') {
-      //dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+    dropdown.editor.commands.setImageWidth('300px')
+    /* if (imageWrapper.style.width != '300px') {
       imageWrapper.style.width = '300px'
       button.on()
     } else {
       button.off()
       imageWrapper.style.width = ''
       dropdown.off()
-    }
+    } */
   })
 
   return button.render()
 }
 
-function quatrocentosPx(imageWrapper: HTMLElement, dropdown: Dropdown, icon: string) {
+function quatrocentosPx(dropdown: Dropdown, icon: string) {
   const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
 
   button.bind('click', () => {
-    if (imageWrapper.style.width != '400px') {
-      //dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+    dropdown.editor.commands.setImageWidth('400px')
+    /* if (imageWrapper.style.width != '400px') {
       imageWrapper.style.width = '400px'
       button.on()
     } else {
       button.off()
       imageWrapper.style.width = ''
       dropdown.off()
-    }
+    } */
   })
 
   return button.render()
 }
 
-function setecentosPx(imageWrapper: HTMLElement, dropdown: Dropdown, icon: string) {
+function setecentosPx(dropdown: Dropdown, icon: string) {
   const button = new Button(dropdown.editor, {
     icon: icon,
     classList: ['ex-mr-0']
   })
 
   button.bind('click', () => {
-    if (imageWrapper.style.width != '700px') {
+    dropdown.editor.commands.setImageWidth('700px')
+    /* if (imageWrapper.style.width != '700px') {
       //dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       imageWrapper.style.width = '700px'
     } else {
       button.off()
       imageWrapper.style.width = ''
       dropdown.off()
-    }
+    } */
   })
 
   return button.render()
 }
 
-function criarDropDown(dropdown: Dropdown, imageWrapper: HTMLElement) {
+function criarDropDown(dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
 
-  const original = originalPx(imageWrapper, dropdown, 'Original')
-  const pequeno = trezentosPx(imageWrapper, dropdown, '300px')
-  const medio = quatrocentosPx(imageWrapper, dropdown, '400px')
-  const grande = setecentosPx(imageWrapper, dropdown, '700px')
+  const original = originalPx(dropdown, 'Original')
+  const pequeno = trezentosPx(dropdown, '300px')
+  const medio = quatrocentosPx(dropdown, '400px')
+  const grande = setecentosPx(dropdown, '700px')
 
   dropdownContent?.append(original, pequeno, medio, grande)
 
@@ -281,7 +282,7 @@ function showDropdown({ event, dropdown }: DropDownEventProps) {
   }
 }
 
-function balloonDropDown(imageWrapper: HTMLElement) {
+function balloonDropDown() {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
       events: {
@@ -290,7 +291,7 @@ function balloonDropDown(imageWrapper: HTMLElement) {
       classes: ['ex-dropdown-listItem']
     })
 
-    dropdown.setDropDownContent(criarDropDown(dropdown, imageWrapper))
+    dropdown.setDropDownContent(criarDropDown(dropdown))
 
     window.addEventListener('click', function (event: Event) {
       const target = event.target as HTMLElement
@@ -360,7 +361,7 @@ export class ImageView implements NodeView {
         toolbarButtonConfig: {
           icon: imgSize + arrowDropDown,
           label: 'Aumenta e diminui',
-          dropdown: balloonDropDown(this.imageWrapper)
+          dropdown: balloonDropDown()
         }
       }
     }
@@ -388,16 +389,6 @@ export class ImageView implements NodeView {
       })
       view.dispatch(transaction)
     }
-  }
-
-  update(node: Node) {
-    if (node.type !== this.node.type) {
-      return false
-    }
-
-    this.node = node
-
-    return true
   }
 
   setImageAttributes(image: Element, node: Node) {

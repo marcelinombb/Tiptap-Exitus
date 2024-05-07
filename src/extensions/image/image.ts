@@ -1,5 +1,7 @@
 import imageAdd from '@icons/image-add-fill.svg'
+import { type CommandProps } from '@tiptap/core'
 import { Image as ImageBase } from '@tiptap/extension-image'
+import { findSelectedNodeOfType } from 'prosemirror-utils'
 
 import { type ButtonEventProps } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
@@ -104,6 +106,40 @@ export const Image = ImageBase.extend({
           } else {
             return null
           }
+        }
+      }
+    }
+  },
+  addCommands() {
+    return {
+      ...this.parent?.(),
+      setImageWidth: (width: string) => {
+        return ({ tr, state, dispatch }: CommandProps) => {
+          // Get the selection
+          const { selection } = state
+          // Find the table node around the selection
+          let nodePos = null
+          const imageNode = findSelectedNodeOfType(state.schema.nodes.image)(selection)
+
+          if (imageNode) {
+            nodePos = imageNode.pos
+          }
+
+          // If no table was found or position is undefined, abort the command
+          if (!nodePos) return false
+
+          // Ensure we have a valid width to set
+          if (!width || typeof width !== 'string') return false
+
+          // Create a new attributes object with the updated width
+          const attrs = { ...imageNode?.node.attrs, style: `width: ${width}` }
+
+          // Create a transaction that sets the new attributes
+          if (dispatch) {
+            tr.setNodeMarkup(nodePos, undefined, attrs)
+            dispatch(tr)
+          }
+          return true
         }
       }
     }
