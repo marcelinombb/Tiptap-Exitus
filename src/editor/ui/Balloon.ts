@@ -2,25 +2,26 @@ import { type Editor } from '@tiptap/core'
 
 import { type Toolbar } from '../toolbar/Toolbar'
 
-import { type ButtonConfig } from './Button'
-
 export interface BallonnEventProps {
   toolbar: Toolbar
 }
-
-export interface BalloonConfig extends Omit<ButtonConfig, 'events'> {
-  events: {
-    [key: string]: (ballonEvent: BallonnEventProps) => any
-  }
+export interface BalloonOptions {
+  arrow: 'top' | 'bottom'
 }
 
 export class Balloon {
   ballonMenu!: HTMLDivElement
   ballonPanel!: HTMLDivElement
   editor: Editor
-
-  constructor(editor: Editor) {
+  options: BalloonOptions = {
+    arrow: 'bottom'
+  }
+  constructor(editor: Editor, options?: BalloonOptions) {
     this.editor = editor
+    this.options = {
+      ...this.options,
+      ...options
+    }
     this.render()
   }
 
@@ -29,9 +30,8 @@ export class Balloon {
     this.ballonMenu.className = 'balloon-menu ex-hidden'
 
     this.ballonPanel = this.ballonMenu.appendChild(document.createElement('div'))
-    this.ballonPanel.className = 'balloon-panel'
 
-    //this.ballonPanel.append(this.toolbar.createToolbar())
+    this.ballonPanel.classList.add('balloon-panel', this.options.arrow == 'bottom' ? 'balloon-arrow-bottom' : 'balloon-arrow-top')
 
     this.ballonMenu.append(this.ballonPanel)
   }

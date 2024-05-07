@@ -1,4 +1,5 @@
 import { type Toolbar } from '@editor/toolbar'
+import { type Editor } from '@tiptap/core'
 
 import type ExitusEditor from '../../ExitusEditor'
 import { type Tool } from '../toolbar/Tool'
@@ -12,7 +13,7 @@ export interface ButtonEventProps {
 }
 
 export interface ButtonConfig {
-  icon: string
+  icon?: string
   label?: string
   attributes?: object[]
   classList?: string[]
@@ -24,16 +25,17 @@ export interface ButtonConfig {
 
 const defaultConfig: ButtonConfig = {
   icon: '',
+  label: '',
   classList: []
 }
 
 export class Button implements Tool {
   config: ButtonConfig
   button: HTMLButtonElement
-  editor: ExitusEditor
+  editor: Editor
   dropdown!: Dropdown
   parentToolbar!: Toolbar
-  constructor(editor: ExitusEditor, config: ButtonConfig) {
+  constructor(editor: Editor, config: ButtonConfig) {
     this.config = { ...defaultConfig, ...config }
     this.editor = editor
     this.button = this.createButton()
@@ -96,7 +98,7 @@ export class Button implements Tool {
 
   render() {
     this.checkActive()
-    this.button.innerHTML = this.config.icon
+    this.button.innerHTML = (this.config?.icon as string) + (this.config?.label as string)
     return this.button
   }
 
