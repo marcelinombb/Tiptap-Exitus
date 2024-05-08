@@ -60,6 +60,7 @@
     "eslint-plugin-prettier": "^5.1.3",
     "katex": "^0.16.10",
     "prettier": "^3.2.5",
+    "prosemirror-utils": "^1.2.1-0",
     "vite-plugin-css-injected-by-js": "^3.5.0"
   }
 }
