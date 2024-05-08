@@ -1,9 +1,8 @@
+import { type ButtonEventProps } from '@editor/ui'
 import imageAdd from '@icons/image-add-fill.svg'
-import { type CommandProps } from '@tiptap/core'
-import { Image as ImageBase } from '@tiptap/extension-image'
+import { Node, nodeInputRule } from '@tiptap/core'
 import { findSelectedNodeOfType } from 'prosemirror-utils'
 
-import { type ButtonEventProps } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
 import { ImageView } from './imageView'
@@ -69,7 +68,37 @@ function addImage({ editor }: ButtonEventProps) {
   inputElement.click()
 }
 
-export const Image = ImageBase.extend({
+export interface ImageOptions {
+  inline: boolean
+  allowBase64: boolean
+  HTMLAttributes: Record<string, any>
+}
+
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    image: {
+      /**
+       * Add an image
+       */
+      setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType
+      setImageWidth: (width: string) => ReturnType
+    }
+  }
+}
+
+export const inputRegex = /(?:^|\s)(!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\))$/
+
+export const Image = Node.create<ImageOptions>({
+  name: 'image',
+
+  addOptions() {
+    return {
+      inline: false,
+      allowBase64: false,
+      HTMLAttributes: {}
+    }
+  },
+
   addStorage() {
     return {
       toolbarButtonConfig: {
@@ -82,17 +111,26 @@ export const Image = ImageBase.extend({
     }
   },
 
-  renderHTML({ HTMLAttributes }) {
-    const { style, classes, src } = HTMLAttributes
-
-    return ['div', { style, class: classes }, ['img', { src }]]
+  inline() {
+    return this.options.inline
   },
+
+  group() {
+    return this.options.inline ? 'inline' : 'block'
+  },
+
+  draggable: true,
 
   addAttributes() {
     return {
-      ...this.parent?.(),
-      selectedClass: {
-        default: ''
+      src: {
+        default: null
+      },
+      alt: {
+        default: null
+      },
+      title: {
+        default: null
       },
       classes: {
         default: 'ex-image-wrapper ex-image-block-middle tiptap-widget'
@@ -110,11 +148,33 @@ export const Image = ImageBase.extend({
       }
     }
   },
+
+  parseHTML() {
+    return [
+      {
+        tag: this.options.allowBase64 ? 'img[src]' : 'img[src]:not([src^="data:"])'
+      }
+    ]
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    const { style, classes, src } = HTMLAttributes
+
+    return ['div', { style, class: classes }, ['img', { src }]]
+  },
+
   addCommands() {
     return {
-      ...this.parent?.(),
+      setImage:
+        options =>
+        ({ commands }) => {
+          return commands.insertContent({
+            type: this.name,
+            attrs: options
+          })
+        },
       setImageWidth: (width: string) => {
-        return ({ tr, state, dispatch }: CommandProps) => {
+        return ({ tr, state, dispatch }) => {
           // Get the selection
           const { selection } = state
           // Find the table node around the selection
@@ -143,6 +203,20 @@ export const Image = ImageBase.extend({
         }
       }
     }
+  },
+
+  addInputRules() {
+    return [
+      nodeInputRule({
+        find: inputRegex,
+        type: this.type,
+        getAttributes: match => {
+          const [, , alt, src, title] = match
+
+          return { src, alt, title }
+        }
+      })
+    ]
   },
   addNodeView() {
     return ({ node, editor, getPos }) => {

@@ -333,7 +333,7 @@ export class ImageView implements NodeView {
       alinhaDireita: {
         toolbarButtonConfig: {
           icon: textDr,
-          label: 'direita',
+          title: 'direita',
           events: {
             click: alinhaDireita(this)
           }
@@ -342,7 +342,7 @@ export class ImageView implements NodeView {
       alinhaMeio: {
         toolbarButtonConfig: {
           icon: textDm,
-          label: 'meio',
+          title: 'meio',
           events: {
             click: alinhaMeio(this)
           }
@@ -351,7 +351,7 @@ export class ImageView implements NodeView {
       alinhaEsquerda: {
         toolbarButtonConfig: {
           icon: textDl,
-          label: 'esquerda',
+          title: 'esquerda',
           events: {
             click: alinhaEsquerda(this)
           }
@@ -360,7 +360,7 @@ export class ImageView implements NodeView {
       tamanhoImg: {
         toolbarButtonConfig: {
           icon: imgSize + arrowDropDown,
-          label: 'Aumenta e diminui',
+          title: 'Aumenta e diminui',
           dropdown: balloonDropDown()
         }
       }

@@ -9,7 +9,13 @@ import '../../../node_modules/katex/dist/katex.css'
 import { KatexView } from './katexView'
 
 function click({ editor }: ButtonEventProps) {
-  editor.chain().insertContent(`<span class="math-tex" isEditing='false' > </span>`).focus().run()
+  const { nodeBefore } = editor.state.selection.$anchor
+
+  if (nodeBefore?.type.name == 'katex' && nodeBefore.attrs.isEditing) {
+    return
+  }
+
+  editor.commands.insertContent(`<span class="math-tex" isEditing='true' > </span>`)
 }
 
 declare module '@tiptap/core' {
@@ -25,13 +31,13 @@ export const Katex = Node.create({
 
   group: 'inline',
 
-  draggable: true,
-
   inline: true,
 
   atom: true,
 
   content: 'inline*',
+
+  draggable: true,
 
   addStorage() {
     return {
@@ -105,13 +111,11 @@ export const Katex = Node.create({
 
 export function parseLatex(text: string) {
   const regex = /\\\((.*?)\\\)/g
-  //const matches = []
   let match
 
   let parsedData = text
   while ((match = regex.exec(text)) !== null) {
     parsedData = parsedData.replace(match[0], match[1])
-    //matches.push(match[1])
   }
 
   return parsedData

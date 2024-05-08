@@ -15,6 +15,7 @@ export interface ButtonEventProps {
 export interface ButtonConfig {
   icon?: string
   label?: string
+  title?: string
   attributes?: object[]
   classList?: string[]
   events?: {
@@ -26,6 +27,7 @@ export interface ButtonConfig {
 const defaultConfig: ButtonConfig = {
   icon: '',
   label: '',
+  title: '',
   classList: []
 }
 
@@ -49,7 +51,7 @@ export class Button implements Tool {
     const button = document.createElement('button')
     button.classList.add('ex-toolbar-button', ...(this.config.classList as string[]))
     button.setAttribute('id', `${Math.floor(Math.random() * 100) + 1}`)
-    button.title = this.config?.label ?? ''
+    button.title = this.config.title as string
     return button
   }
 

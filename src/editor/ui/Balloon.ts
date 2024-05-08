@@ -31,7 +31,7 @@ export class Balloon {
 
     this.ballonPanel = this.ballonMenu.appendChild(document.createElement('div'))
 
-    this.ballonPanel.classList.add('balloon-panel', this.options.arrow == 'bottom' ? 'balloon-arrow-bottom' : 'balloon-arrow-top')
+    this.ballonPanel.classList.add('balloon-panel', this.options.arrow == 'bottom' ? 'balloon-arrow-bottom-center' : 'balloon-arrow-top-center')
 
     this.ballonMenu.append(this.ballonPanel)
   }
@@ -46,6 +46,10 @@ export class Balloon {
 
   show() {
     this.ballonMenu.classList.remove('ex-hidden')
+    requestAnimationFrame(() => {
+      const rect = this.ballonMenu.getBoundingClientRect()
+      console.log(rect.width, rect.height)
+    })
   }
 
   hide() {
