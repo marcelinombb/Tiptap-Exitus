@@ -55,7 +55,7 @@ export const Katex = Node.create({
       {
         tag: 'span',
         getAttrs: node => {
-          return (node as HTMLElement).className === 'math-tex' && null
+          return (node as HTMLElement).classList.contains('math-tex') && null
         },
         getContent: (dom, schema) => {
           const data = dom.textContent as string
@@ -98,6 +98,12 @@ export const Katex = Node.create({
         default: '',
         parseHTML(element) {
           return element.innerText
+        }
+      },
+      display: {
+        default: false,
+        parseHTML: element => {
+          return element.classList.contains('katex-display')
         }
       }
     }

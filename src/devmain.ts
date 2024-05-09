@@ -4,7 +4,7 @@ import katex from 'katex'
 import ExitusEditor from './main'
 
 const defaultText =
-  '<p style="margin-left: 0px!important;"><span class="ex-tab">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> The editor instance will provide a bunch of public methods. Methods are regular functions and can return anything. They’ll help you to work with the editor. Don’t confuse methods with commands. Commands are used to change the state of editor (content, selection, and so on) and only return true or false. # <span class="math-tex">\\displaystyle \\frac{1}{\\Bigl(\\sqrt{\\phi \\sqrt{5}}-\\phi\\Bigr) e^{\\frac25 \\pi}} = 1+\\frac{e^{-2\\pi}} {1+\\frac{e^{-4\\pi}} {1+\\frac{e^{-6\\pi}} {1+\\frac{e^{-8\\pi}} {1+\\cdots} } } }</span></p><p style="margin-left: 0px!important;"></p><p style="margin-left: 0px!important;"></p>'
+  '<p style="margin-left: 0px!important;"><span class="ex-tab">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> The editor instance will provide a bunch of public methods. Methods are regular functions and can return anything. They’ll help you to work with the editor. Don’t confuse methods with commands. Commands are used to change the state of editor (content, selection, and so on) and only return true or false. # <span class="math-tex katex-display">\\displaystyle \\frac{1}{\\Bigl(\\sqrt{\\phi \\sqrt{5}}-\\phi\\Bigr) e^{\\frac25 \\pi}} = 1+\\frac{e^{-2\\pi}} {1+\\frac{e^{-4\\pi}} {1+\\frac{e^{-6\\pi}} {1+\\frac{e^{-8\\pi}} {1+\\cdots} } } }</span></p><p style="margin-left: 0px!important;"></p><p style="margin-left: 0px!important;"></p>'
 
 const toolbar = [
   'bold',
@@ -47,7 +47,7 @@ function parseLatex(text: string) {
         //displayMode: true,
         output: 'html'
       })
-      dataModified = dataModified.replace(match[0], `<span class="latex">${renderFormula}</span>`)
+      dataModified = dataModified.replace(match[0], `<span class="math-tex">${renderFormula}</span>`)
     } catch (e) {}
   }
 

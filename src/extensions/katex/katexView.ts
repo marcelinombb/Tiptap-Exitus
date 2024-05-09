@@ -17,62 +17,79 @@ export class KatexView implements NodeView {
   editing: boolean
   bindDeselected: (event: Event) => void
   preview: HTMLDivElement
+  checkboxDisplay: any
 
   constructor(node: ProseMirrorNode, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
     this.editor = editor
     this.getPos = getPos
-    this.editing = this.node.attrs.isEditing
+    const { isEditing, display, latexFormula } = this.node.attrs
+    this.editing = isEditing
 
     this.dom = document.createElement('span')
     this.dom.contentEditable = 'false'
     this.dom.className = 'math-tex tiptap-widget '
+    this.dom.classList.toggle('katex-display', display)
 
     this.balloon = new Balloon(editor, {
       arrow: 'top'
     })
 
-    this.input = document.createElement('input')
-    this.input.type = 'text'
-    this.input.className = 'latex-input-text'
-    this.input.value = this.node.attrs.latexFormula.trim()
-    this.input.placeholder = '\\sqrt{2}'
-    this.input.contentEditable = 'true'
-
-    const checkboxDisplay = document.createElement('input')
-    checkboxDisplay.type = 'checkbox'
-
     const divConteiner = document.createElement('div')
     divConteiner.className = 'latex-editting-container'
 
+    this.input = document.createElement('input')
+    this.input.type = 'text'
+    this.input.className = 'latex-input-text'
+    this.input.value = latexFormula.trim()
+    this.input.placeholder = '\\sqrt{2}'
+    this.input.contentEditable = 'true'
+
+    this.checkboxDisplay = document.createElement('input')
+    this.checkboxDisplay.type = 'checkbox'
+    this.checkboxDisplay.checked = display
+
     const inputDisplay = document.createElement('div')
     inputDisplay.className = 'latex-editting-input'
-    inputDisplay.append(this.input, checkboxDisplay)
+    inputDisplay.append(this.input, this.checkboxDisplay)
 
     this.preview = document.createElement('div')
     this.preview.className = 'latex-editting-preview'
+    this.preview.classList.toggle('katex-display', display)
 
     this.input.addEventListener('keyup', () => {
-      this.updateLatexDisplay(this.input.value, this.preview, checkboxDisplay.checked)
+      this.updateLatexDisplay(this.input.value, this.preview)
+      this.preview.classList.toggle('katex-display', this.checkboxDisplay.checked)
     })
 
-    checkboxDisplay.addEventListener('change', () => {
-      console.log(checkboxDisplay.checked)
-      this.updateLatexDisplay(this.input.value, this.preview, checkboxDisplay.checked)
+    this.checkboxDisplay.addEventListener('change', () => {
+      //console.log(this.checkboxDisplay.checked)
+      this.preview.classList.toggle('katex-display', this.checkboxDisplay.checked)
     })
 
     const confirmButton = new Button(editor, {
       label: 'inserir',
-      events: {
-        click: () => {}
-      }
+      classList: ['latex-confirm']
+    })
+
+    confirmButton.bind('click', () => {
+      console.log('click')
+
+      this.closeBalloon()
+
+      this.updateAttributes({
+        latexFormula: this.input.value,
+        display: this.checkboxDisplay.checked
+      })
     })
 
     const cancelButton = new Button(editor, {
       label: 'cancelar',
-      events: {
-        click: () => {}
-      }
+      classList: ['latex-cancel']
+    })
+
+    cancelButton.bind('click', () => {
+      this.cancelEdit()
     })
 
     const footer = document.createElement('div')
@@ -96,7 +113,6 @@ export class KatexView implements NodeView {
     this.renderedLatex.addEventListener('click', this.selected.bind(this))
 
     const balloon = this.balloon.getBalloon()
-    //balloon.contentEditable = 'false'
 
     this.dom.append(balloon, this.renderedLatex)
 
@@ -118,7 +134,7 @@ export class KatexView implements NodeView {
     return this.editing
   }
 
-  updateLatexDisplay(latex: string, containerDisplay: HTMLElement, display: boolean = false) {
+  updateLatexDisplay(latex: string, containerDisplay: HTMLElement) {
     const formula = latex
 
     const matches = parseLatex(formula)
@@ -126,10 +142,9 @@ export class KatexView implements NodeView {
     const latexFormula = matches
     try {
       containerDisplay.innerHTML = katex.renderToString(latexFormula, {
-        output: 'html',
-        displayMode: display
+        output: 'html'
       })
-      //containerDisplay.title = latexFormula
+
       containerDisplay.classList.remove('math-tex-error')
     } catch (error) {
       containerDisplay.innerHTML = formula
@@ -158,14 +173,21 @@ export class KatexView implements NodeView {
     const target = event.target as HTMLElement
 
     if (target.closest('.math-tex') === null) {
-      this.balloon.hide()
-      this.dom.classList.remove('ex-selected')
-      window.removeEventListener('click', this.bindDeselected)
-      this.editing = false
-      this.updateAttributes({
-        latexFormula: this.input.value
-      })
+      this.cancelEdit()
     }
+  }
+
+  cancelEdit() {
+    this.closeBalloon()
+    this.input.value = this.node.attrs.latexFormula
+    this.preview.innerHTML = this.renderedLatex.innerHTML
+  }
+
+  closeBalloon() {
+    this.balloon.hide()
+    this.dom.classList.remove('ex-selected')
+    window.removeEventListener('click', this.bindDeselected)
+    this.editing = false
   }
 
   onDestroy() {
@@ -180,15 +202,24 @@ export class KatexView implements NodeView {
     this.node = newNode
 
     if (!this.isEditing()) {
-      this.input.value = this.node.attrs.latexFormula
+      const { display, latexFormula } = this.node.attrs
+      this.input.value = latexFormula
       //this.renderedLatex.innerHTML = this.preview.innerHTML
-      this.updateLatexDisplay(this.input.value, this.renderedLatex)
+      console.log(display)
+
+      this.updateLatexDisplay(latexFormula, this.renderedLatex)
+      this.dom.classList.toggle('katex-display', display)
     }
 
     return true
   }
 
   stopEvent(event: Event) {
+    if ((event.target as HTMLElement).classList.contains('latex-confirm')) {
+      console.log(event.target)
+      return false
+    }
+
     if (event.type === 'dragstart' && this.isEditing()) {
       event.preventDefault()
     }
