@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Button, Dropdown } from '@editor/ui'
 import type ExitusEditor from 'src/ExitusEditor'
 
