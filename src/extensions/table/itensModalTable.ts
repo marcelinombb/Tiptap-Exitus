@@ -122,7 +122,9 @@ function itensModalTable(editor: ExitusEditor) {
     const largura = larguraBloco1.value
 
     if (selectedValue && cor && largura) {
-      ;(editor.commands as any).setTableBorder(`${largura}px ${selectedValue} ${cor}`)
+      ;(editor.commands as any).setTableStyle({
+        border: `${largura}px ${selectedValue} ${cor}`
+      })
     }
   }
 
@@ -150,7 +152,9 @@ function itensModalTable(editor: ExitusEditor) {
     const cor2 = inputBackgroundColor2.value
 
     if (cor2) {
-      ;(editor.commands as any).setCellColor(cor2)
+      ;(editor.commands as any).setTableStyle({
+        background: cor2
+      })
     }
   }
 

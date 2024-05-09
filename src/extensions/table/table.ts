@@ -99,6 +99,38 @@ function tableDropDown({ editor }: { editor: any }) {
   return dropdown
 }
 
+export function cssParaObj(cssString: string): { [key: string]: string } {
+  const styles: { [key: string]: string } = {}
+
+  // Remover espaços em branco desnecessários
+  cssString = cssString.replace(/\s*:\s*/g, ':').replace(/\s*;\s*/g, ';')
+
+  // Dividir a string por ponto e vírgula para obter as declarações individuais
+  const declarations = cssString.split(';')
+
+  // Iterar sobre as declarações e adicionar ao objeto
+  declarations.forEach(declaration => {
+    const [property, value] = declaration.split(':')
+    if (property && value) {
+      styles[property.trim()] = value.trim()
+    }
+  })
+
+  return styles
+}
+
+export function objParaCss(styles: { [key: string]: string }): string {
+  let cssString = ''
+
+  for (const property in styles) {
+    if (styles.hasOwnProperty(property)) {
+      cssString += `${property}: ${styles[property]}; `
+    }
+  }
+
+  return cssString.trim()
+}
+
 export const TableCustom = Table.extend({
   addStorage() {
     return {
@@ -117,19 +149,23 @@ export const TableCustom = Table.extend({
         default: false
       },
       style: {
-        default: '',
+        default: {},
         parseHTML: element => {
           //if ((element!.parentNode as HTMLElement).tagName.toUpperCase() !== 'FIGURE') return null
-          console.log(element.getAttribute('style'))
+          const style = element.getAttribute('style')
 
-          return (element as HTMLElement).getAttribute('style')
+          return style && cssParaObj(element.getAttribute('style'))
         }
       }
     }
   },
   renderHTML({ node, HTMLAttributes }) {
     const { colgroup } = createColGroup(node, this.options.cellMinWidth)
-    const mergedAttributes = mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {})
+
+    const mergedAttributes = mergeAttributes(this.options.HTMLAttributes, {
+      ...HTMLAttributes,
+      style: objParaCss(HTMLAttributes.style)
+    })
 
     const table: DOMOutputSpec = ['table', mergedAttributes, colgroup, ['tbody', 0]]
 
@@ -139,7 +175,7 @@ export const TableCustom = Table.extend({
   addCommands() {
     return {
       ...this.parent?.(),
-      setTableBorder: border => {
+      setTableStyle: style => {
         return ({ tr, state, dispatch }) => {
           // Get the selection
           const { selection } = state
@@ -154,45 +190,13 @@ export const TableCustom = Table.extend({
           // If no table was found or position is undefined, abort the command
           if (nodePos == null) return false
 
-          // Ensure we have a valid border value
-          if (!border || typeof border !== 'string') return false
-
-          // Create a new attributes object with the updated border
+          // Create a new attributes object with the updated style
           const attrs = {
             ...tableNode.node.attrs,
-            style: `border: ${border} !important`
-          }
-
-          // Create a transaction that sets the new attributes
-          if (dispatch) {
-            tr.setNodeMarkup(nodePos, undefined, attrs)
-            dispatch(tr)
-          }
-          return true
-        }
-      },
-      setCellColor: background => {
-        return ({ tr, state, dispatch }) => {
-          // Get the selection
-          const { selection } = state
-          // Find the table node around the selection
-          let nodePos = null
-          const tableNode = findParentNodeOfType(state.schema.nodes.table)(selection)
-
-          if (tableNode) {
-            nodePos = tableNode.pos
-          }
-
-          // If no table was found or position is undefined, abort the command
-          if (nodePos == null) return false
-
-          // Ensure we have a valid border value
-          if (!background || typeof background !== 'string') return false
-
-          // Create a new attributes object with the updated background
-          const attrs = {
-            ...tableNode.node.attrs,
-            style: `background-color: ${background} !important`
+            style: {
+              ...tableNode.node.attrs.style,
+              ...style
+            }
           }
 
           // Create a transaction that sets the new attributes

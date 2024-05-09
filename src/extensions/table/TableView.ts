@@ -16,6 +16,7 @@ import { Button, Dropdown } from '../../editor/ui'
 import { Balloon } from '../../editor/ui/Balloon'
 
 import { criaTabelaModal } from './itensModalTable'
+import { objParaCss } from './table'
 import { criaDropCell, criaDropColuna, criaDropLinhas } from './tableToolbarItens'
 
 function clickHandler(table: TableView) {
@@ -109,6 +110,7 @@ export class TableView implements NodeView {
   tableWrapper: HTMLElement
   contentDOM: HTMLElement
   getPos: boolean | (() => number)
+  tableStyle: { [key: string]: string }
 
   constructor(node: ProseMirrorNode, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
@@ -118,11 +120,12 @@ export class TableView implements NodeView {
     this.dom = document.createElement('div')
     this.tableWrapper = document.createElement('div')
     this.tableWrapper.classList.add('tableWrapper', 'tiptap-widget')
-    console.log('cosntruct')
-
     this.table = this.tableWrapper.appendChild(document.createElement('table'))
     this.colgroup = this.table.appendChild(document.createElement('colgroup'))
-    this.table.setAttribute('style', node.attrs.style)
+
+    this.tableStyle = node.attrs.style
+    this.table.setAttribute('style', objParaCss(this.tableStyle))
+
     updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
 
@@ -219,14 +222,9 @@ export class TableView implements NodeView {
     console.log(node.attrs)
     this.node = node
     this.balloon.ballonMenu.style.display = this.node.attrs.ballonActive ? 'block' : 'none'
-    const currentStyle = this.table.getAttribute('style') || ''
+    //const currentStyle = this.table.getAttribute('style') || ''
 
-    const newStyle = node.attrs.style || ''
-
-    const mergedStyle = `${currentStyle}; ${newStyle}`.trim()
-    if (newStyle != '') {
-      this.table.setAttribute('style', mergedStyle)
-    }
+    this.tableStyle = node.attrs.style
     updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
 
     return true
