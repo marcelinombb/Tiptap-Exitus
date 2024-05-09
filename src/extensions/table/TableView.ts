@@ -197,7 +197,7 @@ export class TableView implements NodeView {
     }
   }
 
-  update(node: ProseMirrorNode) {
+  /*  update(node: ProseMirrorNode) {
     if (node.type !== this.node.type) {
       return false
     }
@@ -206,6 +206,27 @@ export class TableView implements NodeView {
     this.node = node
     this.balloon.ballonMenu.style.display = this.node.attrs.ballonActive ? 'block' : 'none'
     this.table.setAttribute('style', node.attrs.style)
+    updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
+
+    return true
+  } */
+
+  update(node: ProseMirrorNode) {
+    if (node.type !== this.node.type) {
+      return false
+    }
+
+    console.log(node.attrs)
+    this.node = node
+    this.balloon.ballonMenu.style.display = this.node.attrs.ballonActive ? 'block' : 'none'
+    const currentStyle = this.table.getAttribute('style') || ''
+
+    const newStyle = node.attrs.style || ''
+
+    const mergedStyle = `${currentStyle}; ${newStyle}`.trim()
+    if (newStyle != '') {
+      this.table.setAttribute('style', mergedStyle)
+    }
     updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
 
     return true

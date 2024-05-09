@@ -1,10 +1,13 @@
 //@ts-nocheck
-import { mergeAttributes } from '@tiptap/core'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import table from '@icons/table-2.svg'
+import { mergeAttributes } from '@tiptap/core'
 import { createColGroup, Table } from '@tiptap/extension-table'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { selectedRect } from '@tiptap/pm/tables'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { findParentNodeOfType, findSelectedNodeOfType } from 'prosemirror-utils'
+
 import { Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
@@ -126,17 +129,9 @@ export const TableCustom = Table.extend({
   },
   renderHTML({ node, HTMLAttributes }) {
     const { colgroup } = createColGroup(node, this.options.cellMinWidth)
+    const mergedAttributes = mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {})
 
-    const borderStyle = node.attrs.style || 'none'
-
-    const table: DOMOutputSpec = [
-      'table',
-      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
-        /* style: `border: ${borderStyle}` */
-      }),
-      colgroup,
-      ['tbody', 0]
-    ]
+    const table: DOMOutputSpec = ['table', mergedAttributes, colgroup, ['tbody', 0]]
 
     return table
   },
@@ -166,6 +161,38 @@ export const TableCustom = Table.extend({
           const attrs = {
             ...tableNode.node.attrs,
             style: `border: ${border} !important`
+          }
+
+          // Create a transaction that sets the new attributes
+          if (dispatch) {
+            tr.setNodeMarkup(nodePos, undefined, attrs)
+            dispatch(tr)
+          }
+          return true
+        }
+      },
+      setCellColor: background => {
+        return ({ tr, state, dispatch }) => {
+          // Get the selection
+          const { selection } = state
+          // Find the table node around the selection
+          let nodePos = null
+          const tableNode = findParentNodeOfType(state.schema.nodes.table)(selection)
+
+          if (tableNode) {
+            nodePos = tableNode.pos
+          }
+
+          // If no table was found or position is undefined, abort the command
+          if (nodePos == null) return false
+
+          // Ensure we have a valid border value
+          if (!background || typeof background !== 'string') return false
+
+          // Create a new attributes object with the updated background
+          const attrs = {
+            ...tableNode.node.attrs,
+            style: `background-color: ${background} !important`
           }
 
           // Create a transaction that sets the new attributes

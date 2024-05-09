@@ -128,6 +128,7 @@ function itensModalTable(editor: ExitusEditor) {
 
   larguraBloco1.addEventListener('change', aplicarEstiloBorda)
   larguraBloco1.value = ''
+
   //bloco2
   const corFundoLabel = document.createElement('strong')
   corFundoLabel.textContent = 'Cor de Fundo'
@@ -145,6 +146,15 @@ function itensModalTable(editor: ExitusEditor) {
   bloco2.appendChild(inputBackgroundColor2)
   dropdownContent.appendChild(bloco2)
 
+  function aplicarEstiloCelulas() {
+    const cor2 = inputBackgroundColor2.value
+
+    if (cor2) {
+      ;(editor.commands as any).setCellColor(cor2)
+    }
+  }
+
+  inputBackgroundColor2.addEventListener('change', aplicarEstiloCelulas)
   //bloco3
   const dimensoesLabel = document.createElement('strong')
   dimensoesLabel.textContent = 'Dimensões'
