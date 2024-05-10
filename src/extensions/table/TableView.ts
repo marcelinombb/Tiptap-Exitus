@@ -20,6 +20,7 @@ import { objParaCss } from './table'
 import { criaDropCell, criaDropColuna, criaDropLinhas } from './tableToolbarItens'
 
 function clickHandler(table: TableView) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   table.tableWrapper.addEventListener('click', event => {
     table.updateAttributes({
       ballonActive: true
@@ -219,11 +220,12 @@ export class TableView implements NodeView {
       return false
     }
 
-    console.log(node.attrs)
     this.node = node
     this.balloon.ballonMenu.style.display = this.node.attrs.ballonActive ? 'block' : 'none'
     //const currentStyle = this.table.getAttribute('style') || ''
 
+    // eslint-disable-next-line no-console
+    console.log(node.attrs.style)
     this.tableStyle = node.attrs.style
     updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
 

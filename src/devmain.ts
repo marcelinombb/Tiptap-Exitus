@@ -1,7 +1,7 @@
 // @ts-nocheck
 import ExitusEditor from './main'
 
-const defaultText = `<table style="background: blue; margin 0 auto; color: red; padding-top: 50px" ballonactive="false" ><colgroup><col><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th></tr><tr><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td></tr><tr><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td></tr></tbody></table>`
+const defaultText = `<table style="border:5px solid cornflowerblue;" ballonactive="false" ><colgroup><col><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th></tr><tr><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td></tr><tr><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></td></tr></tbody></table>`
 
 const toolbar = [
   'bold',
@@ -33,3 +33,4 @@ const editor2 = new ExitusEditor({
 })
 
 window.editor = editor
+window.editor = editor2

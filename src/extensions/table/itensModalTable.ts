@@ -1,7 +1,9 @@
+//@ts-nocheck
 import { Button, Dropdown } from '@editor/ui'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Editor } from '@tiptap/core'
 import type ExitusEditor from 'src/ExitusEditor'
 
@@ -128,7 +130,7 @@ function itensModalTable(editor: ExitusEditor) {
     }
   }
 
-  larguraBloco1.addEventListener('change', aplicarEstiloBorda)
+  larguraBloco1.addEventListener('input', aplicarEstiloBorda)
   larguraBloco1.value = ''
 
   //bloco2
@@ -158,7 +160,8 @@ function itensModalTable(editor: ExitusEditor) {
     }
   }
 
-  inputBackgroundColor2.addEventListener('change', aplicarEstiloCelulas)
+  inputBackgroundColor2.addEventListener('input', aplicarEstiloCelulas)
+
   //bloco3
   const dimensoesLabel = document.createElement('strong')
   dimensoesLabel.textContent = 'Dimensões'
@@ -190,6 +193,18 @@ function itensModalTable(editor: ExitusEditor) {
 
   dropdownContent.appendChild(bloco3)
 
+  function aplicarDimencoesTabela() {
+    const altura = inputAltura.value
+    const largura = inputLargura.value
+    if (altura && largura) {
+      ;(editor.commands as any).setTableStyle({
+        height: `${altura}px`,
+        widht: `${largura}px`
+      })
+    }
+  }
+  inputLargura.addEventListener('input', aplicarDimencoesTabela)
+
   //bloco 4
   const alinhamentoLabel = document.createElement('strong')
   alinhamentoLabel.textContent = 'Alinhamento'
@@ -199,11 +214,26 @@ function itensModalTable(editor: ExitusEditor) {
   const bloco8 = document.createElement('div')
   bloco8.className = 'bloco8'
 
-  const TableEsquerda = createButton(editor, textDl, () => {})
+  const TableEsquerda = createButton(editor, textDl, () => {
+    ;(editor.commands as any).setTableStyle({
+      'margin-right': 'auto',
+      'margin-left': 0
+    })
+  })
 
-  const TableMeio = createButton(editor, textDm, () => {})
+  const TableMeio = createButton(editor, textDm, () => {
+    ;(editor.commands as any).setTableStyle({
+      'margin-right': 'auto',
+      'margin-left': 'auto'
+    })
+  })
 
-  const TableDireito = createButton(editor, textDr, () => {})
+  const TableDireito = createButton(editor, textDr, () => {
+    ;(editor.commands as any).setTableStyle({
+      'margin-right': 0,
+      'margin-left': 'auto'
+    })
+  })
 
   bloco8.append(TableEsquerda, TableMeio, TableDireito)
 
