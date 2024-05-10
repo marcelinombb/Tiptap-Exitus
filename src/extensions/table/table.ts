@@ -16,6 +16,11 @@ import { TableView } from './TableView'
 function onSelectTableRowColumn(event): EventListener {
   const onColumn = parseInt(event.target.getAttribute('data-column'))
   const onRow = parseInt(event.target.getAttribute('data-row'))
+  const indicator = document.querySelector('.ex-indicator')
+  if (indicator) {
+    indicator.textContent = `${onRow} x ${onColumn}`
+  }
+
   const buttons = event.target.parentNode.querySelectorAll('button') as HTMLCollectionOf<HTMLButtonElement>
 
   Array.from(buttons).forEach(element => {
@@ -42,6 +47,10 @@ function createDropDownContent(editor: ExitusEditor) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdown-content ex-dropdown-table-cells'
   dropdownContent.setAttribute('id', 'ex-dropdown-content')
+
+  const indicator = document.createElement('div')
+  indicator.className = 'ex-indicator'
+  dropdownContent.appendChild(indicator)
 
   for (let row = 1; row <= 10; row++) {
     for (let column = 1; column <= 10; column++) {

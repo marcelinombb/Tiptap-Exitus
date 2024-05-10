@@ -1,9 +1,7 @@
-//@ts-nocheck
 import { Button, Dropdown } from '@editor/ui'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Editor } from '@tiptap/core'
 import type ExitusEditor from 'src/ExitusEditor'
 

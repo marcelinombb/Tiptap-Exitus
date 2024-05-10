@@ -196,6 +196,7 @@
     box-shadow: 0 1px 2px 1px rgba(0,0,0,.15);
     padding: 10px;
     z-index: 1;
+    padding-bottom: 20px;
   }
 
   .ex-dropdown-content {
@@ -487,4 +488,11 @@
     right: 91px;
     position: relative;
     top: 3px;
+}
+
+.ex-indicator {
+  position: absolute;
+  top: 135px;
+  left: 65px;
+  right: auto;
 }
