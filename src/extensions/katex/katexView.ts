@@ -73,8 +73,6 @@ export class KatexView implements NodeView {
     })
 
     confirmButton.bind('click', () => {
-      console.log('click')
-
       this.closeBalloon()
 
       this.updateAttributes({
@@ -110,7 +108,11 @@ export class KatexView implements NodeView {
     }
 
     this.bindDeselected = this.deselected.bind(this)
-    this.renderedLatex.addEventListener('click', this.selected.bind(this))
+    this.dom.addEventListener('click', (event: Event) => {
+      if ((event.target as Element).closest('.balloon-menu') == null) {
+        this.selected()
+      }
+    })
 
     const balloon = this.balloon.getBalloon()
 
@@ -204,8 +206,6 @@ export class KatexView implements NodeView {
     if (!this.isEditing()) {
       const { display, latexFormula } = this.node.attrs
       this.input.value = latexFormula
-      //this.renderedLatex.innerHTML = this.preview.innerHTML
-      console.log(display)
 
       this.updateLatexDisplay(latexFormula, this.renderedLatex)
       this.dom.classList.toggle('katex-display', display)
@@ -216,7 +216,6 @@ export class KatexView implements NodeView {
 
   stopEvent(event: Event) {
     if ((event.target as HTMLElement).classList.contains('latex-confirm')) {
-      console.log(event.target)
       return false
     }
 
