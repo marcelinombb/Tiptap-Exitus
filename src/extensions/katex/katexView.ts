@@ -1,4 +1,7 @@
 import { Balloon, Button } from '@editor/ui'
+import { createHTMLElement } from '@editor/utils'
+import check from '@icons/check-line.svg'
+import close from '@icons/close-line.svg'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
@@ -16,7 +19,7 @@ export class KatexView implements NodeView {
   input: HTMLInputElement
   editing: boolean
   bindDeselected: (event: Event) => void
-  preview: HTMLDivElement
+  preview: Element
   checkboxDisplay: any
 
   constructor(node: ProseMirrorNode, editor: Editor, getPos: boolean | (() => number)) {
@@ -26,35 +29,25 @@ export class KatexView implements NodeView {
     const { isEditing, display, latexFormula } = this.node.attrs
     this.editing = isEditing
 
-    this.dom = document.createElement('span')
-    this.dom.contentEditable = 'false'
-    this.dom.className = 'math-tex tiptap-widget '
+    this.dom = createHTMLElement('span', { contentEditable: 'false', class: 'math-tex tiptap-widget ' }) as HTMLElement
     this.dom.classList.toggle('katex-display', display)
 
     this.balloon = new Balloon(editor, {
       arrow: 'top'
     })
 
-    const divConteiner = document.createElement('div')
-    divConteiner.className = 'latex-editting-container'
+    this.input = createHTMLElement('input', {
+      type: 'text',
+      class: 'latex-input-text',
+      value: latexFormula.trim(),
+      placeholder: '\\sqrt{2}',
+      contentEditable: 'true'
+    }) as HTMLInputElement
 
-    this.input = document.createElement('input')
-    this.input.type = 'text'
-    this.input.className = 'latex-input-text'
-    this.input.value = latexFormula.trim()
-    this.input.placeholder = '\\sqrt{2}'
-    this.input.contentEditable = 'true'
-
-    this.checkboxDisplay = document.createElement('input')
-    this.checkboxDisplay.type = 'checkbox'
+    this.checkboxDisplay = createHTMLElement('input', { type: 'checkbox', checked: display, id: 'emBloco' })
     this.checkboxDisplay.checked = display
 
-    const inputDisplay = document.createElement('div')
-    inputDisplay.className = 'latex-editting-input'
-    inputDisplay.append(this.input, this.checkboxDisplay)
-
-    this.preview = document.createElement('div')
-    this.preview.className = 'latex-editting-preview'
+    this.preview = createHTMLElement('div', { class: 'latex-editting-preview' })
     this.preview.classList.toggle('katex-display', display)
 
     this.input.addEventListener('keyup', () => {
@@ -63,12 +56,11 @@ export class KatexView implements NodeView {
     })
 
     this.checkboxDisplay.addEventListener('change', () => {
-      //console.log(this.checkboxDisplay.checked)
       this.preview.classList.toggle('katex-display', this.checkboxDisplay.checked)
     })
 
     const confirmButton = new Button(editor, {
-      label: 'inserir',
+      label: check,
       classList: ['latex-confirm']
     })
 
@@ -82,19 +74,22 @@ export class KatexView implements NodeView {
     })
 
     const cancelButton = new Button(editor, {
-      label: 'cancelar',
+      label: close,
       classList: ['latex-cancel']
     })
 
     cancelButton.bind('click', () => {
-      this.cancelEdit()
+      this.cancelEditting()
     })
 
-    const footer = document.createElement('div')
-    footer.className = 'latex-editting-footer'
-    footer.append(confirmButton.render(), cancelButton.render())
+    const inputDisplay = createHTMLElement('div', { class: 'latex-editting-input' }, [this.input, confirmButton.render(), cancelButton.render()])
 
-    divConteiner.append(inputDisplay, this.preview, footer)
+    const label = createHTMLElement('label', { for: 'emBloco', class: 'checkbox-label' })
+    label.textContent = 'Em Bloco'
+
+    const displayCheckbox = createHTMLElement('div', { class: 'latex-editting-displayCheckbox' }, [label, this.checkboxDisplay])
+
+    const divConteiner = createHTMLElement('div', { class: 'latex-editting-container' }, [inputDisplay, displayCheckbox, this.preview])
 
     this.balloon.ballonPanel.appendChild(divConteiner)
 
@@ -136,7 +131,7 @@ export class KatexView implements NodeView {
     return this.editing
   }
 
-  updateLatexDisplay(latex: string, containerDisplay: HTMLElement) {
+  updateLatexDisplay(latex: string, containerDisplay: Element) {
     const formula = latex
 
     const matches = parseLatex(formula)
@@ -175,12 +170,20 @@ export class KatexView implements NodeView {
     const target = event.target as HTMLElement
 
     if (target.closest('.math-tex') === null) {
-      this.cancelEdit()
+      this.cancelEditting()
     }
   }
 
-  cancelEdit() {
+  cancelEditting() {
     this.closeBalloon()
+    if (this.input.value.length === 0) {
+      this.deleteNode()
+    } else {
+      this.resetInputs()
+    }
+  }
+
+  resetInputs() {
     this.input.value = this.node.attrs.latexFormula
     this.preview.innerHTML = this.renderedLatex.innerHTML
   }
@@ -212,6 +215,16 @@ export class KatexView implements NodeView {
     }
 
     return true
+  }
+
+  deleteNode() {
+    if (typeof this.getPos === 'function') {
+      const pos = this.getPos()
+      if (typeof pos !== 'number') return
+      const tr = this.editor.view.state.tr
+
+      this.editor.view.dispatch(tr.delete(pos, pos + this.node.nodeSize))
+    }
   }
 
   stopEvent(event: Event) {

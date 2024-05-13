@@ -46,13 +46,59 @@ export class Balloon {
 
   show() {
     this.ballonMenu.classList.remove('ex-hidden')
+
     requestAnimationFrame(() => {
-      const rect = this.ballonMenu.getBoundingClientRect()
-      console.log(rect.width, rect.height)
+      const { view } = this.editor
+      const rectBalloon = this.ballonMenu.getBoundingClientRect()
+      const rectEditor = view.dom.getBoundingClientRect()
+      const spanRect = (this.ballonMenu.parentElement as Element).getBoundingClientRect()
+
+      if (spanRect.width > rectBalloon.width) {
+        this.ballonMenu.classList.add('balloon-menu-middle')
+        this.ballonMenu.classList.remove('balloon-menu-right', 'balloon-menu-left')
+        return
+      }
+
+      const isOverflowLeft = overFlowLeft(spanRect.x, rectEditor.left, rectBalloon.width)
+      const isOverflowRight = overFlowRight(spanRect.x, rectEditor.right, rectBalloon.width)
+
+      if (isOverflowLeft && !isOverflowRight) {
+        this.setBalloonMenuClass('balloon-menu-left', `balloon-arrow-${this.options.arrow}-left`)
+      } else if (isOverflowRight && !isOverflowLeft) {
+        this.setBalloonMenuClass('balloon-menu-right', `balloon-arrow-${this.options.arrow}-right`)
+      } else {
+        this.setBalloonMenuClass('balloon-menu-middle', `balloon-arrow-${this.options.arrow}-center`)
+      }
     })
+  }
+
+  setBalloonMenuClass(menuClass: string, arrowClass: string) {
+    this.ballonMenu.classList.remove('balloon-menu-left', 'balloon-menu-right', 'balloon-menu-middle')
+    this.ballonPanel.classList.remove(
+      `balloon-arrow-${this.options.arrow}-left`,
+      `balloon-arrow-${this.options.arrow}-right`,
+      `balloon-arrow-${this.options.arrow}-center`
+    )
+    this.ballonMenu.classList.add(menuClass)
+    this.ballonPanel.classList.add(arrowClass)
   }
 
   hide() {
     this.ballonMenu.classList.add('ex-hidden')
   }
+}
+
+function overFlowRight(balloonX: number, editorTR: number, balloonWidth: number) {
+  const middle = balloonWidth / 2
+  //console.log('overFlowRight', rectBalloon.x + middle, rectEditor.right)
+
+  return balloonX + middle > editorTR
+}
+
+function overFlowLeft(balloonX: number, editorTl: number, balloonWidth: number) {
+  const middle = balloonWidth / 2
+
+  //console.log('overFlowLeft', rectBalloon.x - middle, rectEditor.left)
+
+  return balloonX - middle < editorTl
 }

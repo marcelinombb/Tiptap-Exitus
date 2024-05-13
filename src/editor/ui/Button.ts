@@ -1,4 +1,5 @@
 import { type Toolbar } from '@editor/toolbar'
+import { createHTMLElement } from '@editor/utils'
 import { type Editor } from '@tiptap/core'
 
 import type ExitusEditor from '../../ExitusEditor'
@@ -47,12 +48,14 @@ export class Button implements Tool {
     this.editor = editor
   }
 
-  createButton() {
-    const button = document.createElement('button')
-    button.classList.add('ex-toolbar-button', ...(this.config.classList as string[]))
-    button.setAttribute('id', `${Math.floor(Math.random() * 100) + 1}`)
-    button.title = this.config.title as string
-    return button
+  createButton(): HTMLButtonElement {
+    const button = createHTMLElement('button', {
+      class: ['ex-toolbar-button', ...(this.config.classList as string[])].join(' '),
+      id: `${Math.floor(Math.random() * 100) + 1}`,
+      title: this.config.title as string
+    })
+
+    return button as HTMLButtonElement
   }
 
   setParentToolbar(toolbar: Toolbar) {

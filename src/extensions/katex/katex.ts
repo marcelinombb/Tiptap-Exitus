@@ -15,7 +15,12 @@ function click({ editor }: ButtonEventProps) {
     return
   }
 
-  editor.commands.insertContent(`<span class="math-tex" isEditing='true' > </span>`)
+  editor.commands.insertContent(`<span class="math-tex" isEditing='true' > </span>`, {
+    updateSelection: true,
+    parseOptions: {
+      preserveWhitespace: 'full'
+    }
+  })
 }
 
 declare module '@tiptap/core' {
