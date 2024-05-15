@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 //@ts-nocheck
 import { Toolbar } from '@editor/toolbar'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
@@ -21,10 +22,7 @@ import { criaDropCell, criaDropColuna, criaDropLinhas } from './tableToolbarIten
 
 function clickHandler(table: TableView) {
   table.tableWrapper.addEventListener('click', event => {
-    table.updateAttributes({
-      ballonActive: true
-    })
-
+    table.balloon.on()
     function clickOutside(event) {
       const target = event.target as HTMLElement
 
@@ -32,9 +30,7 @@ function clickHandler(table: TableView) {
         //console.log(target.closest('.tableWrapper'))
 
         try {
-          table.updateAttributes({
-            ballonActive: false
-          })
+          table.balloon.on()
         } catch (error) {}
         table.tableWrapper.classList.remove('ex-selected')
         window.removeEventListener('click', clickOutside)
@@ -111,6 +107,7 @@ export class TableView implements NodeView {
   contentDOM: HTMLElement
   getPos: boolean | (() => number)
   tableStyle: { [key: string]: string }
+  tableWrapperStyle: { [key: string]: string }
 
   constructor(node: ProseMirrorNode, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
@@ -124,7 +121,9 @@ export class TableView implements NodeView {
     this.colgroup = this.table.appendChild(document.createElement('colgroup'))
 
     this.tableStyle = node.attrs.style
-    this.table.setAttribute('style', objParaCss(this.tableStyle))
+    this.tableWrapperStyle = node.attrs.styleTableWrapper
+
+    updateTableStyle(this)
 
     updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
@@ -180,8 +179,6 @@ export class TableView implements NodeView {
 
     this.dom.appendChild(this.tableWrapper)
 
-    this.balloon.ballonMenu.style.display = this.node.attrs.ballonActive ? 'block' : 'none'
-
     clickHandler(this)
   }
 
@@ -200,37 +197,36 @@ export class TableView implements NodeView {
     }
   }
 
-  /*  update(node: ProseMirrorNode) {
-    if (node.type !== this.node.type) {
-      return false
-    }
-
-    console.log(node.attrs)
-    this.node = node
-    this.balloon.ballonMenu.style.display = this.node.attrs.ballonActive ? 'block' : 'none'
-    this.table.setAttribute('style', node.attrs.style)
-    updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
-
-    return true
-  } */
-
   update(node: ProseMirrorNode) {
     if (node.type !== this.node.type) {
       return false
     }
 
     this.node = node
-    this.balloon.ballonMenu.style.display = this.node.attrs.ballonActive ? 'block' : 'none'
-    //const currentStyle = this.table.getAttribute('style') || ''
-
-    console.log(node.attrs.style)
+    //console.log(node.attrs.style)
     this.tableStyle = node.attrs.style
+    this.tableWrapperStyle = node.attrs.styleTableWrapper
+    updateTableStyle(this)
+    //console.log(node.attrs.styleTableWrapper)
     updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
 
     return true
   }
 
+  stopEvent(event: Event) {
+    //console.log(event)
+    if (event instanceof KeyboardEvent) {
+      return true
+    }
+
+    return false
+  }
+
   ignoreMutation(mutation: MutationRecord | { type: 'selection'; target: Element }) {
+    //console.log(mutation.type === 'attributes' && (mutation.target === this.table || this.colgroup.contains(mutation.target)))
+    if (mutation.type === 'attributes' && this.balloon.ballonMenu.contains(mutation.target)) {
+      return true
+    }
     if (mutation.type === 'attributes' && mutation.target.classList.contains('ex-dropdown')) {
       return true
     }
@@ -241,4 +237,10 @@ export class TableView implements NodeView {
 
     return mutation.type === 'attributes' && (mutation.target === this.table || this.colgroup.contains(mutation.target))
   }
+}
+
+function updateTableStyle(tableView: TableView) {
+  const { table, tableWrapperStyle, tableWrapper, tableStyle } = tableView
+  table.setAttribute('style', objParaCss(tableStyle))
+  tableWrapper.setAttribute('style', objParaCss({ 'margin-right': tableWrapperStyle.Direita, 'margin-left': tableWrapperStyle.Esquerda }))
 }

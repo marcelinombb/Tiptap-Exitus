@@ -18,7 +18,7 @@ function onSelectTableRowColumn(event): EventListener {
   const onRow = parseInt(event.target.getAttribute('data-row'))
   const indicator = document.querySelector('.ex-indicator')
   if (indicator) {
-    indicator.textContent = `${onRow} x ${onColumn}`
+    indicator.textContent = `${onRow} × ${onColumn}`
   }
 
   const buttons = event.target.parentNode.querySelectorAll('button') as HTMLCollectionOf<HTMLButtonElement>
@@ -160,10 +160,17 @@ export const TableCustom = Table.extend({
       style: {
         default: {},
         parseHTML: element => {
-          //if ((element!.parentNode as HTMLElement).tagName.toUpperCase() !== 'FIGURE') return null
           const style = element.getAttribute('style')
 
-          return style && cssParaObj(element.getAttribute('style'))
+          return style && cssParaObj(style)
+        }
+      },
+      styleTableWrapper: {
+        default: {},
+        parseHTML: element => {
+          const styleTableWrapper = element.getAttribute('styleTableWrapper')
+
+          return styleTableWrapper && cssParaObj(styleTableWrapper)
         }
       }
     }
@@ -171,16 +178,19 @@ export const TableCustom = Table.extend({
   renderHTML({ node, HTMLAttributes }) {
     const { colgroup } = createColGroup(node, this.options.cellMinWidth)
 
+    const style = HTMLAttributes.style || {}
+    const styleTableWrapper = HTMLAttributes.styleTableWrapper || {}
+
     const mergedAttributes = mergeAttributes(this.options.HTMLAttributes, {
       ...HTMLAttributes,
-      style: objParaCss(HTMLAttributes.style)
+      style: objParaCss(style),
+      styleTableWrapper: objParaCss(styleTableWrapper)
     })
 
     const table: DOMOutputSpec = ['table', mergedAttributes, colgroup, ['tbody', 0]]
 
     return table
   },
-
   addCommands() {
     return {
       ...this.parent?.(),
@@ -195,7 +205,6 @@ export const TableCustom = Table.extend({
           if (tableNode) {
             nodePos = tableNode.pos
           }
-
           // If no table was found or position is undefined, abort the command
           if (nodePos == null) return false
 
@@ -207,12 +216,42 @@ export const TableCustom = Table.extend({
               ...style
             }
           }
-
           // Create a transaction that sets the new attributes
           if (dispatch) {
             tr.setNodeMarkup(nodePos, undefined, attrs)
             dispatch(tr)
           }
+          return true
+        }
+      },
+      setWrapperStyle: styleTableWrapper => {
+        return ({ tr, state, dispatch }) => {
+          // Get the selection
+          const { selection } = state
+
+          // Find the tableWrapper node around the selection
+          const tableWrapperNode = findParentNodeOfType(state.schema.nodes.table)(selection)
+
+          // If no tableWrapper was found, abort the command
+          if (!tableWrapperNode) return false
+
+          // Get the position of the tableWrapper node
+          const nodePos = tableWrapperNode.pos
+
+          // Create a new attributes object with the updated style
+          const attrs = {
+            ...tableWrapperNode.node.attrs,
+            styleTableWrapper: {
+              ...tableWrapperNode.node.attrs.styleTableWrapper,
+              ...styleTableWrapper
+            }
+          }
+          // Create a transaction that sets the new attributes
+          if (dispatch) {
+            tr.setNodeMarkup(nodePos, undefined, attrs)
+            dispatch(tr)
+          }
+
           return true
         }
       }

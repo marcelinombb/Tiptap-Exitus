@@ -15,6 +15,9 @@ function generateUUID() {
 }
 
 class ExitusEditor extends Editor {
+  focus() {
+    throw new Error('Method not implemented.')
+  }
   editorInstance!: string
   toolbar: Toolbar
   toolbarItemsDiv!: HTMLDivElement

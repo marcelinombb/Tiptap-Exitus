@@ -34,6 +34,7 @@ export class Dropdown implements Tool {
     this.editor = editor
     this.dropdownContainer = document.createElement('div')
     this.dropdownContainer.className = 'ex-dropdown-container'
+    this.dropdownContainer.contentEditable = 'false'
 
     this.dropdownContentContainer = document.createElement('div')
     this.dropdownContentContainer.classList.add('ex-dropdown', ...this.config.classes)

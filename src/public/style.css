@@ -296,17 +296,17 @@
       transform: translate(-50%,-100%);
   }
 
-  .ex-direita{
+  .ex-margin-direita{
     margin-right: 0;
     margin-left: auto;
   }
 
-  .ex-esquerda{
+  .ex-margin-esquerda{
     margin-right: auto;
     margin-left: 0;
   }
 
-  .ex-meio{
+  .ex-margin-meio{
     margin-right: auto;
     margin-left: auto;
   }

@@ -1,8 +1,8 @@
+/* eslint-disable no-console */
 import { Button, Dropdown } from '@editor/ui'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
-import { Editor } from '@tiptap/core'
 import type ExitusEditor from 'src/ExitusEditor'
 
 let dropdownsAbertos: Dropdown[] = []
@@ -36,30 +36,22 @@ export function criaTabelaModal() {
     })
 
     dropdown.setDropDownContent(itensModalTable(editor))
-    /* window.addEventListener('click', function (event: Event) {
-      const target = event.target as HTMLElement
-      if (!target.matches('.dropdown')) {
-        dropdown.off()
-      }
-    }) */
     return dropdown
   }
 }
 
 function createButton(editor: ExitusEditor, icone: string, onClick: () => void) {
   const button = new Button(editor, {
-    icon: icone,
-    events: {
-      click: onClick
-    }
+    icon: icone
   })
-
+  button.bind('click', onClick)
   return button.render()
 }
 
 function createInput(type: string, placeholder: string) {
   const input = document.createElement('input')
   input.type = type
+  input.contentEditable = 'true'
   input.placeholder = placeholder
 
   return input
@@ -128,7 +120,7 @@ function itensModalTable(editor: ExitusEditor) {
     }
   }
 
-  larguraBloco1.addEventListener('input', aplicarEstiloBorda)
+  larguraBloco1.addEventListener('change', aplicarEstiloBorda)
   larguraBloco1.value = ''
 
   //bloco2
@@ -158,7 +150,7 @@ function itensModalTable(editor: ExitusEditor) {
     }
   }
 
-  inputBackgroundColor2.addEventListener('input', aplicarEstiloCelulas)
+  inputBackgroundColor2.addEventListener('change', aplicarEstiloCelulas)
 
   //bloco3
   const dimensoesLabel = document.createElement('strong')
@@ -197,11 +189,11 @@ function itensModalTable(editor: ExitusEditor) {
     if (altura && largura) {
       ;(editor.commands as any).setTableStyle({
         height: `${altura}px`,
-        widht: `${largura}px`
+        width: `${largura}px`
       })
     }
   }
-  inputLargura.addEventListener('input', aplicarDimencoesTabela)
+  inputLargura.addEventListener('change', aplicarDimencoesTabela)
 
   //bloco 4
   const alinhamentoLabel = document.createElement('strong')
@@ -213,23 +205,23 @@ function itensModalTable(editor: ExitusEditor) {
   bloco8.className = 'bloco8'
 
   const TableEsquerda = createButton(editor, textDl, () => {
-    ;(editor.commands as any).setTableStyle({
-      'margin-right': 'auto',
-      'margin-left': 0
+    ;(editor.commands as any).setWrapperStyle({
+      Direita: 'auto',
+      Esquerda: '0'
     })
   })
 
   const TableMeio = createButton(editor, textDm, () => {
-    ;(editor.commands as any).setTableStyle({
-      'margin-right': 'auto',
-      'margin-left': 'auto'
+    console.log('TableMeio clicado')
+    ;(editor.commands as any).setWrapperStyle({
+      Direita: 'auto',
+      Esquerda: 'auto'
     })
   })
-
   const TableDireito = createButton(editor, textDr, () => {
-    ;(editor.commands as any).setTableStyle({
-      'margin-right': 0,
-      'margin-left': 'auto'
+    ;(editor.commands as any).setWrapperStyle({
+      Direita: '0',
+      Esquerda: 'auto'
     })
   })
 
@@ -251,6 +243,7 @@ function itensModalTable(editor: ExitusEditor) {
   //bloco7
   const botaoConfirma = createButton(editor, 'Salvar', () => {
     // o que acontece quando clicar no botão
+    fecharDropdownsAbertos()
   })
   botaoConfirma.className = 'botaoSalvar'
   const iconeConfirma = document.createElement('span')
