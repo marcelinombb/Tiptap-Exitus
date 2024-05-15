@@ -1,4 +1,5 @@
 import { Toolbar } from '@editor/toolbar'
+import { createHTMLElement } from '@editor/utils'
 import { type AnyExtension, Editor, type EditorOptions } from '@tiptap/core'
 
 export interface ExitusEditorOptions extends EditorOptions {
@@ -35,25 +36,16 @@ class ExitusEditor extends Editor {
   }
 
   _generateEditorUI() {
-    const editorShell = document.createElement('div')
-    editorShell.className = 'editor-shell'
-
-    const toolbarEditor = document.createElement('div')
-    toolbarEditor.className = 'ex-toolbar-editor'
-
     const toolbarItems = this.toolbar.createToolbar()
-    toolbarEditor.appendChild(toolbarItems)
-
-    const editorScroller = document.createElement('div')
-    editorScroller.className = 'editor-scroller'
+    const toolbarEditor = createHTMLElement('div', { class: 'ex-toolbar-editor' }, [toolbarItems])
 
     const editorMain = this.options.element
     editorMain.className = 'editor-main'
     editorMain.setAttribute('id', generateUUID())
 
-    editorScroller.appendChild(editorMain)
+    const editorScroller = createHTMLElement('div', { class: 'editor-scroller' }, [editorMain])
 
-    editorShell.append(toolbarEditor, editorScroller)
+    const editorShell = createHTMLElement('div', { class: 'editor-shell' }, [toolbarEditor, editorScroller])
 
     this.toolbarItemsDiv = toolbarItems
 
