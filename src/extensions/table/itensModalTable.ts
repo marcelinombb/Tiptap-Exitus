@@ -252,7 +252,16 @@ function itensModalTable(editor: ExitusEditor) {
   dropdownContent.appendChild(botaoConfirma)
 
   const botaoCancela = createButton(editor, 'Cancelar', () => {
-    // o que acontece quando clicar no botão
+    ;(editor.commands as any).setWrapperStyle({
+      Direita: 'auto',
+      Esquerda: 'auto'
+    })
+    ;(editor.commands as any).setTableStyle({
+      height: ``,
+      width: ``,
+      background: ``,
+      border: ``
+    })
   })
   botaoCancela.className = 'botaoCancela'
   const iconeCancela = document.createElement('span')

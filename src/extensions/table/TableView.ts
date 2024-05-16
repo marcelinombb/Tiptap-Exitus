@@ -18,6 +18,7 @@ import { Balloon } from '../../editor/ui/Balloon'
 
 import { criaTabelaModal } from './itensModalTable'
 import { objParaCss } from './table'
+import TableFocus from './tableFocus'
 import { criaDropCell, criaDropColuna, criaDropLinhas } from './tableToolbarItens'
 
 function clickHandler(table: TableView) {
@@ -127,6 +128,8 @@ export class TableView implements NodeView {
 
     updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
+
+    new TableFocus(this)
 
     const configStorage = {
       celumnsTable: {

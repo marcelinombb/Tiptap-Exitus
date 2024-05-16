@@ -84,6 +84,10 @@
     outline-color: #ffc83d;
   }
 
+  .tiptap-widget:hover > .bolinha{
+    display: block;
+  }
+
   .ex-selected {
     outline-color: hsl(218,81.8%,56.9%)!important;
   }
@@ -123,15 +127,23 @@
     display: none!important;
   }
 
-  .ex-toolbar-button:hover {
+  .ex-toolbar-button:not(.bolinha):hover {
     background: #f0f0f0;
-  }
+}
 
   .ex-toolbar-button svg {
     width: 20px;
     height: 20px;
   }
 
+  .bolinha svg {
+    width: 15px;
+    height: 15px;
+    color: #fff;
+    margin: -1px -1px;
+}
+
+  
   .resize-cursor {
     cursor: ew-resize;
     cursor: col-resize;
@@ -495,4 +507,30 @@
   top: 135px;
   left: 65px;
   right: auto;
+}
+
+
+.bolinha {
+  width: 18px;
+  height: 18px;
+  background-color: #007bff; 
+  border-radius: 50%; 
+  position: absolute; 
+  cursor: pointer; 
+  z-index: 0; 
+  display: none;
+}
+  
+
+.bolinha-cima {
+  top: -12px;
+  left: 4%;
+  transform: translateX(-50%);
+}
+
+
+.bolinha-baixo {
+  bottom: -12px;
+  left: 96%;
+  transform: translateX(-50%);
 }
