@@ -8,17 +8,49 @@ import '../../../node_modules/katex/dist/katex.css'
 
 import { KatexView } from './katexView'
 
+function createRedSquare(top: number, left: number, color: string) {
+  // Create the div element
+  const div = document.createElement('div')
+
+  // Set the style properties
+  div.style.width = '10px'
+  div.style.height = '10px'
+  div.style.backgroundColor = color
+  div.style.position = 'absolute'
+  div.style.top = `${top}px`
+  div.style.left = `${left}px`
+
+  // Append the div to the body or another container
+  return div
+}
+
 function click({ editor }: ButtonEventProps) {
-  const { nodeBefore } = editor.state.selection.$anchor
+  const { nodeBefore, pos } = editor.state.selection.$anchor
+
+  //const { state, view } = editor
+
+  //console.log(nodeBefore, nodeAfter, pos)
+  /*   const after = editor.view.coordsAtPos(pos - 1, -1)
+  const before = editor.view.coordsAtPos(pos + 1, 1)
+  const main = editor.view.dom.getBoundingClientRect()
+  console.log(pos, { right: before.right, top: before.top }, { right: after.right, top: after.top }) */
+
+  //console.log(editor.view.coordsAtPos(pos, 1), editor.view.coordsAtPos(pos, -1))
+
+  //editor.editorMainDiv.appendChild(createRedSquare(after.top, after.left, 'red'))
+  //editor.editorMainDiv.appendChild(createRedSquare(before.top, before.left, 'green'))
+
+  //editor.editorMainDiv.appendChild(createRedSquare(before.top - main.y, before.left - main.left, 'blue'))
+  //document.body.appendChild(createRedSquare(top, left))
 
   if (nodeBefore?.type.name == 'katex' && nodeBefore.attrs.isEditing) {
     return
   }
 
-  editor.commands.insertContent(`<span class="math-tex" isEditing='true' > </span>`, {
+  editor.commands.insertContentAt(pos, `<span class="math-tex" isEditing='true'> </span>`, {
     updateSelection: true,
     parseOptions: {
-      preserveWhitespace: 'full'
+      preserveWhitespace: true
     }
   })
 }

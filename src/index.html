@@ -9,19 +9,21 @@
 </head>
 
 <body>
- <style>
-  .html-content {
-    padding: 1cm 1cm 1cm;
-  }
- </style>
+  <style>
+    html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+  </style>
   <div style="display: flex;">
     <div style="flex:1">
-      <div class="element"></div>
+      <div class="element"  style="padding: 12px;"></div>
       <div class="element2"></div>
     </div>
     <div style="flex:1">
-      <div class="html-content">
-
+      <div class="html-content editor-main">
+        <div class="ProseMirror" id="testeHtml"></div>
       </div>
     </div>
   </div>

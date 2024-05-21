@@ -90,15 +90,10 @@ export class Balloon {
 
 function overFlowRight(balloonX: number, editorTR: number, balloonWidth: number) {
   const middle = balloonWidth / 2
-  console.log('overFlowRight', balloonX + middle, editorTR)
-
   return balloonX + middle > editorTR
 }
 
 function overFlowLeft(balloonX: number, editorTl: number, balloonWidth: number) {
   const middle = balloonWidth / 2
-
-  console.log('overFlowLeft', balloonX - middle, editorTl)
-
   return balloonX - middle < editorTl
 }

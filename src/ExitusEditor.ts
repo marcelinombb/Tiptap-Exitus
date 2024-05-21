@@ -42,6 +42,7 @@ class ExitusEditor extends Editor {
     const editorMain = this.options.element
     editorMain.className = 'editor-main'
     editorMain.setAttribute('id', generateUUID())
+    this.editorMainDiv = editorMain as HTMLDivElement
 
     const editorScroller = createHTMLElement('div', { class: 'editor-scroller' }, [editorMain])
 

@@ -30,7 +30,7 @@ const editor = new ExitusEditor({
 })
 
 editor.on('create', ({ editor }) => {
-  const htmlContent = document.querySelector('.html-content') as Element
+  const htmlContent = document.querySelector('#testeHtml') as Element
   htmlContent.innerHTML = parseLatex(editor.getHTML())
 })
 
@@ -55,7 +55,7 @@ function parseLatex(text: string) {
 }
 
 editor.on('update', ({ editor }) => {
-  const htmlContent = document.querySelector('.html-content') as Element
+  const htmlContent = document.querySelector('#testeHtml') as Element
 
   const latexMatches = parseLatex(editor.getHTML())
 
