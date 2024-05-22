@@ -26,7 +26,7 @@ function showDropdown({ event, dropdown }: any) {
   }
 }
 
-export function criaTabelaModal() {
+export function criaCellModal() {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
       events: {
@@ -35,7 +35,7 @@ export function criaTabelaModal() {
       classes: ['ex-dropdown-balloonModal']
     })
 
-    dropdown.setDropDownContent(itensModalTable(editor))
+    dropdown.setDropDownContent(itensModalCell(editor))
     return dropdown
   }
 }
@@ -57,12 +57,12 @@ function createInput(type: string, placeholder: string) {
   return input
 }
 
-function itensModalTable(editor: ExitusEditor) {
+function itensModalCell(editor: ExitusEditor) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
 
   const propriedadesLabel = document.createElement('label')
-  propriedadesLabel.textContent = 'Propriedades da Tabela'
+  propriedadesLabel.textContent = 'Propriedades da Célula'
   dropdownContent.appendChild(propriedadesLabel)
 
   const hr = document.createElement('hr')
@@ -72,7 +72,7 @@ function itensModalTable(editor: ExitusEditor) {
   const selectInput = document.createElement('select')
   selectInput.style.width = '80px'
 
-  const borderStyles = {
+  const cellStyles: { [key: string]: string } = {
     'sem borda': 'none',
     sólida: 'solid',
     pontilhada: 'dotted',
@@ -84,7 +84,7 @@ function itensModalTable(editor: ExitusEditor) {
     'alto relevo': 'outset'
   }
 
-  Object.entries(borderStyles).forEach(([name, value]) => {
+  Object.entries(cellStyles).forEach(([name, value]) => {
     const option = document.createElement('option')
     option.value = value
     option.textContent = name
@@ -93,11 +93,9 @@ function itensModalTable(editor: ExitusEditor) {
 
   const inputBackgroundColor1 = createInput('color', 'Cor de Fundo')
   inputBackgroundColor1.className = 'colorInput'
-  inputBackgroundColor1.disabled = true
 
   const larguraBloco1 = createInput('text', 'Largura')
   larguraBloco1.className = 'largura1'
-  larguraBloco1.disabled = true
 
   const bloco1 = document.createElement('div')
   bloco1.className = 'bloco1'
@@ -107,19 +105,8 @@ function itensModalTable(editor: ExitusEditor) {
   bordaLabel.textContent = 'Borda'
 
   bloco1.append(bordaLabel, selectInput, inputBackgroundColor1, larguraBloco1)
+
   dropdownContent.appendChild(bloco1)
-
-  selectInput.addEventListener('change', () => {
-    if (selectInput.value) {
-      inputBackgroundColor1.disabled = false
-    }
-  })
-
-  inputBackgroundColor1.addEventListener('change', () => {
-    if (inputBackgroundColor1.value) {
-      larguraBloco1.disabled = false
-    }
-  })
 
   function aplicarEstiloBorda() {
     const selectedValue = selectInput.value
@@ -127,15 +114,12 @@ function itensModalTable(editor: ExitusEditor) {
     const largura = larguraBloco1.value
 
     if (selectedValue && cor && largura) {
-      ;(editor.commands as any).setTableStyle({
+      editor.commands.setCellAttribute({
         border: `${largura}px ${selectedValue} ${cor}`
       })
     }
   }
-
   larguraBloco1.addEventListener('change', aplicarEstiloBorda)
-  selectInput.addEventListener('change', aplicarEstiloBorda)
-  inputBackgroundColor1.addEventListener('change', aplicarEstiloBorda)
   larguraBloco1.value = ''
 
   //bloco2
@@ -159,7 +143,7 @@ function itensModalTable(editor: ExitusEditor) {
     const cor2 = inputBackgroundColor2.value
 
     if (cor2) {
-      ;(editor.commands as any).setTableStyle({
+      editor.commands.setCellAttribute({
         background: cor2
       })
     }
@@ -202,15 +186,13 @@ function itensModalTable(editor: ExitusEditor) {
     const altura = inputAltura.value
     const largura = inputLargura.value
     if (altura && largura) {
-      ;(editor.commands as any).setTableStyle({
+      ;(editor.commands as any).setCellAttribute({
         height: `${altura}px`,
         width: `${largura}px`
       })
     }
   }
   inputLargura.addEventListener('change', aplicarDimencoesTabela)
-
-  inputAltura.addEventListener('change', aplicarDimencoesTabela)
 
   //bloco 4
   const alinhamentoLabel = document.createElement('strong')
@@ -222,23 +204,21 @@ function itensModalTable(editor: ExitusEditor) {
   bloco8.className = 'bloco8'
 
   const TableEsquerda = createButton(editor, textDl, () => {
-    ;(editor.commands as any).setWrapperStyle({
-      Direita: 'auto',
-      Esquerda: '0'
+    ;(editor.commands as any).setCellAttribute({
+      'vertical-align': 'top'
     })
   })
 
   const TableMeio = createButton(editor, textDm, () => {
     console.log('TableMeio clicado')
-    ;(editor.commands as any).setWrapperStyle({
-      Direita: 'auto',
-      Esquerda: 'auto'
+    ;(editor.commands as any).setCellAttribute({
+      'vertical-align': 'middle'
     })
   })
+
   const TableDireito = createButton(editor, textDr, () => {
-    ;(editor.commands as any).setWrapperStyle({
-      Direita: '0',
-      Esquerda: 'auto'
+    ;(editor.commands as any).setCellAttribute({
+      'vertical-align': 'bottom'
     })
   })
 
@@ -269,11 +249,11 @@ function itensModalTable(editor: ExitusEditor) {
   dropdownContent.appendChild(botaoConfirma)
 
   const botaoCancela = createButton(editor, 'Cancelar', () => {
-    ;(editor.commands as any).setWrapperStyle({
+    ;(editor.commands as any).setCellAttribute({
       Direita: 'auto',
       Esquerda: 'auto'
     })
-    ;(editor.commands as any).setTableStyle({
+    ;(editor.commands as any).setCellAttribute({
       height: ``,
       width: ``,
       background: ``,

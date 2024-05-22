@@ -21,7 +21,8 @@
     "baseUrl": ".",
     "paths": {
       "@icons/*": ["src/assets/icons/Editor/*"],
-      "@editor/*": ["src/editor/*"]
+      "@editor/*": ["src/editor/*"],
+      "@extensions/*": ["src/extensions/*"]
     },
   },
   "include": ["src", "declaration.d.ts"],

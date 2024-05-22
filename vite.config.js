@@ -11,7 +11,8 @@ export default defineConfig({
     extensions: ['.ts', '.svg'],
     alias: [
       { find: '@icons', replacement: fileURLToPath(new URL('./src/assets/icons/Editor', import.meta.url)) },
-      { find: '@editor', replacement: fileURLToPath(new URL('./src/editor', import.meta.url)) }
+      { find: '@editor', replacement: fileURLToPath(new URL('./src/editor', import.meta.url)) },
+      { find: '@extensions', replacement: fileURLToPath(new URL('./src/extensions', import.meta.url)) }
     ]
   },
   build: {

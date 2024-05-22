@@ -16,6 +16,7 @@ import type ExitusEditor from 'src/ExitusEditor'
 import { Button, Dropdown } from '../../editor/ui'
 import { Balloon } from '../../editor/ui/Balloon'
 
+import { criaCellModal } from './itensModalCell'
 import { criaTabelaModal } from './itensModalTable'
 import { objParaCss } from './table'
 import TableFocus from './tableFocus'
@@ -164,9 +165,7 @@ export class TableView implements NodeView {
         toolbarButtonConfig: {
           icon: starredCell + arrowDropDown,
           label: 'editar celula',
-          events: {
-            click: null
-          }
+          dropdown: criaCellModal()
         }
       }
     }

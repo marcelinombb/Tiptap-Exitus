@@ -45,18 +45,18 @@ function clickHandler(imageWrapper: HTMLElement) {
 function alinhaDireita(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { editor, node, imageWrapper } = imageView
-    if (!imageWrapper.classList.contains('ex-direita')) {
+    if (!imageWrapper.classList.contains('ex-margin-direita')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
-      imageWrapper.classList.add('ex-direita')
-      imageWrapper.classList.remove('ex-meio', 'ex-esquerda')
+      imageWrapper.classList.add('ex-margin-direita')
+      imageWrapper.classList.remove('ex-margin-meio', 'ex-margin-esquerda')
 
       editor.commands.updateAttributes(node.type, {
         classes: imageWrapper.className
       })
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-direita')
+      imageWrapper.classList.remove('ex-margin-direita')
     }
   }
 }
@@ -64,17 +64,17 @@ function alinhaDireita(imageView: ImageView) {
 function alinhaEsquerda(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { editor, node, imageWrapper } = imageView
-    if (!imageWrapper.classList.contains('ex-esquerda')) {
+    if (!imageWrapper.classList.contains('ex-margin-esquerda')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
-      imageWrapper.classList.add('ex-esquerda')
-      imageWrapper.classList.remove('ex-meio', 'ex-direita')
+      imageWrapper.classList.add('ex-margin-esquerda')
+      imageWrapper.classList.remove('ex-margin-meio', 'ex-margin-direita')
       editor.commands.updateAttributes(node.type, {
         classes: imageWrapper.className
       })
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-esquerda')
+      imageWrapper.classList.remove('ex-margin-esquerda')
     }
   }
 }
@@ -82,17 +82,17 @@ function alinhaEsquerda(imageView: ImageView) {
 function alinhaMeio(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { editor, node, imageWrapper } = imageView
-    if (!imageWrapper.classList.contains('ex-meio')) {
+    if (!imageWrapper.classList.contains('ex-margin-meio')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
-      imageWrapper.classList.add('ex-meio')
-      imageWrapper.classList.remove('ex-esquerda', 'ex-direita')
+      imageWrapper.classList.add('ex-margin-meio')
+      imageWrapper.classList.remove('ex-margin-esquerda', 'ex-margin-direita')
       editor.commands.updateAttributes(node.type, {
         classes: imageWrapper.className
       })
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-meio')
+      imageWrapper.classList.remove('ex-margin-meio')
     }
   }
 }

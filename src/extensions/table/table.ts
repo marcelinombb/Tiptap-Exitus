@@ -6,6 +6,8 @@ import { createColGroup, Table } from '@tiptap/extension-table'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { selectedRect } from '@tiptap/pm/tables'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { setCellAttr } from '@tiptap/pm/tables'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { findParentNodeOfType, findSelectedNodeOfType } from 'prosemirror-utils'
 
 import { Dropdown } from '../../editor/ui'
@@ -254,7 +256,15 @@ export const TableCustom = Table.extend({
 
           return true
         }
-      }
+      } /* ,
+      setCellAttribute:
+        (attributes: { [key: string]: any }) =>
+        ({ state, dispatch }) => {
+          Object.entries(attributes).forEach(([name, value]) => {
+            setCellAttr(name, value)(state, dispatch)
+          })
+          return true
+        } */
     }
   },
   addOptions() {

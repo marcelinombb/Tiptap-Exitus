@@ -19,13 +19,13 @@ export default class TableFocus {
     const element = this.tableView.tableWrapper
     element.style.position = 'relative'
 
-    const botaoCima = createButton(editor, setaCima, () => {
+    const botaoCima = this.createButton(editor, setaCima, () => {
       this.moveAlvoParaCima()
     })
     this.FocarCima = element.appendChild(botaoCima)
     this.FocarCima.classList.add('bolinha', 'bolinha-cima')
 
-    const botaoBaixo = createButton(editor, setaBaixo, () => {
+    const botaoBaixo = this.createButton(editor, setaBaixo, () => {
       this.moveAlvoParaBaixo()
     })
     this.FocarBaixo = element.appendChild(botaoBaixo)
@@ -41,13 +41,13 @@ export default class TableFocus {
     const paragrafo = '<p></p>'
     this.tableView.dom.insertAdjacentHTML('afterend', paragrafo)
   }
-}
 
-function createButton(editor: ExitusEditor, icone: string, onClick: () => void) {
-  const button = new Button(editor, {
-    icon: icone,
-    classList: ['bolinha']
-  })
-  button.bind('click', onClick)
-  return button.render()
+  private createButton(editor: ExitusEditor, icone: string, onClick: () => void): HTMLElement {
+    const button = new Button(editor, {
+      icon: icone,
+      classList: ['bolinha']
+    })
+    button.bind('click', onClick)
+    return button.render()
+  }
 }
