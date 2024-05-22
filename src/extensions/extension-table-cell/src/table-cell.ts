@@ -93,7 +93,7 @@ export const TableCell = Node.create<TableCellOptions>({
     return {
       ...this.parent?.(),
       setCellAttribute:
-        (attributes: { [key: string]: boolean }) =>
+        (attributes: { [key: string]: any | undefined }) =>
         ({ state, dispatch, tr }) => {
           const { nodeAfter, pos } = selectionCell(state)
 
