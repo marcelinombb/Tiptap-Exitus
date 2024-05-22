@@ -209,6 +209,7 @@
     padding: 10px;
     z-index: 1;
     padding-bottom: 20px;
+    border-radius: 10px;
   }
 
   .ex-dropdown-content {
@@ -399,7 +400,7 @@
   display: flex;
   align-items: center;
     flex-wrap: wrap;
-    width: 40%;
+    width: 90%;
 }
 
 .bloco4{
@@ -416,6 +417,7 @@
   justify-content: space-between; 
   width: 100%;
   margin-top: 10px;
+  /* gap: 117px; */
 }
 
 .bloco6{
