@@ -93,9 +93,11 @@ function itensModalCell(editor: ExitusEditor) {
 
   const inputBackgroundColor1 = createInput('color', 'Cor de Fundo')
   inputBackgroundColor1.className = 'colorInput'
+  inputBackgroundColor1.disabled = true
 
   const larguraBloco1 = createInput('text', 'Largura')
   larguraBloco1.className = 'largura1'
+  larguraBloco1.disabled = true
 
   const bloco1 = document.createElement('div')
   bloco1.className = 'bloco1'
@@ -105,9 +107,19 @@ function itensModalCell(editor: ExitusEditor) {
   bordaLabel.textContent = 'Borda'
 
   bloco1.append(bordaLabel, selectInput, inputBackgroundColor1, larguraBloco1)
-
   dropdownContent.appendChild(bloco1)
 
+  selectInput.addEventListener('change', () => {
+    if (selectInput.value) {
+      inputBackgroundColor1.disabled = false
+    }
+  })
+
+  inputBackgroundColor1.addEventListener('change', () => {
+    if (inputBackgroundColor1.value) {
+      larguraBloco1.disabled = false
+    }
+  })
   function aplicarEstiloBorda() {
     const selectedValue = selectInput.value
     const cor = inputBackgroundColor1.value
@@ -120,6 +132,8 @@ function itensModalCell(editor: ExitusEditor) {
     }
   }
   larguraBloco1.addEventListener('change', aplicarEstiloBorda)
+  selectInput.addEventListener('change', aplicarEstiloBorda)
+  inputBackgroundColor1.addEventListener('change', aplicarEstiloBorda)
   larguraBloco1.value = ''
 
   //bloco2
@@ -193,7 +207,7 @@ function itensModalCell(editor: ExitusEditor) {
     }
   }
   inputLargura.addEventListener('change', aplicarDimencoesTabela)
-
+  inputAltura.addEventListener('change', aplicarDimencoesTabela)
   //bloco 4
   const alinhamentoLabel = document.createElement('strong')
   alinhamentoLabel.textContent = 'Alinhamento'
@@ -250,8 +264,7 @@ function itensModalCell(editor: ExitusEditor) {
 
   const botaoCancela = createButton(editor, 'Cancelar', () => {
     ;(editor.commands as any).setCellAttribute({
-      Direita: 'auto',
-      Esquerda: 'auto'
+      'vertical-align': 'top'
     })
     ;(editor.commands as any).setCellAttribute({
       height: ``,
@@ -259,6 +272,7 @@ function itensModalCell(editor: ExitusEditor) {
       background: ``,
       border: ``
     })
+    fecharDropdownsAbertos()
   })
   botaoCancela.className = 'botaoCancela'
   const iconeCancela = document.createElement('span')

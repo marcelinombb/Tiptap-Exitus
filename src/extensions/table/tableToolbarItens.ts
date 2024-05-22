@@ -94,7 +94,7 @@ function dropDownColunas(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
 
-  const colunaHead = colunaHeader(editor, dropdown, 'Adicionar cabeçalho à coluna')
+  const colunaHead = colunaHeader(editor, dropdown, 'Adicionar/remover cabeçalho à coluna')
   const colunaE = colunaEsquerda(editor, dropdown, 'Adicionar coluna à Esquerda')
   const colunaD = colunaDireita(editor, dropdown, 'Adicionar coluna à Direita')
   const colunaDel = colunaDelete(editor, dropdown, 'Deletar coluna')
@@ -193,7 +193,7 @@ function dropDownLinhas(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
 
-  const linhaHead = linhaHeader(editor, dropdown, 'Adicionar cabeçalho à linha')
+  const linhaHead = linhaHeader(editor, dropdown, 'Adicionar/remover cabeçalho à linha')
   const linhaE = linhaEsquerda(editor, dropdown, 'Adicionar linha em cima')
   const linhaD = linhaDireita(editor, dropdown, 'Adicionar linha em baixo')
   const linhaDel = linhaDelete(editor, dropdown, 'Deletar linha')
@@ -277,7 +277,7 @@ function dropDownCell(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
 
-  const cellHead = cellHeader(editor, dropdown, 'Adicionar cabeçalho à célula')
+  const cellHead = cellHeader(editor, dropdown, 'Adicionar/remover cabeçalho à célula')
   const cellMerge = mergeCell(editor, dropdown, 'Mesclar células')
   const cellSplit = splitCell(editor, dropdown, 'Dividir células')
 
