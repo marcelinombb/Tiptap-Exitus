@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { Button, Dropdown } from '@editor/ui'
-import textDl from '@icons/image-left.svg'
-import textDm from '@icons/image-middle.svg'
-import textDr from '@icons/image-right.svg'
+import textDr from '@icons/align-bottom.svg'
+import textDl from '@icons/align-top.svg'
+import textDm from '@icons/align-vertically.svg'
 import type ExitusEditor from 'src/ExitusEditor'
 
 let dropdownsAbertos: Dropdown[] = []
