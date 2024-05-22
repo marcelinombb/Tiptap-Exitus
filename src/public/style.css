@@ -14,8 +14,8 @@
   padding: 1cm 1cm 1cm;
   background: #fff;
   text-align: left;
-  overflow: auto;
-  overflow-y: hidden;
+  /* overflow: auto;
+  overflow-y: hidden; */
 }
 
 .ProseMirror {
@@ -345,9 +345,7 @@
   align-items: center;
 }
 
-.balloon-arrow-top-center::after,
-.balloon-arrow-top-left::after ,
-.balloon-arrow-top-right::after{
+.balloon-arrow-up::before {
   content: "";
   position: absolute;
   bottom: 100%;
@@ -356,10 +354,7 @@
   border-color: transparent transparent white transparent;
 }
 
-.balloon-arrow-bottom-center::before,
-.balloon-arrow-bottom-left::before,
-.balloon-arrow-bottom-right::before
- {
+.balloon-arrow-down::after {
   content: "";
   position: absolute;
   top: 100%;
@@ -368,43 +363,57 @@
   border-color: white transparent transparent transparent;
 }
 
-.balloon-arrow-top-left::after, .balloon-arrow-bottom-left::before {
+.balloon-arrow-float-left::before, .balloon-arrow-top-left::after, .balloon-arrow-bottom-left::before {
   left: 0%;
 }
 
-.balloon-arrow-top-right::after, .balloon-arrow-bottom-right::before{
+.balloon-arrow-float-right::before, .balloon-arrow-top-right::after, .balloon-arrow-bottom-right::before{
   right: 0%;
 }
 
+.balloon-arrow-float-center::after,
+.balloon-arrow-float-center::before,
 .balloon-arrow-top-center::after,
 .balloon-arrow-bottom-center::before {
   left: 50%;
   transform: translateX(-50%);
 }
 
-/* .balloon-menu:has([class*=balloon-arrow-bottom]) {
-  top: 0;
-  transform: translate(-50%, calc(-100% - 10px));
-}
-
-.balloon-menu:has([class*=balloon-arrow-top]) {
-  bottom: 0;
-  transform: translate(-50%, calc(100% + 10px));
-} */
-
-.balloon-menu-left{
+.balloon-menu-bottom-left{
   bottom: 0;
   transform: translate(calc(0% - 10px), calc(100% + 10px));
 }
 
-.balloon-menu-middle{
+/* .balloon-menu-middle{
+  bottom: 0;
+  transform: translate(-50%, calc(100% + 10px));
+} */
+
+.balloon-menu-bottom-right{
+  bottom: 0;
+  transform: translate(calc(-100% + 10px), calc(100% + 10px));
+}
+
+.balloon-menu-bottom-center{
   bottom: 0;
   transform: translate(-50%, calc(100% + 10px));
 }
 
-.balloon-menu-right{
-  bottom: 0;
-  transform: translate(calc(-100% + 10px), calc(100% + 10px));
+.balloon-menu-top-center {
+  top: 0;
+  transform: translate(-50%, calc(-100% - 10px));
+}
+
+.balloon-menu-float-center {
+  transform: translateX(-50%);
+}
+
+.balloon-menu-float-left {
+  transform: translateX(-10px);
+}
+
+.balloon-menu-float-right {
+  transform: translateX(calc(-100% + 10px));
 }
 
 .ex-hidden {

@@ -1,6 +1,6 @@
 import { Toolbar } from '@editor/toolbar'
 import { Button, type ButtonEventProps, Dropdown, type DropDownEventProps } from '@editor/ui'
-import { Balloon } from '@editor/ui/Balloon'
+import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
@@ -371,7 +371,9 @@ export class ImageView implements NodeView {
       configStorage
     })
 
-    this.balloon = new Balloon(editor)
+    this.balloon = new Balloon(editor, {
+      position: BalloonPosition.TOP
+    })
     this.balloon.ballonPanel.appendChild(toolbar.createToolbar())
 
     this.imageWrapper.appendChild(this.balloon.getBalloon())
