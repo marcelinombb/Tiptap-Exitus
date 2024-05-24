@@ -10,7 +10,7 @@ import { setCellAttr } from '@tiptap/pm/tables'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { findParentNodeOfType, findSelectedNodeOfType } from 'prosemirror-utils'
 
-import { Dropdown } from '../../editor/ui'
+import { type ButtonEventProps, Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
 import { TableView } from './TableView'
@@ -91,7 +91,7 @@ declare module '@tiptap/core' {
   }
 }
 
-function tableDropDown({ editor }: { editor: any }) {
+function tableDropDown({ editor }: ButtonEventProps) {
   const dropdown = new Dropdown(editor, {
     events: {
       open: showTableGridDropdown
@@ -99,13 +99,6 @@ function tableDropDown({ editor }: { editor: any }) {
   })
 
   dropdown.setDropDownContent(createDropDownContent(editor))
-
-  window.addEventListener('click', function (event) {
-    const target = event.target as HTMLElement
-    if (!target.matches('.dropdown')) {
-      dropdown.off()
-    }
-  })
 
   return dropdown
 }

@@ -1,5 +1,6 @@
 import { objParaCss } from '@extensions/table'
 import { mergeAttributes, Node } from '@tiptap/core'
+import { type DOMOutputSpec } from '@tiptap/pm/model'
 import { selectionCell } from '@tiptap/pm/tables'
 
 export interface TableCellOptions {
@@ -80,20 +81,23 @@ export const TableCell = Node.create<TableCellOptions>({
     return [{ tag: 'td' }]
   },
 
-  renderHTML({ HTMLAttributes }) {
+  renderHTML({ HTMLAttributes, node }) {
     //console.log(HTMLAttributes)
 
-    HTMLAttributes = {
+    const attributesMerged = mergeAttributes(this.options.HTMLAttributes, {
       ...HTMLAttributes,
       style: objParaCss(HTMLAttributes.style)
-    }
-    return ['td', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
+    })
+    // console.log(HTMLAttributes.style, node.attrs.style)
+    const celula: DOMOutputSpec = ['td', attributesMerged, 0]
+
+    return celula
   },
   addCommands() {
     return {
       ...this.parent?.(),
       setCellAttribute:
-        (attributes: { [key: string]: any | undefined }) =>
+        (attributes: { [key: string]: any }) =>
         ({ state, dispatch, tr }) => {
           const { nodeAfter, pos } = selectionCell(state)
 

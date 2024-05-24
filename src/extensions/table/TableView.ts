@@ -151,14 +151,14 @@ export class TableView implements NodeView {
         toolbarButtonConfig: {
           icon: tableCell + arrowDropDown,
           label: 'mesclar células',
-          dropdown: criaDropCell()
+          dropdown: criaDropCell(node.attrs.style)
         }
       },
       tableStarred: {
         toolbarButtonConfig: {
           icon: starredTable + arrowDropDown,
           label: 'editar tabela',
-          dropdown: criaTabelaModal()
+          dropdown: criaTabelaModal(node.attrs.style)
         }
       },
       cellStarred: {

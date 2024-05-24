@@ -15,18 +15,18 @@ function fecharDropdownsAbertos() {
 }
 
 function showDropdown({ event, dropdown }: any) {
-  event.stopPropagation()
+  // event.stopPropagation()
   if (dropdown.isOpen) {
     dropdown.off()
-    dropdownsAbertos = dropdownsAbertos.filter(d => d !== dropdown)
+    //dropdownsAbertos = dropdownsAbertos.filter(d => d !== dropdown)
   } else {
-    fecharDropdownsAbertos()
+    //fecharDropdownsAbertos()
     dropdown.on()
-    dropdownsAbertos.push(dropdown)
+    //dropdownsAbertos.push(dropdown)
   }
 }
 
-export function criaTabelaModal() {
+export function criaTabelaModal(style: any) {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
       events: {
@@ -35,7 +35,7 @@ export function criaTabelaModal() {
       classes: ['ex-dropdown-balloonModal']
     })
 
-    dropdown.setDropDownContent(itensModalTable(editor))
+    dropdown.setDropDownContent(itensModalTable(editor, style))
     return dropdown
   }
 }
@@ -57,7 +57,7 @@ function createInput(type: string, placeholder: string) {
   return input
 }
 
-function itensModalTable(editor: ExitusEditor) {
+function itensModalTable(editor: ExitusEditor, style: any) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
 
@@ -67,11 +67,12 @@ function itensModalTable(editor: ExitusEditor) {
 
   const hr = document.createElement('hr')
   dropdownContent.appendChild(hr)
-
+  console.log(style)
+  const [size, border, color] = style.border.split(' ')
   //bloco 1
   const selectInput = document.createElement('select')
   selectInput.style.width = '80px'
-
+  selectInput.value = border
   const borderStyles = {
     'sem borda': 'none',
     sólida: 'solid',
@@ -88,6 +89,7 @@ function itensModalTable(editor: ExitusEditor) {
     const option = document.createElement('option')
     option.value = value
     option.textContent = name
+    option.selected = value == border
     selectInput.appendChild(option)
   })
 
@@ -95,9 +97,12 @@ function itensModalTable(editor: ExitusEditor) {
   inputBackgroundColor1.className = 'colorInput'
   inputBackgroundColor1.disabled = true
 
-  const larguraBloco1 = createInput('text', 'Largura')
+  inputBackgroundColor1.value = color
+
+  const larguraBloco1 = createInput('number', 'Largura')
   larguraBloco1.className = 'largura1'
-  larguraBloco1.disabled = true
+  //larguraBloco1.disabled = true
+  larguraBloco1.value = size.replace('px', '')
 
   const bloco1 = document.createElement('div')
   bloco1.className = 'bloco1'
@@ -136,7 +141,7 @@ function itensModalTable(editor: ExitusEditor) {
   larguraBloco1.addEventListener('change', aplicarEstiloBorda)
   selectInput.addEventListener('change', aplicarEstiloBorda)
   inputBackgroundColor1.addEventListener('change', aplicarEstiloBorda)
-  larguraBloco1.value = ''
+  //larguraBloco1.value = ''
 
   //bloco2
   const corFundoLabel = document.createElement('strong')

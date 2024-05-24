@@ -2,6 +2,10 @@
 .tiptap {
   box-sizing: border-box;
   padding: 1rem;
+  font-family: sans-serif, Arial, Verdana, "Trebuchet MS";
+  color: #333 !important;
+  font-size: 14px;
+  line-height: 1.3em;
 }
 
 .tiptap blockquote {
@@ -406,8 +410,7 @@
 .bloco4{
   display: flex;
   align-items: center;
-    flex-wrap: wrap;
-    width: 60%;
+  flex-wrap: wrap;
 }
 
 .bloco5{
@@ -425,6 +428,7 @@
   flex-direction: row;
   flex-wrap: nowrap;
   width: 32%;
+  gap: 5px;
 }
 
 .bloco7{

@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
-import { Button, Dropdown } from '@editor/ui'
+import { Button, Dropdown, type DropDownEventProps } from '@editor/ui'
 import textDr from '@icons/align-bottom.svg'
 import textDl from '@icons/align-top.svg'
 import textDm from '@icons/align-vertically.svg'
+import { selectionCell } from '@tiptap/pm/tables'
 import type ExitusEditor from 'src/ExitusEditor'
 
 let dropdownsAbertos: Dropdown[] = []
@@ -14,19 +15,20 @@ function fecharDropdownsAbertos() {
   dropdownsAbertos = []
 }
 
-function showDropdown({ event, dropdown }: any) {
-  event.stopPropagation()
+function showDropdown({ dropdown, editor }: DropDownEventProps) {
+  const { nodeAfter } = selectionCell(editor.view.state)
+  console.log(nodeAfter?.attrs)
+
+  dropdown.dropdownContent.querySelector<HTMLInputElement>('.largura1')!.value = '123'
+
   if (dropdown.isOpen) {
     dropdown.off()
-    dropdownsAbertos = dropdownsAbertos.filter(d => d !== dropdown)
   } else {
-    fecharDropdownsAbertos()
     dropdown.on()
-    dropdownsAbertos.push(dropdown)
   }
 }
 
-export function criaCellModal() {
+export function criaCellModal(style: any) {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
       events: {
@@ -34,8 +36,8 @@ export function criaCellModal() {
       },
       classes: ['ex-dropdown-balloonModal']
     })
-
-    dropdown.setDropDownContent(itensModalCell(editor))
+    fecharDropdownsAbertos()
+    dropdown.setDropDownContent(itensModalCell(editor, style))
     return dropdown
   }
 }
@@ -57,7 +59,7 @@ function createInput(type: string, placeholder: string) {
   return input
 }
 
-function itensModalCell(editor: ExitusEditor) {
+function itensModalCell(editor: ExitusEditor, style: any) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
 

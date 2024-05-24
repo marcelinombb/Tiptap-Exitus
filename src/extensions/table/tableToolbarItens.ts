@@ -24,11 +24,11 @@ function showDropdown({ event, dropdown }: any) {
   event.stopPropagation()
   if (dropdown.isOpen) {
     dropdown.off()
-    dropdownsAbertos = dropdownsAbertos.filter(d => d !== dropdown)
+    //dropdownsAbertos = dropdownsAbertos.filter(d => d !== dropdown)
   } else {
-    fecharDropdownsAbertos()
+    //fecharDropdownsAbertos()
     dropdown.on()
-    dropdownsAbertos.push(dropdown)
+    //dropdownsAbertos.push(dropdown)
   }
 }
 function colunaEsquerda(editor: ExitusEditor, dropdown: Dropdown, icon: string) {

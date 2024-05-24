@@ -37,6 +37,10 @@ export class Toolbar {
     this.toolbarConfig = toolbarConfig
   }
 
+  closeAllTools() {
+    this.tools.forEach(tool => tool.off())
+  }
+
   createToolbar(toolbarItemsDiv: HTMLDivElement) {
     this.toolbarItemsDiv = toolbarItemsDiv
     const { configStorage, toolbarOrder } = this.toolbarConfig

@@ -56,7 +56,7 @@ export class Dropdown implements Tool {
   }
 
   on() {
-    this.editor.toolbar.tools.forEach(tool => tool instanceof Dropdown && tool.off())
+    this.parentToolbar.closeAllTools()
     this.dropdownContentContainer.style.display = 'block'
     this.isOpen = true
   }
@@ -69,7 +69,18 @@ export class Dropdown implements Tool {
   render() {
     this.button.bind('click', ({ editor, event, button }) => {
       this.config.events['open']({ editor, event, button, dropdown: this })
+
+      const close = (event: Event) => {
+        const target = event.target as HTMLElement
+        if (target.closest('.dropdown')) {
+          this.off()
+          window.removeEventListener('click', close)
+        }
+      }
+
+      window.addEventListener('click', close)
     })
+
     this.dropdownContentContainer.appendChild(this.dropdownContent)
     this.dropdownContainer.append(this.button.render(), this.dropdownContentContainer)
     return this.dropdownContainer
