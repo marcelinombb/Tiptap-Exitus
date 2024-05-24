@@ -35,12 +35,13 @@ class ExitusEditor extends Editor {
     this._createUI(options.container as Element)
   }
 
-  _generateEditorUI() {
+  private _generateEditorUI() {
     const toolbarItems = this.toolbar.createToolbar()
     const toolbarEditor = createHTMLElement('div', { class: 'ex-toolbar-editor' }, [toolbarItems])
 
     const editorMain = this.options.element
     editorMain.className = 'editor-main'
+    editorMain.setAttribute('spellcheck', 'false')
     editorMain.setAttribute('id', generateUUID())
     this.editorMainDiv = editorMain as HTMLDivElement
 
@@ -53,7 +54,7 @@ class ExitusEditor extends Editor {
     return editorShell
   }
 
-  _createUI(container: Element) {
+  private _createUI(container: Element) {
     const editorUI = this._generateEditorUI()
     container.appendChild(editorUI)
   }

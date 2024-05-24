@@ -1,14 +1,10 @@
-// @ts-nocheck
+import { type ButtonEventProps } from '@editor/ui/Button'
 import subscript from '@icons/subscript.svg'
 import { Subscript as SubscriptBase } from '@tiptap/extension-subscript'
 
-function togglesubscript({ editor, button }) {
+function togglesubscript({ editor, button }: ButtonEventProps) {
   editor.chain().focus().toggleSubscript().run()
-  if (editor.isActive('subscript')) {
-    button.on()
-  } else {
-    button.off()
-  }
+  button.toggleActive(editor.isActive('subscript'))
 }
 
 export const Subscript = SubscriptBase.extend({

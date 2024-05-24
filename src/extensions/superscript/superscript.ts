@@ -3,11 +3,7 @@ import { Superscript as SuperscriptBase } from '@tiptap/extension-superscript'
 
 function togglesuperscript({ editor, button }: any) {
   editor.chain().focus().toggleSuperscript().run()
-  if (editor.isActive('superscript')) {
-    button.on()
-  } else {
-    button.off()
-  }
+  button.toggleActive(editor.isActive('superscript'))
 }
 
 export const Superscript = SuperscriptBase.extend({

@@ -4,11 +4,7 @@ import { Italic as ItalicBase } from '@tiptap/extension-italic'
 
 function toggleItalic({ editor, button }) {
   editor.chain().focus().toggleItalic().run()
-  if (editor.isActive('italic')) {
-    button.on()
-  } else {
-    button.off()
-  }
+  button.toggleActive(editor.isActive('italic'))
 }
 
 export const Italic = ItalicBase.extend({

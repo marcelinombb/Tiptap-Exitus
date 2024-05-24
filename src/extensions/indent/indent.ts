@@ -2,28 +2,19 @@
 //https://github.com/ueberdosis/tiptap/issues/1036#issuecomment-981094752
 //https://github.com/django-tiptap/django_tiptap/blob/main/django_tiptap/templates/forms/tiptap_textarea.html#L453-L602
 // @ts-nocheck
+import tiraEspaço from '@icons/indent-decrease.svg'
+import botaEspaco from '@icons/indent-increase.svg'
 import { Extension } from '@tiptap/core'
 import { AllSelection, TextSelection } from 'prosemirror-state'
 
-import tiraEspaço from '../../assets/icons/Editor/indent-decrease.svg'
-import botaEspaco from '../../assets/icons/Editor/indent-increase.svg'
-
 function setTab({ editor, button }) {
   editor.commands.indent()
-  if (editor.isActive('indent')) {
-    button.on()
-  } else {
-    button.off()
-  }
+  button.toggle(editor.isActive('indent'))
 }
 
 function delTab({ editor, button }) {
   editor.commands.outdent()
-  if (editor.isActive('indent')) {
-    button.on()
-  } else {
-    button.off()
-  }
+  button.toggle(editor.isActive('indent'))
 }
 
 export const clamp = (val, min, max) => {
