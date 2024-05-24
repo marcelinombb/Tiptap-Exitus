@@ -6,31 +6,34 @@ import { Fragment } from '@tiptap/pm/model'
 
 import '../../../node_modules/katex/dist/katex.css'
 
-import { KatexBalloon } from './katexBalloon'
-import { KatexView } from './katexView'
+import { KatexBalloon, KatexView } from './index'
 
-function click({ editor }: ButtonEventProps) {
-  const { nodeBefore, pos } = editor.state.selection.$anchor
+function click({ editor, button }: ButtonEventProps) {
+  const { pos } = editor.state.selection.$anchor
 
   const main = editor.view.dom.getBoundingClientRect()
   const { bottom, left } = editor.view.coordsAtPos(pos)
 
-  if (nodeBefore?.type.name == 'katex' && nodeBefore.attrs.isEditing) {
+  if (button.active()) {
     return
   }
 
+  button.on()
+
   const confirmButtonCallback = (katexBalloon: KatexBalloon) => {
-    editor.commands.insertContentAt(pos, `<span class="math-tex">${katexBalloon.input.value}</span>`, {
+    const { input, checkboxDisplay } = katexBalloon
+    if (input.value === '') return
+    editor.commands.insertContentAt(pos, `<span class="math-tex ${checkboxDisplay.checked ? 'katex-display' : ''}">${input.value}</span>`, {
       updateSelection: true,
       parseOptions: {
         preserveWhitespace: true
       }
     })
-
-    editor.editorMainDiv.removeChild(katexBalloon.getBalloon())
+    cancelButtonCallback(katexBalloon)
   }
 
   const cancelButtonCallback = (katexBalloon: KatexBalloon) => {
+    button.off()
     editor.editorMainDiv.removeChild(katexBalloon.getBalloon())
   }
 
@@ -44,6 +47,16 @@ function click({ editor }: ButtonEventProps) {
     cancelButtonCallback,
     BalloonPosition.FLOAT
   )
+
+  const focus = () => {
+    button.off()
+    editor.off('focus', focus)
+    try {
+      editor.editorMainDiv.removeChild(balloon.getBalloon())
+    } catch (e) {}
+  }
+
+  editor.on('focus', focus)
 
   editor.editorMainDiv.appendChild(balloon.getBalloon())
   balloon.balloon.setPosition(left - main.left, bottom - main.y)
