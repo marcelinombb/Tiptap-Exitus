@@ -67,8 +67,9 @@ function itensModalTable(editor: ExitusEditor, style: any) {
 
   const hr = document.createElement('hr')
   dropdownContent.appendChild(hr)
-  console.log(style)
+
   const [size, border, color] = style.border.split(' ')
+
   //bloco 1
   const selectInput = document.createElement('select')
   selectInput.style.width = '80px'
@@ -149,8 +150,13 @@ function itensModalTable(editor: ExitusEditor, style: any) {
   corFundoLabel.className = 'labels'
   dropdownContent.appendChild(corFundoLabel)
 
+  const colorBack = style.background
+
   const inputBackgroundColor2 = createInput('color', 'Cor de Fundo')
   inputBackgroundColor2.className = 'colorInput2'
+
+  inputBackgroundColor2.value = colorBack
+
   dropdownContent.appendChild(inputBackgroundColor2)
 
   const bloco2 = document.createElement('div')
@@ -181,6 +187,13 @@ function itensModalTable(editor: ExitusEditor, style: any) {
 
   const inputAltura = createInput('text', 'Altura')
   inputAltura.className = 'inputDimensoes'
+
+  const height = style.height
+  if (style.height) {
+    inputAltura.value = height
+    inputAltura.value = height.replace('px', '')
+  }
+
   dropdownContent.appendChild(inputAltura)
 
   const vezesSpan = document.createElement('span')
@@ -189,6 +202,12 @@ function itensModalTable(editor: ExitusEditor, style: any) {
 
   const inputLargura = createInput('text', 'Largura')
   inputLargura.className = 'inputDimensoes'
+
+  const width = style.width
+  if (style.width) {
+    inputLargura.value = width
+    inputLargura.value = width.replace('px', '')
+  }
   dropdownContent.appendChild(inputLargura)
 
   const bloco6 = document.createElement('div')
@@ -234,7 +253,6 @@ function itensModalTable(editor: ExitusEditor, style: any) {
   })
 
   const TableMeio = createButton(editor, textDm, () => {
-    console.log('TableMeio clicado')
     ;(editor.commands as any).setWrapperStyle({
       Direita: 'auto',
       Esquerda: 'auto'

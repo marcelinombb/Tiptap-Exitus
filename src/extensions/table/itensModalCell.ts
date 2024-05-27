@@ -3,7 +3,9 @@ import { Button, Dropdown, type DropDownEventProps } from '@editor/ui'
 import textDr from '@icons/align-bottom.svg'
 import textDl from '@icons/align-top.svg'
 import textDm from '@icons/align-vertically.svg'
+import { Editor } from '@tiptap/core'
 import { selectionCell } from '@tiptap/pm/tables'
+import { s } from 'node_modules/vite/dist/node/types.d-aGj9QkWt'
 import type ExitusEditor from 'src/ExitusEditor'
 
 let dropdownsAbertos: Dropdown[] = []
@@ -15,16 +17,67 @@ function fecharDropdownsAbertos() {
   dropdownsAbertos = []
 }
 
-function showDropdown({ dropdown, editor }: DropDownEventProps) {
+function saveBorderValue({ dropdown, editor }: DropDownEventProps) {
   const { nodeAfter } = selectionCell(editor.view.state)
   console.log(nodeAfter?.attrs)
+  console.log(nodeAfter?.attrs.style.border)
+  const [size, border, color] = (nodeAfter?.attrs.style.border ?? '').split(' ')
 
-  dropdown.dropdownContent.querySelector<HTMLInputElement>('.largura1')!.value = '123'
+  console.log(size, border, color)
 
-  if (dropdown.isOpen) {
-    dropdown.off()
+  const borda = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-selectInput')
+  const larguraInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.largura1')
+  const colorInputBorda = dropdown.dropdownContent.querySelector<HTMLInputElement>('.colorInput')
+
+  if (larguraInput && borda && colorInputBorda) {
+    larguraInput.value = size
+    borda.value = border
+    colorInputBorda.value = color
+  }
+}
+
+function savebackValue({ dropdown, editor }: DropDownEventProps) {
+  const { nodeAfter } = selectionCell(editor.view.state)
+
+  const back = (nodeAfter?.attrs.style.background ?? '').split(' ')
+
+  console.log(back)
+
+  const backInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.colorInput2')
+
+  if (backInput) {
+    backInput.value = back
+  }
+}
+
+function saveSizeValue({ dropdown, editor }: DropDownEventProps) {
+  const { nodeAfter } = selectionCell(editor.view.state)
+
+  const alturaa = (nodeAfter?.attrs.style.height ?? '').split(' ')
+  const larguraa = (nodeAfter?.attrs.style.width ?? '').split(' ')
+
+  const alturaInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('inputDimensoes')
+  const larguraInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('ex-inputDimensoesLargura')
+  if (alturaInput && larguraInput) {
+    larguraInput.value = larguraa
+    alturaInput.value = alturaa
+  }
+}
+
+function showDropdown(dropDownEvent: DropDownEventProps) {
+  /* const { nodeAfter } = selectionCell(editor.view.state)
+  console.log(nodeAfter?.attrs)
+
+  dropdown.dropdownContent.querySelector<HTMLInputElement>('.colorInput')!.value = '#ff0000' */
+
+  saveBorderValue(dropDownEvent)
+  savebackValue(dropDownEvent)
+  saveSizeValue(dropDownEvent)
+
+  if (dropDownEvent.dropdown.isOpen) {
+    dropDownEvent.dropdown.off()
   } else {
-    dropdown.on()
+    dropDownEvent.dropdown.on()
   }
 }
 
@@ -72,6 +125,7 @@ function itensModalCell(editor: ExitusEditor, style: any) {
 
   //bloco 1
   const selectInput = document.createElement('select')
+  selectInput.className = 'ex-selectInput'
   selectInput.style.width = '80px'
 
   const cellStyles: { [key: string]: string } = {
@@ -183,7 +237,7 @@ function itensModalCell(editor: ExitusEditor, style: any) {
   dropdownContent.appendChild(vezesSpan)
 
   const inputLargura = createInput('text', 'Largura')
-  inputLargura.className = 'inputDimensoes'
+  inputLargura.className = 'ex-inputDimensoesLargura'
   dropdownContent.appendChild(inputLargura)
 
   const bloco6 = document.createElement('div')

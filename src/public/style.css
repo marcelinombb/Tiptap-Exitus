@@ -213,7 +213,6 @@
     padding: 10px;
     z-index: 1;
     padding-bottom: 20px;
-    border-radius: 10px;
   }
 
   .ex-dropdown-content {
@@ -469,6 +468,11 @@
 }
 
 .inputDimensoes{
+  min-width: 100%;
+  width: 0;
+}
+
+.ex-inputDimensoesLargura{
   min-width: 100%;
   width: 0;
 }
