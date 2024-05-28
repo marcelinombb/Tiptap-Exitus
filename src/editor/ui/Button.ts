@@ -1,8 +1,8 @@
 import { type Toolbar } from '@editor/toolbar'
 import { createHTMLElement } from '@editor/utils'
+import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
 
-import type ExitusEditor from '../../ExitusEditor'
 import { type Tool } from '../toolbar/Tool'
 
 import { type Dropdown } from '.'

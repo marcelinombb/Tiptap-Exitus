@@ -2,11 +2,10 @@
 import { Dropdown } from '@editor/ui'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import table from '@icons/table-2.svg'
+import type ExitusEditor from '@src/ExitusEditor'
 import { mergeAttributes } from '@tiptap/core'
 import Table from '@tiptap/extension-table'
 import { createColGroup } from '@tiptap/extension-table'
-
-import type ExitusEditor from '../../ExitusEditor'
 
 import { TableView } from './TableView'
 

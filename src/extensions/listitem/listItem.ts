@@ -1,11 +1,10 @@
+import { Button, Dropdown } from '@editor/ui'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import listFullIcon from '@icons/list-check.svg'
 import listOrederedIcon from '@icons/list-ordered-2.svg'
 import listIcon from '@icons/list-unordered.svg'
+import type ExitusEditor from '@src/ExitusEditor'
 import { ListItem as ListitemBase } from '@tiptap/extension-list-item'
-
-import { Button, Dropdown } from '../../editor/ui'
-import type ExitusEditor from '../../ExitusEditor'
 
 function listaOrdenada(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
   const button = new Button(editor, {

@@ -1,7 +1,6 @@
+import { type ButtonEventProps } from '@editor/ui'
 import bold from '@icons/bold.svg'
 import { Bold as BoldBase } from '@tiptap/extension-bold'
-
-import { type ButtonEventProps } from '../../editor/ui'
 
 function toggleBold({ editor, button }: ButtonEventProps) {
   editor.chain().focus().toggleBold().run()

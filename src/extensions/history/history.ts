@@ -1,8 +1,7 @@
+import { type ButtonEventProps } from '@editor/ui'
 import quote from '@icons/arrow-go-back-line.svg'
 import quote2 from '@icons/arrow-go-forward-line.svg'
 import { History as HistoryBase } from '@tiptap/extension-history'
-
-import { type ButtonEventProps } from '../../editor/ui'
 
 function goBack({ editor, button }: ButtonEventProps) {
   editor.chain().focus().undo().run()

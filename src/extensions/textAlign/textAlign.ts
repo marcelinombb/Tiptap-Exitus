@@ -1,12 +1,11 @@
+import { Button, Dropdown } from '@editor/ui'
 import centertIcon from '@icons/align-center.svg'
 import justifyIcon from '@icons/align-justify.svg'
 import alignLeftIcon from '@icons/align-left.svg'
 import alignRightIcon from '@icons/align-right.svg'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
+import type ExitusEditor from '@src/ExitusEditor'
 import { TextAlign as TextAlignBase } from '@tiptap/extension-text-align'
-
-import { Button, Dropdown } from '../../editor/ui'
-import type ExitusEditor from '../../ExitusEditor'
 
 function createAlignmentButton(editor: ExitusEditor, dropdown: Dropdown, icon: string, alignment: string) {
   const button = new Button(editor, {

@@ -1,7 +1,6 @@
+import { type ButtonEventProps } from '@editor/ui'
 import quote from '@icons/double-quotes-l.svg'
 import { Blockquote as BlockquoteBase } from '@tiptap/extension-blockquote'
-
-import { type ButtonEventProps } from '../../editor/ui'
 
 function toggleBlockQuote({ editor, button }: ButtonEventProps) {
   editor.chain().focus().toggleBlockquote().run()

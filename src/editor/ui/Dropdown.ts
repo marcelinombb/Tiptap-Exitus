@@ -1,7 +1,5 @@
-import { type Toolbar } from '@editor/toolbar'
-
-import type ExitusEditor from '../../ExitusEditor'
-import { type Tool } from '../toolbar/Tool'
+import { type Tool, type Toolbar } from '@editor/toolbar'
+import type ExitusEditor from '@src/ExitusEditor'
 
 import { type Button, type ButtonEventProps } from '.'
 

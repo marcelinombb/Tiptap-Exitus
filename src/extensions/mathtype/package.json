@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tiptap/core": "^2.4.0",
     "@wiris/mathtype-html-integration-devkit": "^1.17.2"
   },
   "devDependencies": {

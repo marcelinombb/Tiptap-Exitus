@@ -23,6 +23,7 @@ import { Indent } from './extensions/indent/indent'
 import { Italic } from './extensions/italic/Italic'
 import { Katex } from './extensions/katex/katex'
 import { ListItem } from './extensions/listitem/listItem'
+import { MathType } from './extensions/mathtype/src/mathtype'
 import { Strike } from './extensions/strike/strike'
 import { Subscript } from './extensions/subscript/subscript'
 import { Superscript } from './extensions/superscript/superscript'
@@ -67,7 +68,8 @@ ExitusEditor.extensions = [
   }),
   Underline,
   Katex,
-  Indent
+  Indent,
+  MathType
 ]
 
 export default ExitusEditor

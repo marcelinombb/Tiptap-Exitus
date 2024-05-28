@@ -1,9 +1,8 @@
 import { type ButtonEventProps } from '@editor/ui'
 import imageAdd from '@icons/image-add-fill.svg'
+import type ExitusEditor from '@src/ExitusEditor'
 import { Node, nodeInputRule } from '@tiptap/core'
 import { findSelectedNodeOfType } from 'prosemirror-utils'
-
-import type ExitusEditor from '../../ExitusEditor'
 
 import { ImageView } from './imageView'
 

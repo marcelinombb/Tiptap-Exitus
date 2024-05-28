@@ -1,5 +1,5 @@
-import type ExitusEditor from '../../ExitusEditor'
-import { Button, type ButtonConfig } from '../ui'
+import { Button, type ButtonConfig } from '@editor/ui'
+import type ExitusEditor from '@src/ExitusEditor'
 
 import { type Tool } from './Tool'
 
@@ -19,7 +19,7 @@ type ConfigStorage = {
 export interface ToolbarConfig {
   toolbarOrder: string[]
   configStorage: {
-    [key: string]: { toolbarButtonConfig: ButtonConfig | ButtonConfig[] }
+    [key: string]: { toolbarButtonConfig: Partial<ButtonConfig> | Partial<ButtonConfig>[] }
   }
 }
 export class Toolbar {
