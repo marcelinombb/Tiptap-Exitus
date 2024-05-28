@@ -14,7 +14,7 @@ function fecharDropdownsAbertos() {
   dropdownsAbertos = []
 }
 
-function showDropdown({ event, dropdown }: any) {
+function showDropdown({ dropdown }: any) {
   // event.stopPropagation()
   if (dropdown.isOpen) {
     dropdown.off()
@@ -68,7 +68,7 @@ function itensModalTable(editor: ExitusEditor, style: any) {
   const hr = document.createElement('hr')
   dropdownContent.appendChild(hr)
 
-  const [size, border, color] = style.border.split(' ')
+  const [size = '', border = 'none', color = ''] = (style.border ?? '').split(' ')
 
   //bloco 1
   const selectInput = document.createElement('select')
@@ -95,21 +95,21 @@ function itensModalTable(editor: ExitusEditor, style: any) {
   })
 
   const inputBackgroundColor1 = createInput('color', 'Cor de Fundo')
-  inputBackgroundColor1.className = 'colorInput'
+  inputBackgroundColor1.className = 'ex-colorInput'
   inputBackgroundColor1.disabled = true
 
   inputBackgroundColor1.value = color
 
   const larguraBloco1 = createInput('number', 'Largura')
-  larguraBloco1.className = 'largura1'
+  larguraBloco1.className = 'ex-largura1'
   //larguraBloco1.disabled = true
   larguraBloco1.value = size.replace('px', '')
 
   const bloco1 = document.createElement('div')
-  bloco1.className = 'bloco1'
+  bloco1.className = 'ex-bloco1'
 
   const bordaLabel = document.createElement('strong')
-  bordaLabel.className = 'labels'
+  bordaLabel.className = 'ex-labels'
   bordaLabel.textContent = 'Borda'
 
   bloco1.append(bordaLabel, selectInput, inputBackgroundColor1, larguraBloco1)
@@ -147,20 +147,20 @@ function itensModalTable(editor: ExitusEditor, style: any) {
   //bloco2
   const corFundoLabel = document.createElement('strong')
   corFundoLabel.textContent = 'Cor de Fundo'
-  corFundoLabel.className = 'labels'
+  corFundoLabel.className = 'ex-labels'
   dropdownContent.appendChild(corFundoLabel)
 
   const colorBack = style.background
 
   const inputBackgroundColor2 = createInput('color', 'Cor de Fundo')
-  inputBackgroundColor2.className = 'colorInput2'
+  inputBackgroundColor2.className = 'ex-colorInput2'
 
   inputBackgroundColor2.value = colorBack
 
   dropdownContent.appendChild(inputBackgroundColor2)
 
   const bloco2 = document.createElement('div')
-  bloco2.className = 'bloco2'
+  bloco2.className = 'ex-bloco2'
 
   bloco2.appendChild(corFundoLabel)
   bloco2.appendChild(inputBackgroundColor2)
@@ -182,11 +182,11 @@ function itensModalTable(editor: ExitusEditor, style: any) {
   const dimensoesLabel = document.createElement('strong')
   dimensoesLabel.textContent = 'Dimensões'
 
-  dimensoesLabel.className = 'labels'
+  dimensoesLabel.className = 'ex-labels'
   dropdownContent.appendChild(dimensoesLabel)
 
   const inputAltura = createInput('text', 'Altura')
-  inputAltura.className = 'inputDimensoes'
+  inputAltura.className = 'ex-inputDimensoes'
 
   const height = style.height
   if (style.height) {
@@ -201,7 +201,7 @@ function itensModalTable(editor: ExitusEditor, style: any) {
   dropdownContent.appendChild(vezesSpan)
 
   const inputLargura = createInput('text', 'Largura')
-  inputLargura.className = 'inputDimensoes'
+  inputLargura.className = 'ex-inputDimensoes'
 
   const width = style.width
   if (style.width) {
@@ -211,11 +211,11 @@ function itensModalTable(editor: ExitusEditor, style: any) {
   dropdownContent.appendChild(inputLargura)
 
   const bloco6 = document.createElement('div')
-  bloco6.className = 'bloco6'
+  bloco6.className = 'ex-bloco6'
   bloco6.append(inputAltura, vezesSpan, inputLargura)
 
   const bloco3 = document.createElement('div')
-  bloco3.className = 'bloco3'
+  bloco3.className = 'ex-bloco3'
 
   bloco3.appendChild(dimensoesLabel)
   bloco3.appendChild(bloco6)
@@ -239,11 +239,11 @@ function itensModalTable(editor: ExitusEditor, style: any) {
   //bloco 4
   const alinhamentoLabel = document.createElement('strong')
   alinhamentoLabel.textContent = 'Alinhamento'
-  alinhamentoLabel.className = 'labels'
+  alinhamentoLabel.className = 'ex-labels'
   dropdownContent.appendChild(alinhamentoLabel)
 
   const bloco8 = document.createElement('div')
-  bloco8.className = 'bloco8'
+  bloco8.className = 'ex-bloco8'
 
   const TableEsquerda = createButton(editor, textDl, () => {
     ;(editor.commands as any).setWrapperStyle({
@@ -268,14 +268,14 @@ function itensModalTable(editor: ExitusEditor, style: any) {
   bloco8.append(TableEsquerda, TableMeio, TableDireito)
 
   const bloco4 = document.createElement('div')
-  bloco4.className = 'bloco4'
+  bloco4.className = 'ex-bloco4'
   bloco4.appendChild(alinhamentoLabel)
   bloco4.appendChild(bloco8)
   dropdownContent.appendChild(bloco4)
 
   //bloco 5
   const bloco5 = document.createElement('div')
-  bloco5.className = 'bloco5'
+  bloco5.className = 'ex-bloco5'
   bloco5.appendChild(bloco3)
   bloco5.appendChild(bloco4)
   dropdownContent.appendChild(bloco5)
@@ -285,9 +285,9 @@ function itensModalTable(editor: ExitusEditor, style: any) {
     // o que acontece quando clicar no botão
     fecharDropdownsAbertos()
   })
-  botaoConfirma.className = 'botaoSalvar'
+  botaoConfirma.className = 'ex-botaoSalvar'
   const iconeConfirma = document.createElement('span')
-  iconeConfirma.className = 'icone-confirmacao'
+  iconeConfirma.className = 'ex-icone-confirmacao'
   botaoConfirma.appendChild(iconeConfirma)
   dropdownContent.appendChild(botaoConfirma)
 
@@ -303,14 +303,14 @@ function itensModalTable(editor: ExitusEditor, style: any) {
       border: ``
     })
   })
-  botaoCancela.className = 'botaoCancela'
+  botaoCancela.className = 'ex-botaoCancela'
   const iconeCancela = document.createElement('span')
-  iconeCancela.className = 'icone-cancelamento'
+  iconeCancela.className = 'ex-icone-cancelamento'
   botaoCancela.appendChild(iconeCancela)
   dropdownContent.appendChild(botaoCancela)
 
   const bloco7 = document.createElement('div')
-  bloco7.className = 'bloco7'
+  bloco7.className = 'ex-bloco7'
   bloco7.append(botaoConfirma, botaoCancela)
   dropdownContent.appendChild(bloco7)
 

@@ -2,7 +2,7 @@
 import ExitusEditor from './main'
 
 const defaultText =
-  '<table ballonactive="false" style="border: 5px solid #6495ed;background: #fa0000" styletablewrapper=""><colgroup><col><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th></tr><tr><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td></tr><tr><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td></tr></tbody></table>'
+  '<table ballonactive="false" style="border: 5px solid #6945ed;" styletablewrapper=""><colgroup><col><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th><th colspan="1" rowspan="1"><p style="margin-left: 0px!important;"></p></th></tr><tr><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td></tr><tr><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td><td colspan="1" rowspan="1" style=""><p style="margin-left: 0px!important;"></p></td></tr></tbody></table>'
 
 const toolbar = [
   'bold',
@@ -27,6 +27,7 @@ const editor = new ExitusEditor({
   content: defaultText
 })
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const editor2 = new ExitusEditor({
   container: document.querySelector('.element2') as HTMLElement,
   toolbar,

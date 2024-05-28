@@ -29,8 +29,6 @@ function clickHandler(table: TableView) {
       const target = event.target as HTMLElement
 
       if (target.closest('.tableWrapper') == null) {
-        //console.log(target.closest('.tableWrapper'))
-
         try {
           table.balloon.on()
         } catch (error) {}
@@ -205,18 +203,17 @@ export class TableView implements NodeView {
     }
 
     this.node = node
-    //console.log(node.attrs.style)
+
     this.tableStyle = node.attrs.style
     this.tableWrapperStyle = node.attrs.styleTableWrapper
     updateTableStyle(this)
-    //console.log(node.attrs.styleTableWrapper)
+
     updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
 
     return true
   }
 
   stopEvent(event: Event) {
-    //console.log(event)
     if (event instanceof KeyboardEvent) {
       return true
     }
@@ -225,7 +222,6 @@ export class TableView implements NodeView {
   }
 
   ignoreMutation(mutation: MutationRecord | { type: 'selection'; target: Element }) {
-    //console.log(mutation.type === 'attributes' && (mutation.target === this.table || this.colgroup.contains(mutation.target)))
     if (mutation.type === 'attributes' && this.balloon.ballonMenu.contains(mutation.target)) {
       return true
     }

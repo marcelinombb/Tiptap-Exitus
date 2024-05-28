@@ -23,13 +23,13 @@ export default class TableFocus {
       this.moveAlvoParaCima()
     })
     this.FocarCima = element.appendChild(botaoCima)
-    this.FocarCima.classList.add('bolinha', 'bolinha-cima')
+    this.FocarCima.classList.add('ex-bolinha', 'ex-bolinha-cima')
 
     const botaoBaixo = this.createButton(editor, setaBaixo, () => {
       this.moveAlvoParaBaixo()
     })
     this.FocarBaixo = element.appendChild(botaoBaixo)
-    this.FocarBaixo.classList.add('bolinha', 'bolinha-baixo')
+    this.FocarBaixo.classList.add('ex-bolinha', 'ex-bolinha-baixo')
   }
 
   private moveAlvoParaCima() {
@@ -45,7 +45,7 @@ export default class TableFocus {
   private createButton(editor: ExitusEditor, icone: string, onClick: () => void): HTMLElement {
     const button = new Button(editor, {
       icon: icone,
-      classList: ['bolinha']
+      classList: ['ex-bolinha']
     })
     button.bind('click', onClick)
     return button.render()

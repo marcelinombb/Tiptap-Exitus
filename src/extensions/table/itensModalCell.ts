@@ -1,33 +1,17 @@
-/* eslint-disable no-console */
 import { Button, Dropdown, type DropDownEventProps } from '@editor/ui'
 import textDr from '@icons/align-bottom.svg'
 import textDl from '@icons/align-top.svg'
 import textDm from '@icons/align-vertically.svg'
-import { Editor } from '@tiptap/core'
 import { selectionCell } from '@tiptap/pm/tables'
-import { s } from 'node_modules/vite/dist/node/types.d-aGj9QkWt'
 import type ExitusEditor from 'src/ExitusEditor'
-
-let dropdownsAbertos: Dropdown[] = []
-
-function fecharDropdownsAbertos() {
-  dropdownsAbertos.forEach(dropdown => {
-    dropdown.off()
-  })
-  dropdownsAbertos = []
-}
 
 function saveBorderValue({ dropdown, editor }: DropDownEventProps) {
   const { nodeAfter } = selectionCell(editor.view.state)
-  console.log(nodeAfter?.attrs)
-  console.log(nodeAfter?.attrs.style.border)
-  const [size, border, color] = (nodeAfter?.attrs.style.border ?? '').split(' ')
-
-  console.log(size, border, color)
+  const [size = '', border = 'none', color = ''] = (nodeAfter?.attrs.style.border ?? '').split(' ')
 
   const borda = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-selectInput')
-  const larguraInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.largura1')
-  const colorInputBorda = dropdown.dropdownContent.querySelector<HTMLInputElement>('.colorInput')
+  const larguraInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-largura1')
+  const colorInputBorda = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-colorInput')
 
   if (larguraInput && borda && colorInputBorda) {
     larguraInput.value = size
@@ -36,14 +20,12 @@ function saveBorderValue({ dropdown, editor }: DropDownEventProps) {
   }
 }
 
-function savebackValue({ dropdown, editor }: DropDownEventProps) {
+function saveBackValue({ dropdown, editor }: DropDownEventProps) {
   const { nodeAfter } = selectionCell(editor.view.state)
 
   const back = (nodeAfter?.attrs.style.background ?? '').split(' ')
 
-  console.log(back)
-
-  const backInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.colorInput2')
+  const backInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-colorInput2')
 
   if (backInput) {
     backInput.value = back
@@ -53,25 +35,21 @@ function savebackValue({ dropdown, editor }: DropDownEventProps) {
 function saveSizeValue({ dropdown, editor }: DropDownEventProps) {
   const { nodeAfter } = selectionCell(editor.view.state)
 
-  const alturaa = (nodeAfter?.attrs.style.height ?? '').split(' ')
-  const larguraa = (nodeAfter?.attrs.style.width ?? '').split(' ')
+  const altura = nodeAfter?.attrs.style.height ?? ''
+  const largura = nodeAfter?.attrs.style.width ?? ''
 
-  const alturaInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('inputDimensoes')
-  const larguraInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('ex-inputDimensoesLargura')
+  const alturaInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-inputDimensoes')
+  const larguraInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-inputDimensoesLargura')
+
   if (alturaInput && larguraInput) {
-    larguraInput.value = larguraa
-    alturaInput.value = alturaa
+    alturaInput.value = altura.replace('px', '')
+    larguraInput.value = largura.replace('px', '')
   }
 }
 
 function showDropdown(dropDownEvent: DropDownEventProps) {
-  /* const { nodeAfter } = selectionCell(editor.view.state)
-  console.log(nodeAfter?.attrs)
-
-  dropdown.dropdownContent.querySelector<HTMLInputElement>('.colorInput')!.value = '#ff0000' */
-
   saveBorderValue(dropDownEvent)
-  savebackValue(dropDownEvent)
+  saveBackValue(dropDownEvent)
   saveSizeValue(dropDownEvent)
 
   if (dropDownEvent.dropdown.isOpen) {
@@ -89,7 +67,7 @@ export function criaCellModal(style: any) {
       },
       classes: ['ex-dropdown-balloonModal']
     })
-    fecharDropdownsAbertos()
+
     dropdown.setDropDownContent(itensModalCell(editor, style))
     return dropdown
   }
@@ -112,7 +90,7 @@ function createInput(type: string, placeholder: string) {
   return input
 }
 
-function itensModalCell(editor: ExitusEditor, style: any) {
+function itensModalCell(editor: ExitusEditor, dropDownEvent: DropDownEventProps) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
 
@@ -148,18 +126,18 @@ function itensModalCell(editor: ExitusEditor, style: any) {
   })
 
   const inputBackgroundColor1 = createInput('color', 'Cor de Fundo')
-  inputBackgroundColor1.className = 'colorInput'
+  inputBackgroundColor1.className = 'ex-colorInput'
   inputBackgroundColor1.disabled = true
 
   const larguraBloco1 = createInput('text', 'Largura')
-  larguraBloco1.className = 'largura1'
+  larguraBloco1.className = 'ex-largura1'
   larguraBloco1.disabled = true
 
   const bloco1 = document.createElement('div')
-  bloco1.className = 'bloco1'
+  bloco1.className = 'ex-bloco1'
 
   const bordaLabel = document.createElement('strong')
-  bordaLabel.className = 'labels'
+  bordaLabel.className = 'ex-labels'
   bordaLabel.textContent = 'Borda'
 
   bloco1.append(bordaLabel, selectInput, inputBackgroundColor1, larguraBloco1)
@@ -195,15 +173,15 @@ function itensModalCell(editor: ExitusEditor, style: any) {
   //bloco2
   const corFundoLabel = document.createElement('strong')
   corFundoLabel.textContent = 'Cor de Fundo'
-  corFundoLabel.className = 'labels'
+  corFundoLabel.className = 'ex-labels'
   dropdownContent.appendChild(corFundoLabel)
 
   const inputBackgroundColor2 = createInput('color', 'Cor de Fundo')
-  inputBackgroundColor2.className = 'colorInput2'
+  inputBackgroundColor2.className = 'ex-colorInput2'
   dropdownContent.appendChild(inputBackgroundColor2)
 
   const bloco2 = document.createElement('div')
-  bloco2.className = 'bloco2'
+  bloco2.className = 'ex-bloco2'
 
   bloco2.appendChild(corFundoLabel)
   bloco2.appendChild(inputBackgroundColor2)
@@ -225,11 +203,11 @@ function itensModalCell(editor: ExitusEditor, style: any) {
   const dimensoesLabel = document.createElement('strong')
   dimensoesLabel.textContent = 'Dimensões'
 
-  dimensoesLabel.className = 'labels'
+  dimensoesLabel.className = 'ex-labels'
   dropdownContent.appendChild(dimensoesLabel)
 
   const inputAltura = createInput('text', 'Altura')
-  inputAltura.className = 'inputDimensoes'
+  inputAltura.className = 'ex-inputDimensoes'
   dropdownContent.appendChild(inputAltura)
 
   const vezesSpan = document.createElement('span')
@@ -241,11 +219,11 @@ function itensModalCell(editor: ExitusEditor, style: any) {
   dropdownContent.appendChild(inputLargura)
 
   const bloco6 = document.createElement('div')
-  bloco6.className = 'bloco6'
+  bloco6.className = 'ex-bloco6'
   bloco6.append(inputAltura, vezesSpan, inputLargura)
 
   const bloco3 = document.createElement('div')
-  bloco3.className = 'bloco3'
+  bloco3.className = 'ex-bloco3'
 
   bloco3.appendChild(dimensoesLabel)
   bloco3.appendChild(bloco6)
@@ -267,11 +245,11 @@ function itensModalCell(editor: ExitusEditor, style: any) {
   //bloco 4
   const alinhamentoLabel = document.createElement('strong')
   alinhamentoLabel.textContent = 'Alinhamento'
-  alinhamentoLabel.className = 'labels'
+  alinhamentoLabel.className = 'ex-labels'
   dropdownContent.appendChild(alinhamentoLabel)
 
   const bloco8 = document.createElement('div')
-  bloco8.className = 'bloco8'
+  bloco8.className = 'ex-bloco8'
 
   const TableEsquerda = createButton(editor, textDl, () => {
     ;(editor.commands as any).setCellAttribute({
@@ -280,7 +258,6 @@ function itensModalCell(editor: ExitusEditor, style: any) {
   })
 
   const TableMeio = createButton(editor, textDm, () => {
-    console.log('TableMeio clicado')
     ;(editor.commands as any).setCellAttribute({
       'vertical-align': 'middle'
     })
@@ -295,14 +272,14 @@ function itensModalCell(editor: ExitusEditor, style: any) {
   bloco8.append(TableEsquerda, TableMeio, TableDireito)
 
   const bloco4 = document.createElement('div')
-  bloco4.className = 'bloco4'
+  bloco4.className = 'ex-bloco4'
   bloco4.appendChild(alinhamentoLabel)
   bloco4.appendChild(bloco8)
   dropdownContent.appendChild(bloco4)
 
   //bloco 5
   const bloco5 = document.createElement('div')
-  bloco5.className = 'bloco5'
+  bloco5.className = 'ex-bloco5'
   bloco5.appendChild(bloco3)
   bloco5.appendChild(bloco4)
   dropdownContent.appendChild(bloco5)
@@ -310,11 +287,11 @@ function itensModalCell(editor: ExitusEditor, style: any) {
   //bloco7
   const botaoConfirma = createButton(editor, 'Salvar', () => {
     // o que acontece quando clicar no botão
-    fecharDropdownsAbertos()
+    dropDownEvent.dropdown.off()
   })
-  botaoConfirma.className = 'botaoSalvar'
+  botaoConfirma.className = 'ex-botaoSalvar'
   const iconeConfirma = document.createElement('span')
-  iconeConfirma.className = 'icone-confirmacao'
+  iconeConfirma.className = 'ex-icone-confirmacao'
   botaoConfirma.appendChild(iconeConfirma)
   dropdownContent.appendChild(botaoConfirma)
 
@@ -328,16 +305,16 @@ function itensModalCell(editor: ExitusEditor, style: any) {
       background: ``,
       border: ``
     })
-    fecharDropdownsAbertos()
+    dropDownEvent.dropdown.off()
   })
-  botaoCancela.className = 'botaoCancela'
+  botaoCancela.className = 'ex-botaoCancela'
   const iconeCancela = document.createElement('span')
-  iconeCancela.className = 'icone-cancelamento'
+  iconeCancela.className = 'ex-icone-cancelamento'
   botaoCancela.appendChild(iconeCancela)
   dropdownContent.appendChild(botaoCancela)
 
   const bloco7 = document.createElement('div')
-  bloco7.className = 'bloco7'
+  bloco7.className = 'ex-bloco7'
   bloco7.append(botaoConfirma, botaoCancela)
   dropdownContent.appendChild(bloco7)
 

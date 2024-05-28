@@ -88,7 +88,7 @@
     outline-color: #ffc83d;
   }
 
-  .tiptap-widget:hover > .bolinha{
+  .tiptap-widget:hover > .ex-bolinha{
     display: block;
   }
 
@@ -131,7 +131,7 @@
     display: none!important;
   }
 
-  .ex-toolbar-button:not(.bolinha):hover {
+  .ex-toolbar-button:not(.ex-bolinha):hover {
     background: #f0f0f0;
 }
 
@@ -140,7 +140,7 @@
     height: 20px;
   }
 
-  .bolinha svg {
+  .ex-bolinha svg {
     width: 15px;
     height: 15px;
     color: #fff;
@@ -384,14 +384,14 @@
   cursor: nwse-resize;
 }
 
-.bloco1{
+.ex-bloco1{
   display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     /* justify-content: space-between; */
 }
 
-.bloco2{
+.ex-bloco2{
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -399,20 +399,20 @@
   margin-top: 10px;
 }
 
-.bloco3{
+.ex-bloco3{
   display: flex;
   align-items: center;
     flex-wrap: wrap;
     width: 90%;
 }
 
-.bloco4{
+.ex-bloco4{
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.bloco5{
+.ex-bloco5{
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -422,7 +422,7 @@
   /* gap: 117px; */
 }
 
-.bloco6{
+.ex-bloco6{
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -430,7 +430,7 @@
   gap: 5px;
 }
 
-.bloco7{
+.ex-bloco7{
   display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -442,32 +442,32 @@
     margin-left: 20px;
 }
 
-.bloco8{
+.ex-bloco8{
   display: flex;
 }
 
-.labels{
+.ex-labels{
   min-width: 100%;
     width: 100%;
 }
 
 
-.colorInput{
+.ex-colorInput{
   margin-left: 14.4px;
   flex-grow: 1;
   min-width: auto;
 }
-.colorInput2{
+.ex-colorInput2{
   flex-grow: 1;
   min-width: auto;
 }
 
-.largura1{
+.ex-largura1{
   width: 73px;
   margin-left: 14.4px;
 }
 
-.inputDimensoes{
+.ex-inputDimensoes{
   min-width: 100%;
   width: 0;
 }
@@ -477,8 +477,8 @@
   width: 0;
 }
 
-.botaoSalvar,
-.botaoCancela {
+.ex-botaoSalvar,
+.ex-botaoCancela {
   background-color: transparent;
   border: none;
   padding: 0;
@@ -487,12 +487,12 @@
   cursor: pointer;
 }
 
-.botaoSalvar:hover,
-.botaoCancela:hover {
+.ex-botaoSalvar:hover,
+.ex-botaoCancela:hover {
   text-decoration: underline; 
 }
 
-.icone-confirmacao::after {
+.ex-icone-confirmacao::after {
   content: '\2714';
     font-family: Arial, sans-serif;
     color: green;
@@ -502,7 +502,7 @@
     top: 3px;
 }
 
-.icone-cancelamento::after {
+.ex-icone-cancelamento::after {
   content: '\2716'; 
   font-family: Arial, sans-serif; 
   color: red;
@@ -520,7 +520,7 @@
 }
 
 
-.bolinha {
+.ex-bolinha {
   width: 18px;
   height: 18px;
   background-color: #ffc83d; 
@@ -532,14 +532,14 @@
 }
   
 
-.bolinha-cima {
+.ex-bolinha-cima {
   top: -12px;
   left: 4%;
   transform: translateX(-50%);
 }
 
 
-.bolinha-baixo {
+.ex-bolinha-baixo {
   bottom: -12px;
   left: 96%;
   transform: translateX(-50%);
