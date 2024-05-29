@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const path = require('path')
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = (env, argv) => {
@@ -13,13 +13,14 @@ module.exports = (env, argv) => {
       library: 'ExitusEditor',
       assetModuleFilename: 'assets/[name][ext]',
       libraryTarget: 'umd',
-	  libraryExport: 'default',
+      libraryExport: 'default',
       clean: true
     },
     devServer: {
-        static: {
-            directory: path.join(__dirname, 'src/public'),
-          },
+      static: {
+        directory: path.join(__dirname, 'src/public')
+      },
+      port: 9000
     },
     resolve: {
       extensions: ['.tsx', '.ts', '.svg', '.js'],
@@ -65,15 +66,15 @@ module.exports = (env, argv) => {
       ]
     },
     plugins: [
-        // other plugins...
-        new CopyWebpackPlugin({
-            patterns: [
-                {
-                    from: path.resolve(__dirname, 'src/public'),
-                    to: path.resolve(__dirname, 'dist'),
-                }
-            ],
-        }),
+      // other plugins...
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, 'src/public'),
+            to: path.resolve(__dirname, 'dist')
+          }
+        ]
+      })
     ],
     /* optimization: {
       minimize: true,

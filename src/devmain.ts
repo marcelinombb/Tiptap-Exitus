@@ -20,7 +20,8 @@ const toolbar = [
   'katex',
   'history',
   'listItem',
-  'indent'
+  'indent',
+  'mathtype'
 ]
 
 const editor = new ExitusEditor({

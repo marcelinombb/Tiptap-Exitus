@@ -105,7 +105,7 @@ export const Katex = Node.create({
           const data = dom.textContent as string
           return Fragment.from(schema.text(parseLatex(data)))
         },
-        priority: 9999
+        priority: 80
       }
     ]
   },

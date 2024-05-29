@@ -151,7 +151,11 @@ export const Image = Node.create<ImageOptions>({
   parseHTML() {
     return [
       {
-        tag: this.options.allowBase64 ? 'img[src]' : 'img[src]:not([src^="data:"])'
+        tag: this.options.allowBase64 ? 'img[src]' : 'img[src]:not([src^="data:"])',
+        getAttrs: node => {
+          const parent = node.parentElement as HTMLElement
+          return (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure') && null
+        }
       }
     ]
   },

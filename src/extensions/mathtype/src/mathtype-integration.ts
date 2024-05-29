@@ -4,9 +4,9 @@ import Configuration from '@wiris/mathtype-html-integration-devkit/src/configura
 import IntegrationModel, { type IntegrationModelProperties } from '@wiris/mathtype-html-integration-devkit/src/integrationmodel'
 //import Latex from '@wiris/mathtype-html-integration-devkit/src/latex'
 import MathML from '@wiris/mathtype-html-integration-devkit/src/mathml'
+import Parser from '@wiris/mathtype-html-integration-devkit/src/parser'
 import Telemeter from '@wiris/mathtype-html-integration-devkit/src/telemeter'
 import Util from '@wiris/mathtype-html-integration-devkit/src/util'
-import Parser from '@wiris/mathtype-html-integration-devkit/src/parser'
 
 function getExtensionOptions(editor: Editor, extensionName: string) {
   // Find the extension in the editor schema
@@ -63,24 +63,25 @@ export class ExitusEditorIntegration extends IntegrationModel {
   }
 
   createViewImage(formula: string): string {
-    
-   /*  output = formula.replaceAll('"<"', '"&lt;"')
+    /*  output = formula.replaceAll('"<"', '"&lt;"')
         .replaceAll('">"', '"&gt;"')
         .replaceAll('><<', '>&lt;<');
  */
     // Ckeditor retrieves editor data and removes the image information on the formulas
     // We transform all the retrieved data to images and then we Parse the data.
-    let imageFormula = Parser.initParse(formula);
+    const imageFormula = Parser.initParse(formula)
     return imageFormula
-    
   }
 
   //@ts-ignore
   doubleClickHandler(element: HTMLElement, event: MouseEvent) {
     this.core.editionProperties.dbclick = true
-    if ((this.editorObject as Editor).isEditable === false) {
+
+    if ((this.editorObject as Editor).isEditable) {
       if (element.nodeName.toLowerCase() === 'img') {
+        //console.log(Util.containsClass(element, Configuration.get('imageClassName')))
         if (Util.containsClass(element, Configuration.get('imageClassName'))) {
+          //console.log(element)
           // Some plugins (image2, image) open a dialog on Double-click. On formulas
           // doubleclick event ends here.
           if (typeof event.stopPropagation !== 'undefined') {
@@ -90,8 +91,10 @@ export class ExitusEditorIntegration extends IntegrationModel {
             event.returnValue = false
           }
           this.core.getCustomEditors().disable()
+          console.log(this.core.getCustomEditors().getActiveEditor())
           const customEditorAttr = element.getAttribute(Configuration.get('imageCustomEditorName'))
           if (customEditorAttr) {
+            console.log(customEditorAttr)
             this.core.getCustomEditors().enable(customEditorAttr)
           }
           //@ts-ignore
@@ -120,8 +123,6 @@ export class ExitusEditorIntegration extends IntegrationModel {
 
   insertMathml(mathml: string): HTMLElement | null {
     // This returns the value returned by the callback function (writer => {...})
-    //console.log("insertMath", mathml);
-    
     const { view } = this.editor
     const tr = view.state.tr
 
@@ -130,8 +131,7 @@ export class ExitusEditorIntegration extends IntegrationModel {
 
     const modelElementNew = document.createElement('mathml')
     modelElementNew.setAttribute('formula', mathml)
-    console.log(Parser.initParse(mathml));
-
+    //console.log(core.editionProperties.isNewElement)
     if (core.editionProperties.isNewElement) {
       // Don't bother inserting anything at all if the MathML is empty.
       if (!mathml) return null
@@ -143,7 +143,7 @@ export class ExitusEditorIntegration extends IntegrationModel {
 
       //this.editorObject.model.insertObject(modelElementNew, modelPosition)
       const formulaImg = this.createViewImage(mathml)
-      
+
       this.editor.commands.insertContentAt(pos, formulaImg, {
         updateSelection: true,
         parseOptions: {
@@ -190,8 +190,7 @@ export class ExitusEditorIntegration extends IntegrationModel {
 
   insertFormula(_focusElement: HTMLElement, windowTarget: Window, mathml: string, _wirisProperties: object) {
     const returnObject = {}
-    //console.log('insertFormula', mathml);
-    
+    console.log(mathml)
     let mathmlOrigin
     if (!mathml) {
       this.insertMathml('')
@@ -199,10 +198,6 @@ export class ExitusEditorIntegration extends IntegrationModel {
       mathmlOrigin = this.core.editionProperties.temporalImage?.dataset.mathml
 
       try {
-        /* returnObject.node = this.editorObject.editing.view.domConverter.viewToDom(
-          this.editorObject.editing.mapper.toViewElement(this.insertMathml(mathml)),
-          windowTarget.document
-        ) */
         returnObject.node = this.insertMathml(mathml)
       } catch (e) {
         const x = e.toString()

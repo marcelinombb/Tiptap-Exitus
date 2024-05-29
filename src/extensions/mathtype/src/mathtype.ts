@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { type ButtonEventProps } from '@editor/ui'
 import { type Editor, Node } from '@tiptap/core'
 import Configuration from '@wiris/mathtype-html-integration-devkit/src/configuration'
 import Core from '@wiris/mathtype-html-integration-devkit/src/core.src'
@@ -10,14 +11,9 @@ import MathML from '@wiris/mathtype-html-integration-devkit/src/mathml'
 import Parser from '@wiris/mathtype-html-integration-devkit/src/parser'
 import Util from '@wiris/mathtype-html-integration-devkit/src/util'
 
+import mathIcon from './icons/ckeditor5-formula.svg'
+import chemIcon from './icons/ckeditor5-chem.svg'
 import { ExitusEditorIntegration } from './mathtype-integration'
-
-function createViewImage(formula: string): string {
-
-  const mathString = formula.replaceAll('ref="<"', 'ref="&lt;"');
-  const imgHtml = Parser.initParse(mathString, integration.getLanguage());
-  return imgHtml 
-}
 
 function _addIntegration(editor: Editor) {
   //const { editor } = this
@@ -35,7 +31,7 @@ function _addIntegration(editor: Editor) {
   integrationProperties.serviceProviderProperties = {}
   integrationProperties.serviceProviderProperties.URI = 'https://www.wiris.net/demo/plugins/app'
   integrationProperties.serviceProviderProperties.server = 'java'
-  integrationProperties.target = editor.view.dom
+  integrationProperties.target = editor.view.dom.parentElement
   integrationProperties.scriptName = 'bundle.js'
   integrationProperties.managesLanguage = true
   // etc
@@ -52,26 +48,10 @@ function _addIntegration(editor: Editor) {
     integration.checkElement()
 
     editor.view.dom.addEventListener('click', evt => {
-      //console.log(evt)
-
-      /* if (data.domEvent.detail === 2) {
-        integration.doubleClickHandler(data.domTarget, data.domEvent)
-        evt.stop()
-      } */
+      if (evt.detail === 2) {
+        integration.doubleClickHandler(evt.target, evt)
+      }
     })
-
-    /* this.listenTo(
-      editor.editing.view.document,
-      'click',
-      (evt, data) => {
-        // Is Double-click
-        if (data.domEvent.detail === 2) {
-          integration.doubleClickHandler(data.domTarget, data.domEvent)
-          evt.stop()
-        }
-      },
-      { priority: 'normal' }
-    ) */
   }
   console.log('create instance of integration')
 
@@ -80,21 +60,129 @@ function _addIntegration(editor: Editor) {
 
 export const MathType = Node.create({
   name: 'mathtype',
+
+  group: 'inline',
+
+  inline: true,
+
+  atom: true,
+
+  content: 'inline*',
+
+  draggable: true,
+
+  addStorage() {
+    return {
+      toolbarButtonConfig: [
+        {
+          icon: mathIcon,
+          events: {
+            click: ({ editor }: ButtonEventProps) => {
+              editor.commands.openEditor()
+            }
+          }
+        },
+        {
+          icon: chemIcon,
+          events: {
+            click: ({ editor }: ButtonEventProps) => {
+              editor.commands.openChemEditor()
+            }
+          }
+        }
+      ]
+    }
+  },
   parseHTML() {
     return [
       {
         tag: 'img',
         getAttrs(node) {
           return (node as HTMLElement).classList.contains('Wirisformula') && null
-        }
+        },
+        priority: 100
       }
     ]
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ['span', { class: 'ex-mathype' }, ['img', HTMLAttributes]]
+  },
+  addAttributes() {
+    return {
+      class: {
+        default: 'Wirisformula'
+      },
+      style: {
+        default: '',
+        parseHTML(element) {
+          return element.getAttribute('style')
+        }
+      },
+      width: {
+        default: '',
+        parseHTML(element) {
+          return element.getAttribute('width')
+        }
+      },
+      height: {
+        default: '',
+        parseHTML(element) {
+          return element.getAttribute('height')
+        }
+      },
+      'data-mathml': {
+        default: '',
+        parseHTML(element) {
+          return element.getAttribute('data-mathml')
+        }
+      },
+      'data-custom-editor': {
+        default: null,
+        parseHTML(element) {
+          return element.getAttribute('data-custom-editor')
+        }
+      },
+      src: {
+        default: null
+      }
+    }
+  },
+  addNodeView() {
+    return ({ node }) => {
+      console.log(node.attrs)
+
+      const dom = document.createElement('span')
+      dom.className = 'ex-mathype'
+      const img = document.createElement('img')
+      Object.keys(node.attrs).forEach(key => {
+        if (node.attrs[key] == null) return
+        img.setAttribute(key, node.attrs[key])
+      })
+      dom.appendChild(img)
+      return {
+        dom
+      }
+    }
   },
   addCommands() {
     return {
       openEditor: () => () => {
         const integration = this.options.currentInstance
-        //console.log(this.options.currentInstance)
+        integration.core.getCustomEditors().disable()
+
+        integration.core.editionProperties.dbclick = false
+        const image = null
+        if (typeof image !== 'undefined' && image !== null && image.classList.contains(WirisPlugin.Configuration.get('imageClassName'))) {
+          integration.core.editionProperties.temporalImage = image
+          integration.openExistingFormulaEditor()
+        } else {
+          integration.openNewFormulaEditor()
+        }
+      },
+      openChemEditor: () => () => {
+        const integration = this.options.currentInstance
+        integration.core.getCustomEditors().enable('chemistry')
+
         integration.core.editionProperties.dbclick = false
         const image = null
         if (typeof image !== 'undefined' && image !== null && image.classList.contains(WirisPlugin.Configuration.get('imageClassName'))) {
@@ -108,7 +196,7 @@ export const MathType = Node.create({
   },
   onCreate() {
     this.options.currentInstance = _addIntegration(this.editor)
-    console.log(this.options.currentInstance)
+    //console.log(this.options.currentInstance)
 
     window.WirisPlugin = {
       Core,
