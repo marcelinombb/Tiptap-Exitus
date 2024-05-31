@@ -11,8 +11,8 @@ import MathML from '@wiris/mathtype-html-integration-devkit/src/mathml'
 import Parser from '@wiris/mathtype-html-integration-devkit/src/parser'
 import Util from '@wiris/mathtype-html-integration-devkit/src/util'
 
-import mathIcon from './icons/ckeditor5-formula.svg'
 import chemIcon from './icons/ckeditor5-chem.svg'
+import mathIcon from './icons/ckeditor5-formula.svg'
 import { ExitusEditorIntegration } from './mathtype-integration'
 
 function _addIntegration(editor: Editor) {
@@ -53,9 +53,31 @@ function _addIntegration(editor: Editor) {
       }
     })
   }
-  console.log('create instance of integration')
 
   return integration
+}
+
+function openEditor(integration: any, editor: string | null) {
+  return () => {
+   try{
+    if(editor == null) {
+      integration.core.getCustomEditors().disable()
+    }else{
+      integration.core.getCustomEditors().enable(editor)
+    }
+
+    integration.core.editionProperties.dbclick = false
+    const image = null
+    if (typeof image !== 'undefined' && image !== null && image.classList.contains(WirisPlugin.Configuration.get('imageClassName'))) {
+    integration.core.editionProperties.temporalImage = image
+    integration.openExistingFormulaEditor()
+    } else {
+    integration.openNewFormulaEditor()
+    }
+   }catch(e){
+    console.error(e)
+   }
+  }
 }
 
 export const MathType = Node.create({
@@ -78,7 +100,7 @@ export const MathType = Node.create({
           icon: mathIcon,
           events: {
             click: ({ editor }: ButtonEventProps) => {
-              editor.commands.openEditor()
+              editor.commands.openMathEditor()
             }
           }
         },
@@ -149,10 +171,8 @@ export const MathType = Node.create({
   },
   addNodeView() {
     return ({ node }) => {
-      console.log(node.attrs)
-
       const dom = document.createElement('span')
-      dom.className = 'ex-mathype'
+      dom.className = 'ex-mathype tiptap-widget'
       const img = document.createElement('img')
       Object.keys(node.attrs).forEach(key => {
         if (node.attrs[key] == null) return
@@ -160,55 +180,41 @@ export const MathType = Node.create({
       })
       dom.appendChild(img)
       return {
-        dom
+        dom,
+        selectNode() {
+          dom.classList.add('ex-selected')
+        },
+        deselectNode() {
+          dom.classList.remove('ex-selected')
+        }
       }
     }
   },
   addCommands() {
     return {
-      openEditor: () => () => {
-        const integration = this.options.currentInstance
-        integration.core.getCustomEditors().disable()
-
-        integration.core.editionProperties.dbclick = false
-        const image = null
-        if (typeof image !== 'undefined' && image !== null && image.classList.contains(WirisPlugin.Configuration.get('imageClassName'))) {
-          integration.core.editionProperties.temporalImage = image
-          integration.openExistingFormulaEditor()
-        } else {
-          integration.openNewFormulaEditor()
-        }
-      },
-      openChemEditor: () => () => {
-        const integration = this.options.currentInstance
-        integration.core.getCustomEditors().enable('chemistry')
-
-        integration.core.editionProperties.dbclick = false
-        const image = null
-        if (typeof image !== 'undefined' && image !== null && image.classList.contains(WirisPlugin.Configuration.get('imageClassName'))) {
-          integration.core.editionProperties.temporalImage = image
-          integration.openExistingFormulaEditor()
-        } else {
-          integration.openNewFormulaEditor()
-        }
-      }
+      openMathEditor: () => openEditor(this.options.currentInstance),
+      openChemEditor: () => openEditor(this.options.currentInstance, 'chemistry')
     }
   },
   onCreate() {
-    this.options.currentInstance = _addIntegration(this.editor)
-    //console.log(this.options.currentInstance)
+    try {
+      this.options.currentInstance = _addIntegration(this.editor)
+      //console.log(this.options.currentInstance)
 
-    window.WirisPlugin = {
-      Core,
-      Parser,
-      Image,
-      MathML,
-      Util,
-      Configuration,
-      Listeners,
-      IntegrationModel,
-      currentInstance: this.options.currentInstance,
-      Latex
+      window.WirisPlugin = {
+        Core,
+        Parser,
+        Image,
+        MathML,
+        Util,
+        Configuration,
+        Listeners,
+        IntegrationModel,
+        currentInstance: this.options.currentInstance,
+        Latex
+      }
+    }catch(e) {
+      console.error(e)
     }
   },
   onDestroy() {

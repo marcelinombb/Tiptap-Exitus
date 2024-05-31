@@ -1,4 +1,4 @@
-import { type Editor } from '@tiptap/core'
+import { type ChainedCommands, type Editor } from '@tiptap/core'
 import { type Node } from '@tiptap/pm/model'
 import { TextSelection } from '@tiptap/pm/state'
 
@@ -51,4 +51,18 @@ export function getNodeFromSelection(editor: Editor): Node | null {
   const { from } = state.selection
   const node = state.doc.nodeAt(from)
   return node
+}
+
+export function deleteSelectedNode(editor: Editor): ChainedCommands {
+  return editor.chain().command(({ tr, state, dispatch }) => {
+    const { selection } = state
+    const { $from, $to } = selection
+    const node = $from.node()
+
+    if (dispatch && node) {
+      tr.delete($from.pos, $to.pos)
+    }
+
+    return true
+  })
 }

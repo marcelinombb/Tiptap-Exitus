@@ -1,8 +1,8 @@
 //@ts-nocheck
+import { deleteSelectedNode } from '@editor/utils'
 import { type Editor } from '@tiptap/core'
 import Configuration from '@wiris/mathtype-html-integration-devkit/src/configuration'
 import IntegrationModel, { type IntegrationModelProperties } from '@wiris/mathtype-html-integration-devkit/src/integrationmodel'
-//import Latex from '@wiris/mathtype-html-integration-devkit/src/latex'
 import MathML from '@wiris/mathtype-html-integration-devkit/src/mathml'
 import Parser from '@wiris/mathtype-html-integration-devkit/src/parser'
 import Telemeter from '@wiris/mathtype-html-integration-devkit/src/telemeter'
@@ -69,7 +69,7 @@ export class ExitusEditorIntegration extends IntegrationModel {
  */
     // Ckeditor retrieves editor data and removes the image information on the formulas
     // We transform all the retrieved data to images and then we Parse the data.
-    const imageFormula = Parser.initParse(formula)
+    const imageFormula = Parser.initParse(formula, this.getLanguage())
     return imageFormula
   }
 
@@ -79,9 +79,7 @@ export class ExitusEditorIntegration extends IntegrationModel {
 
     if ((this.editorObject as Editor).isEditable) {
       if (element.nodeName.toLowerCase() === 'img') {
-        //console.log(Util.containsClass(element, Configuration.get('imageClassName')))
         if (Util.containsClass(element, Configuration.get('imageClassName'))) {
-          //console.log(element)
           // Some plugins (image2, image) open a dialog on Double-click. On formulas
           // doubleclick event ends here.
           if (typeof event.stopPropagation !== 'undefined') {
@@ -91,10 +89,9 @@ export class ExitusEditorIntegration extends IntegrationModel {
             event.returnValue = false
           }
           this.core.getCustomEditors().disable()
-          console.log(this.core.getCustomEditors().getActiveEditor())
+
           const customEditorAttr = element.getAttribute(Configuration.get('imageCustomEditorName'))
           if (customEditorAttr) {
-            console.log(customEditorAttr)
             this.core.getCustomEditors().enable(customEditorAttr)
           }
           //@ts-ignore
@@ -118,7 +115,13 @@ export class ExitusEditorIntegration extends IntegrationModel {
   }
 
   notifyWindowClosed() {
+    console.log("notifyWindowClosed");
+    
     this.editor.commands.focus()
+  }
+
+  getSelection(): Selection {
+    return window.getSelection();
   }
 
   insertMathml(mathml: string): HTMLElement | null {
@@ -131,7 +134,7 @@ export class ExitusEditorIntegration extends IntegrationModel {
 
     const modelElementNew = document.createElement('mathml')
     modelElementNew.setAttribute('formula', mathml)
-    //console.log(core.editionProperties.isNewElement)
+
     if (core.editionProperties.isNewElement) {
       // Don't bother inserting anything at all if the MathML is empty.
       if (!mathml) return null
@@ -154,34 +157,21 @@ export class ExitusEditorIntegration extends IntegrationModel {
       // Remove selection
       if (!(from == to)) {
         this.editor.view.dispatch(tr.delete(pos, pos + 1))
-        /* for (const range of viewSelection.getRanges()) {
-          writer.remove(this.editorObject.editing.mapper.toModelRange(range))
-        } */
       }
-
-      // Set carret after the formula
-      //const position = this.editorObject.model.createPositionAfter(modelElementNew)
-      //writer.setSelection(position)
     } else {
-      //const img = core.editionProperties.temporalImage
-      //const viewElement = this.editorObject.editing.view.domConverter.domToView(img).parent
-      //const modelElementOld = this.editorObject.editing.mapper.toModelElement(viewElement)
-
-      // Insert the new <mathml> and remove the old one
-      //const position = this.editorObject.model.createPositionBefore(modelElementOld)
-
       // If the given MathML is empty, don't insert a new formula.
       if (mathml) {
         const pos = selection.$anchor.pos
-        this.editor.commands.insertContentAt(pos, modelElementNew, {
-          updateSelection: true,
-          parseOptions: {
-            preserveWhitespace: true
-          }
-        })
-        //this.editorObject.model.insertObject(modelElementNew, position)
+
+        deleteSelectedNode(this.editor)
+          .insertContentAt(pos, this.createViewImage(mathml), {
+            updateSelection: true,
+            parseOptions: {
+              preserveWhitespace: true
+            }
+          })
+          .run()
       }
-      //writer.remove(modelElementOld)
     }
 
     // eslint-disable-next-line consistent-return
@@ -190,7 +180,7 @@ export class ExitusEditorIntegration extends IntegrationModel {
 
   insertFormula(_focusElement: HTMLElement, windowTarget: Window, mathml: string, _wirisProperties: object) {
     const returnObject = {}
-    console.log(mathml)
+
     let mathmlOrigin
     if (!mathml) {
       this.insertMathml('')

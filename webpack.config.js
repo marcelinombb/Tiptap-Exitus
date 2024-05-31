@@ -1,12 +1,12 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = (env, argv) => {
-  const isProduction = argv.mode === 'production'
+  //const isProduction = argv.mode === 'production'
   return {
     entry: path.resolve(__dirname, 'src/main.ts'),
+    performance: { hints: false },
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: 'exituseditor.js',
@@ -18,8 +18,9 @@ module.exports = (env, argv) => {
     },
     devServer: {
       static: {
-        directory: path.join(__dirname, 'src/public')
+        directory: path.join(__dirname, 'src')
       },
+      compress: true,
       port: 9000
     },
     resolve: {
@@ -36,16 +37,15 @@ module.exports = (env, argv) => {
         {
           test: /\.(ts|tsx)?$/,
           loader: 'ts-loader',
+          options: {
+            transpileOnly: true,
+          },
           exclude: /node_modules/
         },
         {
           test: /\.svg$/,
           use: ['raw-loader']
         },
-        /* {
-          test: /\.(wasm)$/,
-          type: 'asset/inline'
-        }, */
         {
           test: /\.css$/,
           use: [
@@ -76,19 +76,22 @@ module.exports = (env, argv) => {
         ]
       })
     ],
-    /* optimization: {
+    experiments: { 
+      topLevelAwait: true, 
+      asyncWebAssembly: true 
+    },
+    optimization: {
       minimize: true,
-      minimizer: [
-        new TerserPlugin({
-          terserOptions: {
-            compress: {
-              drop_console: true,
-              drop_debugger: true
-            }
-          }
-        })
-      ]
-    }, */
+      minimizer: [new TerserPlugin({
+        // These options prevent Terser from generating a LICENSE.txt file
+        terserOptions: {
+          format: {
+            comments: false,
+          },
+        },
+        extractComments: false,
+      })],
+    },
     devtool: 'source-map'
   }
 }

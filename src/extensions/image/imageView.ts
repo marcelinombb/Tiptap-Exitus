@@ -98,7 +98,7 @@ class ResizableImage {
 function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
   imageWrapper.addEventListener('click', event => {
     event.stopPropagation()
-    imageWrapper.classList.add('ex-selected')
+    //imageWrapper.classList.add('ex-selected')
     const resizers = resizer.resizers
 
     if (!balloon.isOpen()) {
@@ -379,6 +379,14 @@ export class ImageView implements NodeView {
     this.imageWrapper.appendChild(this.balloon.getBalloon())
 
     imageClickHandler(this)
+  }
+
+  selectNode() {
+    this.imageWrapper.classList.add('ex-selected')
+  }
+  
+  deselectNode() {
+    this.imageWrapper.classList.remove('ex-selected')
   }
 
   updateAttributes(attributes: Record<string, any>) {

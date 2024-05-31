@@ -10,10 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tiptap/core": "^2.4.0",
     "@wiris/mathtype-html-integration-devkit": "^1.17.2"
   },
   "devDependencies": {
+    "@tiptap/core": "^2.4.0",
     "@types/node": "^20.12.12",
     "typescript": "^5.4.5"
   }
