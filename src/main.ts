@@ -83,10 +83,10 @@ ExitusEditor.toolbarOrder = [
   'textAlign',
   'image',
   'blockquote',
-  'katex',
   'history',
   'listItem',
   'indent',
+  'katex',
   'mathtype'
 ]
 
