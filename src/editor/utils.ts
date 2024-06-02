@@ -2,7 +2,7 @@ import { type ChainedCommands, type Editor } from '@tiptap/core'
 import { type Node } from '@tiptap/pm/model'
 import { TextSelection } from '@tiptap/pm/state'
 
-export function createHTMLElement(tagName: string, attributes: { [x: string]: string }, childrens?: Element[]): Element {
+export function createHTMLElement<T = Element>(tagName: string, attributes: { [x: string]: string }, childrens?: Element[]): T {
   // Create the element
   const element = document.createElement(tagName)
 
@@ -20,7 +20,7 @@ export function createHTMLElement(tagName: string, attributes: { [x: string]: st
     element.append(...childrens)
   }
 
-  return element
+  return element as T
 }
 
 export function setCaretAfterNode(editor: Editor, targetNode: Node) {

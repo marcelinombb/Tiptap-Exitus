@@ -32,9 +32,9 @@ export class KatexBalloon {
       value: latexFormula.trim(),
       placeholder: '\\sqrt{2}',
       contentEditable: 'true'
-    }) as HTMLInputElement
+    })
 
-    this.checkboxDisplay = createHTMLElement('input', { type: 'checkbox', checked: display, id: 'emBloco' }) as HTMLInputElement
+    this.checkboxDisplay = createHTMLElement('input', { type: 'checkbox', checked: display, id: 'emBloco' })
     this.checkboxDisplay.checked = display
 
     this.preview = createHTMLElement('div', { class: 'latex-editting-preview' })

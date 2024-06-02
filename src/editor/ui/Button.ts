@@ -49,13 +49,13 @@ export class Button implements Tool {
   }
 
   createButton(): HTMLButtonElement {
-    const button = createHTMLElement('button', {
+    const button = createHTMLElement<HTMLButtonElement>('button', {
       class: ['ex-toolbar-button', ...(this.config.classList as string[])].join(' '),
       id: `${Math.floor(Math.random() * 100) + 1}`,
       title: this.config.title as string
     })
 
-    return button as HTMLButtonElement
+    return button
   }
 
   setParentToolbar(toolbar: Toolbar) {

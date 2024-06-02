@@ -72,4 +72,22 @@ ExitusEditor.extensions = [
   MathType
 ]
 
+ExitusEditor.toolbarOrder = [
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'subscript',
+  'superscript',
+  'table',
+  'textAlign',
+  'image',
+  'blockquote',
+  'katex',
+  'history',
+  'listItem',
+  'indent',
+  'mathtype'
+]
+
 export default ExitusEditor

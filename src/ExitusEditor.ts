@@ -4,7 +4,7 @@ import { type AnyExtension, Editor, type EditorOptions } from '@tiptap/core'
 
 export interface ExitusEditorOptions extends EditorOptions {
   container: Element
-  toolbar: string[]
+  toolbarOrder: string[]
 }
 
 function generateUUID() {
@@ -16,19 +16,22 @@ function generateUUID() {
 }
 
 class ExitusEditor extends Editor {
-  editorInstance!: string
+  editorInstance: string
   toolbar: Toolbar
   toolbarItemsDiv!: HTMLDivElement
   editorMainDiv!: HTMLDivElement
 
   static extensions: AnyExtension[]
+  static toolbarOrder: string[]
 
   constructor(options: Partial<ExitusEditorOptions> = {}) {
     super({ ...options, extensions: ExitusEditor.extensions })
     this.editorInstance = generateUUID()
 
+    const toolbarOrder: string[] = [...ExitusEditor.toolbarOrder, ...(options.toolbarOrder ?? [])]
+
     this.toolbar = new Toolbar(this, {
-      toolbarOrder: options.toolbar as string[],
+      toolbarOrder: toolbarOrder,
       configStorage: this.extensionStorage
     })
 
