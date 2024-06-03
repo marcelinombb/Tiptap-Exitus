@@ -29,6 +29,8 @@ export class Dropdown implements Tool {
   editor: ExitusEditor
   parentToolbar!: Toolbar
 
+  static instances: Dropdown[] = []
+
   constructor(editor: ExitusEditor, config: DropdownConfig) {
     this.config = { ...this.config, ...config }
     this.editor = editor
@@ -41,6 +43,9 @@ export class Dropdown implements Tool {
 
     this.dropdownContent = document.createElement('div')
     this.dropdownContent.classList.add('ex-dropdown-content')
+
+    // Registrar instância
+    Dropdown.instances.push(this)
   }
 
   setButton(button: Button) {

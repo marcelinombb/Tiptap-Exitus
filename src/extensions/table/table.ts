@@ -41,7 +41,7 @@ function insertTableRowColumn(editor: ExitusEditor): EventListener {
     const target = event.target as HTMLElement
     const columns = parseInt(target.getAttribute('data-column') as string)
     const rows = parseInt(target.getAttribute('data-row') as string)
-    editor.commands.insertTable({ rows: rows, cols: columns, withHeaderRow: true })
+    editor.commands.insertTable({ rows: rows, cols: columns, withHeaderRow: false })
   }
 }
 
@@ -249,15 +249,7 @@ export const TableCustom = Table.extend({
 
           return true
         }
-      } /* ,
-      setCellAttribute:
-        (attributes: { [key: string]: any }) =>
-        ({ state, dispatch }) => {
-          Object.entries(attributes).forEach(([name, value]) => {
-            setCellAttr(name, value)(state, dispatch)
-          })
-          return true
-        } */
+      }
     }
   },
   addOptions() {

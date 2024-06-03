@@ -5,24 +5,16 @@ import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
 import type ExitusEditor from 'src/ExitusEditor'
 
-let dropdownsAbertos: Dropdown[] = []
-
 function fecharDropdownsAbertos() {
-  dropdownsAbertos.forEach(dropdown => {
-    dropdown.off()
-  })
-  dropdownsAbertos = []
+  Dropdown.instances.forEach(dropdown => dropdown.off())
 }
 
 function showDropdown({ dropdown }: any) {
   // event.stopPropagation()
   if (dropdown.isOpen) {
     dropdown.off()
-    //dropdownsAbertos = dropdownsAbertos.filter(d => d !== dropdown)
   } else {
-    //fecharDropdownsAbertos()
     dropdown.on()
-    //dropdownsAbertos.push(dropdown)
   }
 }
 
@@ -44,10 +36,24 @@ function createButton(editor: ExitusEditor, icone: string, onClick: () => void) 
   const button = new Button(editor, {
     icon: icone
   })
-  button.bind('click', onClick)
+
+  button.bind('click', () => {
+    console.log(button.getButtonElement().parentElement?.querySelectorAll('button'))
+    button
+      .getButtonElement()
+      .parentElement?.querySelectorAll('button')
+      .forEach(button => button.classList.remove('ex-button-active'))
+
+    if (button.getButtonElement().classList.contains('ex-button-active')) {
+      button.off()
+    } else {
+      button.on()
+    }
+    onClick()
+  })
+
   return button.render()
 }
-
 function createInput(type: string, placeholder: string) {
   const input = document.createElement('input')
   input.type = type
@@ -60,8 +66,9 @@ function createInput(type: string, placeholder: string) {
 function itensModalTable(editor: ExitusEditor, style: any) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
+  dropdownContent.contentEditable = 'false'
 
-  const propriedadesLabel = document.createElement('label')
+  const propriedadesLabel = document.createElement('strong')
   propriedadesLabel.textContent = 'Propriedades da Tabela'
   dropdownContent.appendChild(propriedadesLabel)
 
@@ -102,7 +109,7 @@ function itensModalTable(editor: ExitusEditor, style: any) {
 
   const larguraBloco1 = createInput('number', 'Largura')
   larguraBloco1.className = 'ex-largura1'
-  //larguraBloco1.disabled = true
+  larguraBloco1.disabled = true
   larguraBloco1.value = size.replace('px', '')
 
   const bloco1 = document.createElement('div')
@@ -282,7 +289,9 @@ function itensModalTable(editor: ExitusEditor, style: any) {
 
   //bloco7
   const botaoConfirma = createButton(editor, 'Salvar', () => {
-    // o que acontece quando clicar no botão
+    aplicarEstiloBorda()
+    //aplicarEstiloCelulas()
+    aplicarDimencoesTabela()
     fecharDropdownsAbertos()
   })
   botaoConfirma.className = 'ex-botaoSalvar'
@@ -302,6 +311,7 @@ function itensModalTable(editor: ExitusEditor, style: any) {
       background: ``,
       border: ``
     })
+    fecharDropdownsAbertos()
   })
   botaoCancela.className = 'ex-botaoCancela'
   const iconeCancela = document.createElement('span')

@@ -101,7 +101,7 @@
     outline-color: transparent;
     outline-style: solid;
     outline-width: 3px;
-    transition: outline-color 200ms ease;
+    /* transition: outline-color 200ms ease; */
   }
 
   .ex-toolbar-button {
@@ -141,12 +141,11 @@
   }
 
   .ex-bolinha svg {
-    width: 15px;
-    height: 15px;
+    width: 18px;
+    height: 19px;
     color: #fff;
-    margin: -1px -1px;
+    margin: -4px -3px;
 }
-
   
   .resize-cursor {
     cursor: ew-resize;
@@ -487,11 +486,6 @@
   cursor: pointer;
 }
 
-.ex-botaoSalvar:hover,
-.ex-botaoCancela:hover {
-  text-decoration: underline; 
-}
-
 .ex-icone-confirmacao::after {
   content: '\2714';
     font-family: Arial, sans-serif;
@@ -521,26 +515,47 @@
 
 
 .ex-bolinha {
-  width: 18px;
-  height: 18px;
-  background-color: #ffc83d; 
+  width: 20px;
+    height: 19px;
+  background-color: hsl(218,81.8%,56.9%); 
   border-radius: 50%; 
   position: absolute; 
   cursor: pointer; 
   z-index: 0; 
   display: none;
 }
-  
+
+
+.ex-pegaTabela {
+  width: 25px;
+  height: 23px;
+  background-color: hsl(218,81.8%,56.9%);
+  position: absolute;
+  cursor: pointer;
+  border-radius: 1px;
+  z-index: 0;
+  display: none;
+  top: 0;
+  transform: translate(-12%,-120%);
+}
+
+.tableWrapper:not(.ex-selected){
+  .ex-pegaTabela{
+    background-color: #ffc83d;
+  }
+  .ex-bolinha{
+    background-color: #ffc83d;
+  }
+}
 
 .ex-bolinha-cima {
-  top: -12px;
-  left: 4%;
-  transform: translateX(-50%);
+  top: 0;
+  transform: translate(215%,-86%);
 }
 
 
 .ex-bolinha-baixo {
-  bottom: -12px;
-  left: 96%;
-  transform: translateX(-50%);
+  bottom: 0;
+  transform: translate(2802%,72%);
+
 }

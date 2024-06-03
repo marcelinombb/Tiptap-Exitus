@@ -5,6 +5,10 @@ import textDm from '@icons/align-vertically.svg'
 import { selectionCell } from '@tiptap/pm/tables'
 import type ExitusEditor from 'src/ExitusEditor'
 
+function fecharDropdownsAbertos() {
+  Dropdown.instances.forEach(dropdown => dropdown.off())
+}
+
 function saveBorderValue({ dropdown, editor }: DropDownEventProps) {
   const { nodeAfter } = selectionCell(editor.view.state)
   const [size = '', border = 'none', color = ''] = (nodeAfter?.attrs.style.border ?? '').split(' ')
@@ -59,7 +63,7 @@ function showDropdown(dropDownEvent: DropDownEventProps) {
   }
 }
 
-export function criaCellModal(style: any) {
+export function criaCellModal() {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
       events: {
@@ -68,7 +72,7 @@ export function criaCellModal(style: any) {
       classes: ['ex-dropdown-balloonModal']
     })
 
-    dropdown.setDropDownContent(itensModalCell(editor, style))
+    dropdown.setDropDownContent(itensModalCell(editor))
     return dropdown
   }
 }
@@ -77,7 +81,22 @@ function createButton(editor: ExitusEditor, icone: string, onClick: () => void) 
   const button = new Button(editor, {
     icon: icone
   })
-  button.bind('click', onClick)
+
+  button.bind('click', () => {
+    console.log(button.getButtonElement().parentElement?.querySelectorAll('button'))
+    button
+      .getButtonElement()
+      .parentElement?.querySelectorAll('button')
+      .forEach(button => button.classList.remove('ex-button-active'))
+
+    if (button.getButtonElement().classList.contains('ex-button-active')) {
+      button.off()
+    } else {
+      button.on()
+    }
+    onClick()
+  })
+
   return button.render()
 }
 
@@ -90,11 +109,12 @@ function createInput(type: string, placeholder: string) {
   return input
 }
 
-function itensModalCell(editor: ExitusEditor, dropDownEvent: DropDownEventProps) {
+function itensModalCell(editor: ExitusEditor) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = '.ex-dropdownList-content'
+  dropdownContent.contentEditable = 'false'
 
-  const propriedadesLabel = document.createElement('label')
+  const propriedadesLabel = document.createElement('strong')
   propriedadesLabel.textContent = 'Propriedades da Célula'
   dropdownContent.appendChild(propriedadesLabel)
 
@@ -129,7 +149,7 @@ function itensModalCell(editor: ExitusEditor, dropDownEvent: DropDownEventProps)
   inputBackgroundColor1.className = 'ex-colorInput'
   inputBackgroundColor1.disabled = true
 
-  const larguraBloco1 = createInput('text', 'Largura')
+  const larguraBloco1 = createInput('number', 'Largura')
   larguraBloco1.className = 'ex-largura1'
   larguraBloco1.disabled = true
 
@@ -284,11 +304,22 @@ function itensModalCell(editor: ExitusEditor, dropDownEvent: DropDownEventProps)
   bloco5.appendChild(bloco4)
   dropdownContent.appendChild(bloco5)
 
-  //bloco7
+  function fecharDropdownSeCliqueFora(event: MouseEvent) {
+    if (!dropdownContent.contains(event.target as Node)) {
+      fecharDropdownsAbertos()
+      document.removeEventListener('click', fecharDropdownSeCliqueFora)
+    }
+  }
+
+  // Bloco 7
   const botaoConfirma = createButton(editor, 'Salvar', () => {
-    // o que acontece quando clicar no botão
-    dropDownEvent.dropdown.off()
+    aplicarEstiloBorda()
+    //aplicarEstiloCelulas()
+    aplicarDimencoesTabela()
+    fecharDropdownsAbertos()
+    document.removeEventListener('click', fecharDropdownSeCliqueFora)
   })
+
   botaoConfirma.className = 'ex-botaoSalvar'
   const iconeConfirma = document.createElement('span')
   iconeConfirma.className = 'ex-icone-confirmacao'
@@ -296,17 +327,10 @@ function itensModalCell(editor: ExitusEditor, dropDownEvent: DropDownEventProps)
   dropdownContent.appendChild(botaoConfirma)
 
   const botaoCancela = createButton(editor, 'Cancelar', () => {
-    ;(editor.commands as any).setCellAttribute({
-      'vertical-align': 'top'
-    })
-    ;(editor.commands as any).setCellAttribute({
-      height: ``,
-      width: ``,
-      background: ``,
-      border: ``
-    })
-    dropDownEvent.dropdown.off()
+    fecharDropdownsAbertos()
+    document.removeEventListener('click', fecharDropdownSeCliqueFora)
   })
+
   botaoCancela.className = 'ex-botaoCancela'
   const iconeCancela = document.createElement('span')
   iconeCancela.className = 'ex-icone-cancelamento'
@@ -317,6 +341,8 @@ function itensModalCell(editor: ExitusEditor, dropDownEvent: DropDownEventProps)
   bloco7.className = 'ex-bloco7'
   bloco7.append(botaoConfirma, botaoCancela)
   dropdownContent.appendChild(bloco7)
+
+  document.addEventListener('click', fecharDropdownSeCliqueFora)
 
   return dropdownContent
 }

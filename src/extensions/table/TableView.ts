@@ -19,7 +19,7 @@ import { Balloon } from '../../editor/ui/Balloon'
 import { criaCellModal } from './itensModalCell'
 import { criaTabelaModal } from './itensModalTable'
 import { objParaCss } from './table'
-import TableFocus from './tableFocus'
+import TableFocus, { UpDownTable } from './tableFocus'
 import { criaDropCell, criaDropColuna, criaDropLinhas } from './tableToolbarItens'
 
 function clickHandler(table: TableView) {
@@ -129,6 +129,7 @@ export class TableView implements NodeView {
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
 
     new TableFocus(this)
+    new UpDownTable(this)
 
     const configStorage = {
       celumnsTable: {
@@ -182,6 +183,10 @@ export class TableView implements NodeView {
     clickHandler(this)
   }
 
+  selectNode() {
+    this.tableWrapper.classList.add('ex-selected')
+  }
+
   updateAttributes(attributes: Record<string, any>) {
     if (typeof this.getPos === 'function') {
       const { view } = this.editor
@@ -217,7 +222,6 @@ export class TableView implements NodeView {
     if (event instanceof KeyboardEvent) {
       return true
     }
-
     return false
   }
 
@@ -236,7 +240,6 @@ export class TableView implements NodeView {
     return mutation.type === 'attributes' && (mutation.target === this.table || this.colgroup.contains(mutation.target))
   }
 }
-
 function updateTableStyle(tableView: TableView) {
   const { table, tableWrapperStyle, tableWrapper, tableStyle } = tableView
   table.setAttribute('style', objParaCss(tableStyle))
