@@ -44,15 +44,14 @@ export class ExitusEditorIntegration extends IntegrationModel {
   addEditorListeners() {
     const editor = this.editorObject
 
-    //if (typeof editor.config.wirislistenersdisabled === 'undefined' || !editor.config.wirislistenersdisabled) {
-    this.checkElement()
-    //}
+    if (typeof editor.config === 'undefined' || !editor.config.wirislistenersdisabled) {
+      this.checkElement()
+    }
   }
 
   checkElement() {
     const editor = this.editorObject as Editor
-    const newElement = editor.view.dom
-
+    const newElement = editor.view.dom.parentElement
     // If the element wasn't treated, add the events.
     if (!newElement.wirisActive) {
       this.setTarget(newElement)
@@ -63,10 +62,8 @@ export class ExitusEditorIntegration extends IntegrationModel {
   }
 
   createViewImage(formula: string): string {
-    /*  output = formula.replaceAll('"<"', '"&lt;"')
-        .replaceAll('">"', '"&gt;"')
-        .replaceAll('><<', '>&lt;<');
- */
+    //output = formula.replaceAll('"<"', '"&lt;"').replaceAll('">"', '"&gt;"').replaceAll('><<', '>&lt;<')
+
     // Ckeditor retrieves editor data and removes the image information on the formulas
     // We transform all the retrieved data to images and then we Parse the data.
     const imageFormula = Parser.initParse(formula, this.getLanguage())
@@ -115,13 +112,11 @@ export class ExitusEditorIntegration extends IntegrationModel {
   }
 
   notifyWindowClosed() {
-    console.log("notifyWindowClosed");
-    
     this.editor.commands.focus()
   }
 
   getSelection(): Selection {
-    return window.getSelection();
+    return window.getSelection()
   }
 
   insertMathml(mathml: string): HTMLElement | null {

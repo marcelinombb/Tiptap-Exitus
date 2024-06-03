@@ -16,16 +16,14 @@ import mathIcon from './icons/ckeditor5-formula.svg'
 import { ExitusEditorIntegration } from './mathtype-integration'
 
 function _addIntegration(editor: Editor) {
-  //const { editor } = this
-  //editor.emit()
   /**
    * Integration model constructor attributes.
    * @type {integrationModelProperties}
    */
   const integrationProperties = {}
   integrationProperties.environment = {}
-  integrationProperties.environment.editor = 'CKEditor5'
-  integrationProperties.environment.editorVersion = '5.x'
+  integrationProperties.environment.editor = 'ExitusEditor'
+  integrationProperties.environment.editorVersion = '1.x'
   integrationProperties.version = '1.0.0'
   integrationProperties.editorObject = editor
   integrationProperties.serviceProviderProperties = {}
@@ -57,26 +55,31 @@ function _addIntegration(editor: Editor) {
   return integration
 }
 
-function openEditor(integration: any, editor: string | null) {
-  return () => {
-   try{
-    if(editor == null) {
-      integration.core.getCustomEditors().disable()
-    }else{
-      integration.core.getCustomEditors().enable(editor)
-    }
+function getExtensionStorage(editor) {
+  return editor.extensionManager.extensions.find(extension => extension.name === 'mathtype').storage
+}
 
-    integration.core.editionProperties.dbclick = false
-    const image = null
-    if (typeof image !== 'undefined' && image !== null && image.classList.contains(WirisPlugin.Configuration.get('imageClassName'))) {
-    integration.core.editionProperties.temporalImage = image
-    integration.openExistingFormulaEditor()
-    } else {
-    integration.openNewFormulaEditor()
+function openEditor(editorType: string | null) {
+  return ({ editor }) => {
+    try {
+      const integration = getExtensionStorage(editor).currentInstances.get(editor.editorInstance)
+      if (editorType == null) {
+        integration.core.getCustomEditors().disable()
+      } else {
+        integration.core.getCustomEditors().enable(editorType)
+      }
+
+      integration.core.editionProperties.dbclick = false
+      const image = null
+      if (typeof image !== 'undefined' && image !== null && image.classList.contains(WirisPlugin.Configuration.get('imageClassName'))) {
+        integration.core.editionProperties.temporalImage = image
+        integration.openExistingFormulaEditor()
+      } else {
+        integration.openNewFormulaEditor()
+      }
+    } catch (e) {
+      console.error(e)
     }
-   }catch(e){
-    console.error(e)
-   }
   }
 }
 
@@ -95,6 +98,7 @@ export const MathType = Node.create({
 
   addStorage() {
     return {
+      currentInstances: new Map(),
       toolbarButtonConfig: [
         {
           icon: mathIcon,
@@ -192,14 +196,15 @@ export const MathType = Node.create({
   },
   addCommands() {
     return {
-      openMathEditor: () => openEditor(this.options.currentInstance),
-      openChemEditor: () => openEditor(this.options.currentInstance, 'chemistry')
+      openMathEditor: () => openEditor(),
+      openChemEditor: () => openEditor('chemistry')
     }
   },
-  onCreate() {
+  onCreate({ editor }) {
     try {
-      this.options.currentInstance = _addIntegration(this.editor)
-      //console.log(this.options.currentInstance)
+      if (getExtensionStorage(editor).currentInstances.has(editor.editorInstance)) return
+      const integration = _addIntegration(editor)
+      getExtensionStorage(editor).currentInstances.set(editor.editorInstance, integration)
 
       window.WirisPlugin = {
         Core,
@@ -210,16 +215,16 @@ export const MathType = Node.create({
         Configuration,
         Listeners,
         IntegrationModel,
-        currentInstance: this.options.currentInstance,
+        currentInstance: integration,
         Latex
       }
-    }catch(e) {
+    } catch (e) {
       console.error(e)
     }
   },
   onDestroy() {
-    this.options.currentInstance.destroy()
-    this.options.currentInstance = null
+    this.storage.currentInstances.get(this.editor.editorInstance).destroy()
+    this.storage.currentInstances.delete(this.editor.editorInstance)
   },
   addOptions() {
     return {
