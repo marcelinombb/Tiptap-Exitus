@@ -44,8 +44,11 @@ export class Toolbar {
     const { configStorage, toolbarOrder } = this.toolbarConfig
     toolbarOrder.forEach(item => {
       const tool = getExtensionStorage(configStorage, item)
-
-      if (!isEmptyObject(tool)) {
+      if (item == '|') {
+        const separator = document.createElement('span')
+        separator.className = 'ex-toolbar-separator'
+        this.toolbarItemsDiv?.append(separator)
+      } else if (!isEmptyObject(tool)) {
         const toolbarButtonConfig = Array.isArray(tool.toolbarButtonConfig) ? tool.toolbarButtonConfig : [tool.toolbarButtonConfig]
 
         toolbarButtonConfig.forEach((config: any) => {

@@ -173,6 +173,17 @@
     background: #f0f0f0;
   }
 
+  .ex-toolbar-separator {
+    display: inline-block;
+    align-self: stretch;
+    background: var( --border-gray);
+    margin-bottom: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    min-width: 1px;
+    width: 1px;
+    margin-right: var(--spacing-sm)
+  }
+
   .ex-toolbar-button svg {
     width: 20px;
     height: 20px;
@@ -200,11 +211,35 @@
     outline: 0;
     z-index: 0;
     overflow-y: auto;
+    overflow-x: hidden;
     resize: vertical;
     border: 1px solid var(--border-gray);
     border-top: 0px;
     padding: calc(2 * calc(0.6em * 1.5));
-    background: #fafafa;;
+    background: #fafafa;
+  }
+
+  
+  .editor-scroller::-webkit-scrollbar {
+    width: 8px;
+    scrollbar-width: thin;
+  }
+
+  /* Track */
+  .editor-scroller::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+    
+  /* Handle */
+  .editor-scroller::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 10px;
+  }
+
+  /* Handle on hover */
+  .editor-scroller::-webkit-scrollbar-thumb:hover {
+    background: #555; 
   }
 
   .editor-shell {

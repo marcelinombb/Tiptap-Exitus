@@ -38,7 +38,7 @@ module.exports = (env, argv) => {
           test: /\.(ts|tsx)?$/,
           loader: 'ts-loader',
           options: {
-            transpileOnly: true,
+            transpileOnly: true
           },
           exclude: /node_modules/
         },
@@ -76,21 +76,23 @@ module.exports = (env, argv) => {
         ]
       })
     ],
-    experiments: { 
-      topLevelAwait: true, 
-      asyncWebAssembly: true 
+    experiments: {
+      topLevelAwait: true,
+      asyncWebAssembly: true
     },
     optimization: {
       minimize: true,
-      minimizer: [new TerserPlugin({
-        // These options prevent Terser from generating a LICENSE.txt file
-        terserOptions: {
-          format: {
-            comments: false,
+      minimizer: [
+        new TerserPlugin({
+          // These options prevent Terser from generating a LICENSE.txt file
+          terserOptions: {
+            format: {
+              comments: false
+            }
           },
-        },
-        extractComments: false,
-      })],
+          extractComments: false
+        })
+      ]
     },
     devtool: 'source-map'
   }

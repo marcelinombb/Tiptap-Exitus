@@ -79,6 +79,7 @@ ExitusEditor.toolbarOrder = [
   'strike',
   'subscript',
   'superscript',
+  '|',
   'table',
   'textAlign',
   'image',
@@ -86,6 +87,7 @@ ExitusEditor.toolbarOrder = [
   'history',
   'listItem',
   'indent',
+  '|',
   'katex',
   'mathtype'
 ]
