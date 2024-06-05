@@ -248,7 +248,5 @@ export class TableView implements NodeView {
 function updateTableStyle(tableView: TableView) {
   const { table, tableWrapperStyle, tableWrapper, tableStyle } = tableView
   table.setAttribute('style', objParaCss(tableStyle))
-  console.log(tableWrapperStyle, objParaCss(tableWrapperStyle))
-
   tableWrapper.setAttribute('style', objParaCss(tableWrapperStyle))
 }

@@ -1,13 +1,13 @@
 import { Toolbar } from '@editor/toolbar'
 import { Button, type ButtonEventProps, Dropdown, type DropDownEventProps } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
-import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
 import imgSize from '@icons/image-size.svg'
 import { type Editor } from '@tiptap/core'
+import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type Node } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
@@ -223,7 +223,6 @@ export class ImageView implements NodeView {
     this.setImageAttributes(this.image, node)
 
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
-    //console.log(imageUrlRegex.test(node.attrs.src))
 
     if (imageUrlRegex.test(node.attrs.src)) {
       this.urlToBase64()

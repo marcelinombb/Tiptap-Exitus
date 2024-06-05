@@ -244,7 +244,6 @@ export const Image = Node.create<ImageOptions>({
               .map(item => item.getAsFile())
             if (images.length !== 0) event.preventDefault()
             images.forEach(image => parseImagesToBase64(image as File, self.editor))
-            console.log(images)
           },
           handleDOMEvents: {
             drop: (view, event) => {
@@ -256,7 +255,6 @@ export const Image = Node.create<ImageOptions>({
                 if (images.length === 0) {
                   return false
                 }
-                console.log(images)
                 images.forEach(image => parseImagesToBase64(image, self.editor))
 
                 event.preventDefault()
