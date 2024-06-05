@@ -30,6 +30,7 @@
 
 .tiptap {
   box-sizing: border-box;
+  border: 1px hsl(0, 0%, 82.7%) solid;
 }
 
 .tiptap {
@@ -147,6 +148,7 @@
     outline-color: transparent;
     outline-style: solid;
     outline-width: 3px;
+    user-select: auto;
     /* transition: outline-color 200ms ease; */
   }
 
@@ -895,6 +897,10 @@
   .ex-bolinha{
     background-color: #ffc83d;
   }
+}
+
+.tiptap-widget > table {
+  cursor: text
 }
 
 .ex-bolinha-cima {
