@@ -1,6 +1,7 @@
 import { Toolbar } from '@editor/toolbar'
 import { Button, type ButtonEventProps, Dropdown, type DropDownEventProps } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
+import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
@@ -11,89 +12,8 @@ import { type Node } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
 
-class ResizableImage {
-  //private element: HTMLElement
-  imageView: ImageView
-  private _isResizing: boolean = false
-  private initialX: number = 0
-  // private initialY: number = 0
-  private initialWidth: number = 0
-  // private initialHeight: number = 0
-  quadradoTopEsquerda!: HTMLElement
-  quadradoTopDireita!: HTMLElement
-  quadradoBaixoEsquerda!: HTMLElement
-  quadradoBaixoDireita!: HTMLElement
-  bindResizeEvent: (event: PointerEvent) => void
-  bindStopResizeEvent: () => void
-  resizers!: HTMLDivElement
-
-  constructor(imageView: ImageView) {
-    this.imageView = imageView
-    this.bindResizeEvent = this.resize.bind(this)
-    this.bindStopResizeEvent = this.stopResize.bind(this)
-    this.initResize()
-  }
-
-  private initResize() {
-    const element = document.createElement('div')
-    element.className = 'ex-hidden'
-
-    // Quadrado no canto superior esquerdo
-    this.quadradoTopEsquerda = element.appendChild(document.createElement('div'))
-    this.quadradoTopEsquerda.className = 'quadrado canto-superior-esquerdo'
-    this.addResizeEvent(this.quadradoTopEsquerda)
-    // Quadrado no canto superior direito
-    this.quadradoTopDireita = element.appendChild(document.createElement('div'))
-    this.quadradoTopDireita.className = 'quadrado canto-superior-direito'
-    this.addResizeEvent(this.quadradoTopDireita)
-    // Quadrado no canto inferior esquerdo
-    this.quadradoBaixoEsquerda = element.appendChild(document.createElement('div'))
-    this.quadradoBaixoEsquerda.className = 'quadrado canto-inferior-esquerdo'
-    this.addResizeEvent(this.quadradoBaixoEsquerda)
-    // Quadrado no canto inferior direito
-    this.quadradoBaixoDireita = element.appendChild(document.createElement('div'))
-    this.quadradoBaixoDireita.className = 'quadrado canto-inferior-direito'
-    this.addResizeEvent(this.quadradoBaixoDireita)
-
-    this.resizers = element
-
-    this.imageView.imageWrapper.appendChild(element)
-  }
-
-  private addResizeEvent(element: HTMLElement) {
-    element.addEventListener('pointerdown', (event: PointerEvent) => {
-      event.preventDefault()
-      event.stopPropagation()
-      this._isResizing = true
-      this.initialX = event.screenX
-      this.initialWidth = this.imageView.imageWrapper.offsetWidth
-      document.addEventListener('pointermove', this.bindResizeEvent)
-      document.addEventListener('pointerup', this.bindStopResizeEvent)
-    })
-  }
-
-  get isResizing() {
-    return this._isResizing
-  }
-
-  private resize(event: PointerEvent) {
-    if (!this._isResizing) return
-
-    const deltaX = event.screenX - this.initialX
-
-    this.imageView.imageWrapper.style.width = `${this.initialWidth + deltaX}px`
-  }
-
-  private stopResize() {
-    this._isResizing = false
-    document.removeEventListener('pointermove', this.bindResizeEvent)
-    document.removeEventListener('pointerup', this.bindStopResizeEvent)
-
-    this.imageView.updateAttributes({
-      style: `width: ${this.imageView.imageWrapper.style.width}`
-    })
-  }
-}
+import { convertToBase64 } from './image'
+import ResizableImage from './ResizableImage'
 
 function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
   imageWrapper.addEventListener('click', event => {
@@ -204,14 +124,6 @@ function trezentosPx(dropdown: Dropdown, icon: string) {
 
   button.bind('click', () => {
     dropdown.editor.commands.setImageWidth('300px')
-    /* if (imageWrapper.style.width != '300px') {
-      imageWrapper.style.width = '300px'
-      button.on()
-    } else {
-      button.off()
-      imageWrapper.style.width = ''
-      dropdown.off()
-    } */
   })
 
   return button.render()
@@ -225,14 +137,6 @@ function quatrocentosPx(dropdown: Dropdown, icon: string) {
 
   button.bind('click', () => {
     dropdown.editor.commands.setImageWidth('400px')
-    /* if (imageWrapper.style.width != '400px') {
-      imageWrapper.style.width = '400px'
-      button.on()
-    } else {
-      button.off()
-      imageWrapper.style.width = ''
-      dropdown.off()
-    } */
   })
 
   return button.render()
@@ -246,14 +150,6 @@ function setecentosPx(dropdown: Dropdown, icon: string) {
 
   button.bind('click', () => {
     dropdown.editor.commands.setImageWidth('700px')
-    /* if (imageWrapper.style.width != '700px') {
-      //dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
-      imageWrapper.style.width = '700px'
-    } else {
-      button.off()
-      imageWrapper.style.width = ''
-      dropdown.off()
-    } */
   })
 
   return button.render()
@@ -307,7 +203,7 @@ function balloonDropDown() {
 export class ImageView implements NodeView {
   node: Node
   dom: Element
-  image: HTMLElement
+  image: HTMLImageElement
   imageWrapper: HTMLElement
   balloon: Balloon
   editor: Editor
@@ -325,6 +221,13 @@ export class ImageView implements NodeView {
     this.image = this.imageWrapper.appendChild(document.createElement('img'))
 
     this.setImageAttributes(this.image, node)
+
+    const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
+    //console.log(imageUrlRegex.test(node.attrs.src))
+
+    if (imageUrlRegex.test(node.attrs.src)) {
+      this.urlToBase64()
+    }
 
     // Adiciona redimensionamento de imagens
     this.resizer = new ResizableImage(this)
@@ -381,10 +284,29 @@ export class ImageView implements NodeView {
     imageClickHandler(this)
   }
 
+  update(newNode: ProseMirrorNode) {
+    if (newNode.type !== this.node.type) {
+      return false
+    }
+
+    this.node = newNode
+    this.setImageAttributes(this.image, this.node)
+
+    return true
+  }
+
+  urlToBase64() {
+    const self = this
+    this.image.setAttribute('crossorigin', 'anonymous')
+    this.image.onload = convertToBase64(this.image, (base64Url: string) => {
+      self.updateAttributes({ src: base64Url })
+    })
+  }
+
   selectNode() {
     this.imageWrapper.classList.add('ex-selected')
   }
-  
+
   deselectNode() {
     this.imageWrapper.classList.remove('ex-selected')
   }

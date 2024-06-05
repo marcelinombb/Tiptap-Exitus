@@ -37,6 +37,10 @@ export class Toolbar {
     this.toolbarConfig = toolbarConfig
   }
 
+  closeAllTools() {
+    this.tools.forEach(tool => tool.off())
+  }
+
   createToolbar() {
     this.toolbarItemsDiv = document.createElement('div')
     this.toolbarItemsDiv.className = 'ex-toolbar-items'

@@ -32,6 +32,14 @@ export class Balloon {
     this.render()
   }
 
+  on() {
+    this.ballonMenu.style.display = 'block'
+  }
+
+  off() {
+    this.ballonMenu.style.display = 'none'
+  }
+
   render() {
     this.ballonMenu = document.createElement('div')
     this.ballonMenu.className = 'balloon-menu ex-hidden'

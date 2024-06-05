@@ -1,51 +1,57 @@
 import { type ButtonEventProps } from '@editor/ui'
 import imageAdd from '@icons/image-add-fill.svg'
 import type ExitusEditor from '@src/ExitusEditor'
-import { Node, nodeInputRule } from '@tiptap/core'
+import { type Editor, Node, nodeInputRule } from '@tiptap/core'
+import { Plugin, PluginKey } from 'prosemirror-state'
 import { findSelectedNodeOfType } from 'prosemirror-utils'
 
 import { ImageView } from './imageView'
 
 const inputID = 'editorImagePicker'
 
-function convertToBase64(input: HTMLInputElement, editor: ExitusEditor) {
-  if (input.files && input.files[0]) {
+export function convertToBase64(img: HTMLImageElement, callback: (base64Url: string) => void) {
+  return function () {
+    const maxHeight = img.height > 700 ? 700 : img.height
+    const maxWidth = img.width > 700 ? 700 : img.width
+    //let newHeight, newWidth;
+    const newDimension =
+      img.width > img.height
+        ? { width: maxWidth, height: Math.round(maxWidth / (img.width / img.height)) }
+        : { width: maxHeight * (img.width / img.height), height: maxHeight }
+
+    const canvas = document.createElement('canvas')
+
+    canvas.width = newDimension.width
+    canvas.height = newDimension.height
+
+    const ctx = canvas.getContext('2d')
+    ctx!.fillStyle = '#FFFFFF'
+    ctx?.fillRect(0, 0, canvas.width, canvas.height)
+    ctx?.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.7)
+    callback(dataUrl)
+  }
+}
+
+function parseImagesToBase64(img: File, editor: Editor) {
+  if (img) {
     const reader = new FileReader()
 
     reader.onload = function (e) {
       const img = document.createElement('img') as HTMLImageElement
-      img.onload = function () {
-        const maxHeight = img.height > 700 ? 700 : img.height
-        const maxWidth = img.width > 700 ? 700 : img.width
-        //let newHeight, newWidth;
-        const newDimension =
-          img.width > img.height
-            ? { width: maxWidth, height: Math.round(maxWidth / (img.width / img.height)) }
-            : { width: maxHeight * (img.width / img.height), height: maxHeight }
-
-        const canvas = document.createElement('canvas')
-
-        canvas.width = newDimension.width
-        canvas.height = newDimension.height
-
-        const ctx = canvas.getContext('2d')
-        ctx!.fillStyle = '#FFFFFF'
-        ctx?.fillRect(0, 0, canvas.width, canvas.height)
-        ctx?.drawImage(img, 0, 0)
-
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7)
-
+      img.onload = convertToBase64(img, (base64Url: string) => {
         editor
           .chain()
           .focus()
-          .setImage({ src: dataUrl as string })
+          .setImage({ src: base64Url as string })
           .run()
-      }
+      })
 
       img.src = e.target?.result as string
     }
 
-    reader.readAsDataURL(input.files[0])
+    reader.readAsDataURL(img)
   }
 }
 
@@ -56,7 +62,7 @@ function createFileInput(editor: ExitusEditor) {
   inputElement.setAttribute('id', inputID + editor.editorInstance)
   inputElement.setAttribute('accept', 'image/jpeg,image/png,image/gif,image/bmp,image/webp,image/tiff')
   inputElement.addEventListener('change', function () {
-    convertToBase64(this, editor)
+    parseImagesToBase64(this.files![0], editor)
   })
 
   return inputElement
@@ -154,7 +160,9 @@ export const Image = Node.create<ImageOptions>({
         tag: this.options.allowBase64 ? 'img[src]' : 'img[src]:not([src^="data:"])',
         getAttrs: node => {
           const parent = node.parentElement as HTMLElement
-          return (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure') && null
+          const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
+          const isUrlImage = imageUrlRegex.test(node.getAttribute('src') as string)
+          return (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure' || isUrlImage) && null
         }
       }
     ]
@@ -207,7 +215,6 @@ export const Image = Node.create<ImageOptions>({
       }
     }
   },
-
   addInputRules() {
     return [
       nodeInputRule({
@@ -215,7 +222,6 @@ export const Image = Node.create<ImageOptions>({
         type: this.type,
         getAttributes: match => {
           const [, , alt, src, title] = match
-
           return { src, alt, title }
         }
       })
@@ -225,5 +231,42 @@ export const Image = Node.create<ImageOptions>({
     return ({ node, editor, getPos }) => {
       return new ImageView(node, editor, getPos)
     }
+  },
+  addProseMirrorPlugins() {
+    const self = this
+    return [
+      new Plugin({
+        key: new PluginKey('eventHandler'),
+        props: {
+          handlePaste: (view, event, slice) => {
+            const images = Array.from(event.clipboardData?.items || [])
+              .filter(item => /image/i.test(item.type))
+              .map(item => item.getAsFile())
+            if (images.length !== 0) event.preventDefault()
+            images.forEach(image => parseImagesToBase64(image as File, self.editor))
+            console.log(images)
+          },
+          handleDOMEvents: {
+            drop: (view, event) => {
+              const hasFiles = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length
+
+              if (hasFiles) {
+                const images = Array.from(event.dataTransfer?.files ?? []).filter(file => /image/i.test(file.type))
+
+                if (images.length === 0) {
+                  return false
+                }
+                console.log(images)
+                images.forEach(image => parseImagesToBase64(image, self.editor))
+
+                event.preventDefault()
+                return true
+              }
+              return false
+            }
+          }
+        }
+      })
+    ]
   }
 })

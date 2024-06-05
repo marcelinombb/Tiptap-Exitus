@@ -1,4 +1,4 @@
-import { Button, Dropdown } from '@editor/ui'
+import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
 import centertIcon from '@icons/align-center.svg'
 import justifyIcon from '@icons/align-justify.svg'
 import alignLeftIcon from '@icons/align-left.svg'
@@ -45,7 +45,7 @@ function showDropdown({ event, dropdown }: any) {
   }
 }
 
-function textAlignDropDown({ editor }: any) {
+function textAlignDropDown({ editor }: ButtonEventProps) {
   const dropdown = new Dropdown(editor, {
     events: {
       open: showDropdown
@@ -54,13 +54,6 @@ function textAlignDropDown({ editor }: any) {
   })
 
   dropdown.setDropDownContent(createDropDownContent(editor, dropdown))
-
-  window.addEventListener('click', function (event: Event) {
-    const target = event.target as HTMLElement
-    if (!target.matches('.dropdown')) {
-      dropdown.off()
-    }
-  })
 
   return dropdown
 }
