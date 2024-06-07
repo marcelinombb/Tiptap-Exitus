@@ -1,5 +1,5 @@
 import { BalloonPosition } from '@editor/ui/Balloon'
-import { createHTMLElement } from '@editor/utils'
+import { createHTMLElement, setSelectionAfter } from '@editor/utils'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
@@ -52,6 +52,7 @@ export class KatexView implements NodeView {
         latexFormula: input.value,
         display: checkboxDisplay.checked
       })
+      setSelectionAfter(this.editor, this.node)
     }
 
     function cancelBalloon(this: KatexView) {

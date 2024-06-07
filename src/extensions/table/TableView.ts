@@ -129,8 +129,8 @@ export class TableView implements NodeView {
     updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
 
-    new TableFocus(this)
-    new UpDownTable(this)
+    new TableFocus(this, this.editor)
+    new UpDownTable(this, this.editor)
 
     const configStorage = {
       celumnsTable: {

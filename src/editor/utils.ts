@@ -1,6 +1,7 @@
 import { type ChainedCommands, type Editor } from '@tiptap/core'
 import { type Node } from '@tiptap/pm/model'
 import { TextSelection } from '@tiptap/pm/state'
+import { Fragment } from 'prosemirror-model'
 
 export function createHTMLElement<T = Element>(tagName: string, attributes: { [x: string]: string }, childrens?: Element[]): T {
   // Create the element
@@ -23,9 +24,42 @@ export function createHTMLElement<T = Element>(tagName: string, attributes: { [x
   return element as T
 }
 
-export function setCaretAfterNode(editor: Editor, targetNode: Node) {
-  const { state, view } = editor
-  const { doc, tr } = state
+export function insertParagraph(editor: Editor, position: number, before = false) {
+  const { view } = editor
+  const { tr, schema } = view.state
+
+  const paragraph = schema.nodes.paragraph.create()
+
+  const insertPos = before ? position : position + 1
+
+  tr.insert(insertPos, Fragment.from(paragraph))
+
+  const newPos = before ? insertPos : insertPos + 1
+
+  // Set selection to new paragraph
+  const transaction = tr.setSelection(TextSelection.create(tr.doc, newPos))
+
+  view.dispatch(transaction)
+}
+
+export function findNodePosition(editor: Editor, targetNode: Node) {
+  const { doc } = editor.view.state
+  let position = -1
+
+  doc.descendants((node, pos) => {
+    if (node === targetNode) {
+      position = pos
+      return false // Stop traversing
+    }
+    return true
+  })
+
+  return position
+}
+
+export function setSelectionAfter(editor: Editor, targetNode: Node) {
+  const { view } = editor
+  const { doc, tr } = view.state
 
   // Find the position of the target node
   let targetPos = null
@@ -41,6 +75,7 @@ export function setCaretAfterNode(editor: Editor, targetNode: Node) {
     const selection = TextSelection.create(doc, targetPos)
     const transaction = tr.setSelection(selection)
     view.dispatch(transaction)
+    view.focus()
   } else {
     console.error('Node not found in the document')
   }
