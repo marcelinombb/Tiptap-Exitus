@@ -73,6 +73,7 @@ export class ItensModalTable {
     this.inputBackgroundColor1 = createInput('color', 'Cor de Fundo')
     this.inputBackgroundColor1.className = 'ex-colorInput'
     this.inputBackgroundColor1.disabled = true
+    this.inputBackgroundColor1.style.cursor = 'not-allowed'
     this.inputBackgroundColor1.value = color
 
     this.selectInput.value = border
@@ -80,6 +81,7 @@ export class ItensModalTable {
     this.larguraBloco1 = createInput('number', 'Largura')
     this.larguraBloco1.className = 'ex-largura1'
     this.larguraBloco1.disabled = true
+    this.larguraBloco1.style.cursor = 'not-allowed'
     this.larguraBloco1.value = size.replace('px', '')
 
     this.inputBackgroundColor2 = createInput('color', 'Cor de Fundo')
@@ -114,12 +116,14 @@ export class ItensModalTable {
     this.selectInput.addEventListener('change', () => {
       if (this.selectInput.value) {
         this.inputBackgroundColor1.disabled = false
+        this.inputBackgroundColor1.style.cursor = 'pointer'
       }
     })
 
     this.inputBackgroundColor1.addEventListener('change', () => {
       if (this.inputBackgroundColor1.value) {
         this.larguraBloco1.disabled = false
+        this.larguraBloco1.style.cursor = 'pointer'
       }
     })
 
@@ -154,7 +158,6 @@ export class ItensModalTable {
     bordaLabel.className = 'ex-labels'
     bordaLabel.textContent = 'Borda'
     bordaLabel.style.marginTop = '10px'
-
 
     bloco1.append(bordaLabel, this.selectInput, this.inputBackgroundColor1, this.larguraBloco1)
     dropdownContent.appendChild(bloco1)
@@ -197,22 +200,22 @@ export class ItensModalTable {
 
     const TableEsquerda = createButton(this.editor, textDl, () => {
       this.editor.commands.setWrapperStyle({
-        Direita: 'auto',
-        Esquerda: '0'
+        'margin-rigth': 'auto',
+        'margin-left': '0'
       })
     })
 
     const TableMeio = createButton(this.editor, textDm, () => {
       this.editor.commands.setWrapperStyle({
-        Direita: 'auto',
-        Esquerda: 'auto'
+        'margin-rigth': 'auto',
+        'margin-left': 'auto'
       })
     })
 
     const TableDireito = createButton(this.editor, textDr, () => {
       this.editor.commands.setWrapperStyle({
-        Direita: '0',
-        Esquerda: 'auto'
+        'margin-rigth': '0',
+        'margin-left': 'auto'
       })
     })
 

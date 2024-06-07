@@ -12,7 +12,7 @@ function fecharDropdownsAbertos() {
 
 function saveBorderValue({ dropdown, editor }: DropDownEventProps) {
   const { nodeAfter } = selectionCell(editor.view.state)
-  const [size = '', border = 'none', color = ''] = (nodeAfter?.attrs.style.border ?? '').split(' ')
+  const [size = '', border = 'undefined', color = ''] = (nodeAfter?.attrs.style.border ?? '').split(' ')
 
   const borda = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-selectInput')
   const larguraInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-largura1')
@@ -114,10 +114,12 @@ export class ItensModalCell {
     this.inputBackgroundColor1 = createInput('color', 'Cor de Fundo')
     this.inputBackgroundColor1.className = 'ex-colorInput'
     this.inputBackgroundColor1.disabled = true
+    this.inputBackgroundColor1.style.cursor = 'not-allowed'
 
     this.larguraBloco1 = createInput('number', 'Largura')
     this.larguraBloco1.className = 'ex-largura1'
     this.larguraBloco1.disabled = true
+    this.larguraBloco1.style.cursor = 'not-allowed'
 
     this.inputBackgroundColor2 = createInput('color', 'Cor de Fundo')
     this.inputBackgroundColor2.className = 'ex-colorInput2'
@@ -135,7 +137,7 @@ export class ItensModalCell {
     dropdownContent.className = '.ex-dropdownList-content'
     dropdownContent.contentEditable = 'false'
 
-   /*  dropdownContent.addEventListener('click', event => {
+    /*  dropdownContent.addEventListener('click', event => {
       event.stopPropagation()
     }) */
 
@@ -149,12 +151,14 @@ export class ItensModalCell {
     this.selectInput.addEventListener('change', () => {
       if (this.selectInput.value) {
         this.inputBackgroundColor1.disabled = false
+        this.inputBackgroundColor1.style.cursor = 'pointer'
       }
     })
 
     this.inputBackgroundColor1.addEventListener('change', () => {
       if (this.inputBackgroundColor1.value) {
         this.larguraBloco1.disabled = false
+        this.larguraBloco1.style.cursor = 'pointer'
       }
     })
 

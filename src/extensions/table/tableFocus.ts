@@ -1,10 +1,11 @@
 import { Button } from '@editor/ui'
+import { setCaretAfterNode } from '@editor/utils'
 import setaCima from '@icons/corner-down-left-line.svg'
 import setaBaixo from '@icons/corner-down-right-line.svg'
 import selecionaIcon from '@icons/select-all.svg'
 import { NodeSelection } from '@tiptap/pm/state'
 import type ExitusEditor from 'src/ExitusEditor'
-import { setCaretAfterNode } from '@editor/utils'
+
 import { type TableView } from './TableView'
 
 export class UpDownTable {
@@ -40,12 +41,17 @@ export class UpDownTable {
   }
 
   private moveAlvoParaBaixo(editor: ExitusEditor) {
+    /*  if (!editor || !editor.state || !editor.view) {
+      console.error('Editor ou suas propriedades estão indefinidos')
+      return
+    } */
+
     const paragrafo = '<p></p>'
     this.tableView.dom.insertAdjacentHTML('afterend', paragrafo)
 
-    const targetMouse = this.tableView.node
+    /* const targetMouse = this.tableView.node
 
-    setCaretAfterNode(editor, targetMouse)
+    setCaretAfterNode(editor, targetMouse) */
   }
 
   private createButton(editor: ExitusEditor, icone: string, onClick: () => void): HTMLElement {
@@ -67,7 +73,7 @@ export default class TableFocus {
     this.getTable(editor)
   }
 
-  handleClick() {
+  private handleClick() {
     const { view } = this.tableView.editor
 
     if (typeof this.tableView.getPos === 'function') {

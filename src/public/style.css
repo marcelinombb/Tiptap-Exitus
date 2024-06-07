@@ -532,7 +532,7 @@
   height: 10px; 
   background-color: #3779eb; 
   position: absolute; 
-  display: none;
+  display: block;
 }
 
 .canto-superior-esquerdo {
@@ -730,7 +730,7 @@ display: none;
   z-index: 0;
   display: none;
   top: 0;
-  transform: translate(-12%,-120%);
+  transform: translate(-3px,calc(-50% - 15.5px));
 }
 
 .tableWrapper:not(.ex-selected){
