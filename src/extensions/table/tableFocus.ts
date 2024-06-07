@@ -62,7 +62,7 @@ export default class TableFocus {
     this.getTable(editor)
   }
 
-  handleClick() {
+  private handleClick() {
     const { view } = this.tableView.editor
 
     if (typeof this.tableView.getPos === 'function') {
@@ -85,7 +85,7 @@ export default class TableFocus {
   private createButton(editor: ExitusEditor, icone: string, onClick: () => void): HTMLElement {
     const button = new Button(editor, {
       icon: icone,
-      classList: ['ex-bolinha']
+      classList: ['ex-getTable']
     })
     button.bind('click', onClick)
     return button.render()

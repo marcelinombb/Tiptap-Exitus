@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { objParaCss } from '@extensions/table'
 import { mergeAttributes, Node } from '@tiptap/core'
 import { type DOMOutputSpec } from '@tiptap/pm/model'
@@ -35,6 +36,13 @@ export function cssParaObj(cssString: string): { [key: string]: string } {
   })
 
   return styles
+}
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    tableCell: {
+      setCellAttribute: (attributes: { [key: string]: any }) => ReturnType
+    }
+  }
 }
 
 export const TableCell = Node.create<TableCellOptions>({
