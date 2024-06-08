@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { objParaCss } from '@extensions/table'
 import { mergeAttributes, Node } from '@tiptap/core'
 import { type DOMOutputSpec } from '@tiptap/pm/model'
@@ -37,10 +36,11 @@ export function cssParaObj(cssString: string): { [key: string]: string } {
 
   return styles
 }
+
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     tableCell: {
-      setCellAttribute: (attributes: { [key: string]: any }) => ReturnType
+      setCellAttributes: (attributes: { [key: string]: any }) => ReturnType
     }
   }
 }
@@ -100,8 +100,7 @@ export const TableCell = Node.create<TableCellOptions>({
   },
   addCommands() {
     return {
-      ...this.parent?.(),
-      setCellAttribute:
+      setCellAttributes:
         (attributes: { [key: string]: any }) =>
         ({ state, dispatch, tr }) => {
           const { nodeAfter, pos } = selectionCell(state)
@@ -116,9 +115,10 @@ export const TableCell = Node.create<TableCellOptions>({
           if (dispatch) {
             tr.setNodeMarkup(pos, undefined, attrs)
             dispatch(tr)
+            return true
           }
 
-          return true
+          return false
         }
     }
   }

@@ -230,19 +230,19 @@ export class ItensModalCell {
     bloco8.className = 'ex-bloco8'
 
     const TableEsquerda = createButton(this.editor, textDl, () => {
-      ;(this.editor.commands as any).setCellAttribute({
+      this.editor.commands.setCellAttributes({
         'vertical-align': 'top'
       })
     })
 
     const TableMeio = createButton(this.editor, textDm, () => {
-      ;(this.editor.commands as any).setCellAttribute({
+      this.editor.commands.setCellAttributes({
         'vertical-align': 'middle'
       })
     })
 
     const TableDireito = createButton(this.editor, textDr, () => {
-      ;(this.editor.commands as any).setCellAttribute({
+      this.editor.commands.setCellAttributes({
         'vertical-align': 'bottom'
       })
     })
@@ -278,7 +278,7 @@ export class ItensModalCell {
 
     // Botão de cancelar
     const botaoCancela = createButton(this.editor, 'Cancelar', () => {
-      this.editor.commands.setCellAttribute({
+      this.editor.commands.setCellAttributes({
         height: '',
         width: '',
         background: '',
@@ -303,7 +303,7 @@ export class ItensModalCell {
     const largura = this.larguraBloco1.value
 
     if (selectedValue && cor && largura) {
-      this.editor.commands.setCellAttribute({
+      this.editor.commands.setCellAttributes({
         border: `${largura}px ${selectedValue} ${cor}`
       })
     }
@@ -313,7 +313,7 @@ export class ItensModalCell {
     const cor2 = this.inputBackgroundColor2.value
 
     if (cor2) {
-      this.editor.commands.setCellAttribute({
+      this.editor.commands.setCellAttributes({
         background: cor2
       })
     }
@@ -323,7 +323,7 @@ export class ItensModalCell {
     const altura = this.inputAltura.value
     const largura = this.inputLargura.value
     if (altura && largura) {
-      this.editor.commands.setCellAttribute({
+      this.editor.commands.setCellAttributes({
         height: `${altura}em`,
         width: `${largura}em`
       })
