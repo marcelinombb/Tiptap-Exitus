@@ -1,4 +1,4 @@
-import { Balloon, type BalloonPosition, Button } from '@editor/ui'
+import { Balloon, type BalloonOptions, Button } from '@editor/ui'
 import { createHTMLElement } from '@editor/utils'
 import check from '@icons/check-line.svg'
 import close from '@icons/close-line.svg'
@@ -18,7 +18,7 @@ export class KatexBalloon {
     latexConfig: any,
     confirmCallback: (katexBalloon: KatexBalloon) => void,
     cancelCallback: (katexBalloon: KatexBalloon) => void,
-    position: BalloonPosition
+    position: BalloonOptions['position']
   ) {
     const { display, latexFormula } = latexConfig
     this.editor = editor

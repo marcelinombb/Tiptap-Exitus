@@ -1,4 +1,3 @@
-import { BalloonPosition } from '@editor/ui/Balloon'
 import { createHTMLElement, setSelectionAfter } from '@editor/utils'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
@@ -67,7 +66,7 @@ export class KatexView implements NodeView {
       },
       confirmBalloon.bind(this),
       cancelBalloon.bind(this),
-      BalloonPosition.BOTTOM
+      'bottom'
     )
 
     this.renderedLatex = document.createElement('span')

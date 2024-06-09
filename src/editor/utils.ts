@@ -82,7 +82,7 @@ export function setSelectionAfter(editor: Editor, targetNode: Node) {
 }
 
 export function getNodeFromSelection(editor: Editor): Node | null {
-  const { state } = editor
+  const { state } = editor.view
   const { from } = state.selection
   const node = state.doc.nodeAt(from)
   return node

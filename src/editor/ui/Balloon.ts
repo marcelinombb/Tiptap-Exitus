@@ -13,7 +13,7 @@ export enum BalloonPosition {
 }
 
 export interface BalloonOptions {
-  position: BalloonPosition
+  position: 'top' | 'bottom' | 'float'
 }
 
 export class Balloon {
@@ -21,7 +21,7 @@ export class Balloon {
   ballonPanel!: HTMLDivElement
   editor: Editor
   options: BalloonOptions = {
-    position: BalloonPosition.BOTTOM
+    position: 'bottom'
   }
   constructor(editor: Editor, options?: BalloonOptions) {
     this.editor = editor

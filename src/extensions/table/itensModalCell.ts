@@ -1,5 +1,6 @@
 //@ts-nocheck
 import { Button, Dropdown, type DropDownEventProps } from '@editor/ui'
+import { type TableView } from '@extensions/table'
 import textDr from '@icons/align-bottom.svg'
 import textDl from '@icons/align-top.svg'
 import textDm from '@icons/align-vertically.svg'
@@ -39,11 +40,11 @@ function saveSizeValue({ dropdown, editor }: DropDownEventProps) {
 
   if (nodeAfter && nodeAfter?.attrs.style) {
     const style = nodeAfter?.attrs.style
-    const alturaInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-inputDimensoes')
-    const larguraInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('.ex-inputDimensoesLargura')
+    const alturaInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('input[placeholder="Altura"]')
+    const larguraInput = dropdown.dropdownContent.querySelector<HTMLInputElement>('input[placeholder="Largura"]')
 
-    alturaInput.value = style?.altura.replace('px', '')
-    larguraInput.value = style?.largura.replace('px', '')
+    alturaInput.value = style?.altura?.replace('px', '')
+    larguraInput.value = style?.largura?.replace('px', '')
   }
 }
 
@@ -59,7 +60,7 @@ function showDropdown(dropDownEvent: DropDownEventProps) {
   }
 }
 
-export function criaCellModal() {
+export function criaCellModal(tableView: TableView) {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
       events: {
@@ -68,7 +69,7 @@ export function criaCellModal() {
       classes: ['ex-dropdown-balloonModal']
     })
 
-    dropdown.setDropDownContent(new ItensModalCell(editor).render())
+    dropdown.setDropDownContent(new ItensModalCell(tableView).render())
     return dropdown
   }
 }
@@ -80,17 +81,19 @@ export class ItensModalCell {
   private inputBackgroundColor2: HTMLInputElement
   private inputAltura: HTMLInputElement
   private inputLargura: HTMLInputElement
+  private tableView: TableView
 
-  constructor(editor: ExitusEditor) {
-    this.editor = editor
-
+  constructor(tableView: TableView) {
+    this.editor = tableView.editor
+    this.tableView = tableView
     this.selectInput = document.createElement('select')
     this.selectInput.style.width = '80px'
     this.selectInput.className = 'ex-selectInput'
 
     const borderStyles = {
       'sem borda': 'none',
-      sólida: 'solid',
+      // eslint-disable-next-line prettier/prettier
+      'sólida': 'solid',
       pontilhada: 'dotted',
       tracejada: 'dashed',
       dupla: 'double',
@@ -132,10 +135,6 @@ export class ItensModalCell {
     const dropdownContent = document.createElement('div')
     dropdownContent.className = '.ex-dropdownList-content'
     dropdownContent.contentEditable = 'false'
-
-    /*  dropdownContent.addEventListener('click', event => {
-      event.stopPropagation()
-    }) */
 
     const propriedadesLabel = document.createElement('strong')
     propriedadesLabel.textContent = 'Propriedades da Tabela'
@@ -230,19 +229,19 @@ export class ItensModalCell {
     bloco8.className = 'ex-bloco8'
 
     const TableEsquerda = createButton(this.editor, textDl, () => {
-      this.editor.commands.setCellAttributes({
+      this.editor.commands.setCellAttributes(this.tableView.selectedCell, {
         'vertical-align': 'top'
       })
     })
 
     const TableMeio = createButton(this.editor, textDm, () => {
-      this.editor.commands.setCellAttributes({
+      this.editor.commands.setCellAttributes(this.tableView.selectedCell, {
         'vertical-align': 'middle'
       })
     })
 
     const TableDireito = createButton(this.editor, textDr, () => {
-      this.editor.commands.setCellAttributes({
+      this.editor.commands.setCellAttributes(this.tableView.selectedCell, {
         'vertical-align': 'bottom'
       })
     })
@@ -278,7 +277,7 @@ export class ItensModalCell {
 
     // Botão de cancelar
     const botaoCancela = createButton(this.editor, 'Cancelar', () => {
-      this.editor.commands.setCellAttributes({
+      this.editor.commands.setCellAttributes(this.tableView.selectedCell, {
         height: '',
         width: '',
         background: '',
@@ -303,7 +302,7 @@ export class ItensModalCell {
     const largura = this.larguraBloco1.value
 
     if (selectedValue && cor && largura) {
-      this.editor.commands.setCellAttributes({
+      this.editor.commands.setCellAttributes(this.tableView.selectedCell, {
         border: `${largura}px ${selectedValue} ${cor}`
       })
     }
@@ -313,7 +312,7 @@ export class ItensModalCell {
     const cor2 = this.inputBackgroundColor2.value
 
     if (cor2) {
-      this.editor.commands.setCellAttributes({
+      this.editor.commands.setCellAttributes(this.tableView.selectedCell, {
         background: cor2
       })
     }
@@ -323,7 +322,7 @@ export class ItensModalCell {
     const altura = this.inputAltura.value
     const largura = this.inputLargura.value
     if (altura && largura) {
-      this.editor.commands.setCellAttributes({
+      this.editor.commands.setCellAttributes(this.tableView.selectedCell, {
         height: `${altura}em`,
         width: `${largura}em`
       })

@@ -10,11 +10,10 @@ import starredTable from '@icons/starred-table.svg'
 import tableColumns from '@icons/table-columns.svg'
 import tableRow from '@icons/table-lines.svg'
 import { type Editor } from '@tiptap/core'
-import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
+import { type Node as ProseMirrorNode, type ResolvedPos } from '@tiptap/pm/model'
+import { selectionCell } from '@tiptap/pm/tables'
 import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 import { criaCellModal } from './itensModalCell'
 import { criaTabelaModal } from './itensModalTable'
@@ -22,23 +21,24 @@ import { objParaCss } from './table'
 import TableFocus, { UpDownTable } from './tableFocus'
 import { criaDropCell, criaDropColuna, criaDropLinhas } from './tableToolbarItens'
 
-function clickHandler(table: TableView) {
-  table.tableWrapper.addEventListener('click', event => {
-    if (!table.balloon.isOpen()) {
-      table.balloon.show()
+function clickHandler(tableView: TableView) {
+  tableView.table.addEventListener('click', event => {
+    if (!tableView.balloon.isOpen()) {
+      tableView.balloon.show()
     }
+    tableView.updateSelectedCell()
 
     function clickOutside(event) {
       const target = event.target as HTMLElement
 
       if (target.closest('.tableWrapper') == null) {
-        table.balloon.hide()
-        table.tableWrapper.classList.remove('ex-selected')
-        window.removeEventListener('click', clickOutside)
+        tableView.balloon.hide()
+        tableView.tableWrapper.classList.remove('ex-selected')
+        document.removeEventListener('click', clickOutside)
       }
     }
 
-    window.addEventListener('click', clickOutside)
+    document.addEventListener('click', clickOutside)
   })
 }
 
@@ -109,6 +109,7 @@ export class TableView implements NodeView {
   getPos: boolean | (() => number)
   tableStyle: { [key: string]: string }
   tableWrapperStyle: { [key: string]: string }
+  selectedCell: ResolvedPos
 
   constructor(node: ProseMirrorNode, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
@@ -151,7 +152,7 @@ export class TableView implements NodeView {
         toolbarButtonConfig: {
           icon: tableCell + arrowDropDown,
           title: 'mesclar células',
-          dropdown: criaDropCell(node.attrs.style)
+          dropdown: criaDropCell()
         }
       },
       tableStarred: {
@@ -165,7 +166,7 @@ export class TableView implements NodeView {
         toolbarButtonConfig: {
           icon: starredCell + arrowDropDown,
           title: 'editar celula',
-          dropdown: criaCellModal()
+          dropdown: criaCellModal(this)
         }
       }
     }
@@ -205,6 +206,14 @@ export class TableView implements NodeView {
         dispatch(tr)
       }
     }
+  }
+
+  updateSelectedCell() {
+    this.selectedCell = selectionCell(this.editor.view.state)
+  }
+
+  getSelectedCell() {
+    return this.selectedCell
   }
 
   update(node: ProseMirrorNode) {

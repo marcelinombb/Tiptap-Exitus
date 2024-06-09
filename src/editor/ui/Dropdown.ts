@@ -69,13 +69,13 @@ export class Dropdown implements Tool {
     this.dropdownContentContainer.style.display = 'none'
   }
 
-  render() {    
+  render() {
     this.button.bind('click', ({ editor, event, button }) => {
       this.config.events['open']({ editor, event, button, dropdown: this })
 
       const close = (event: Event) => {
         const target = event.target as HTMLElement
-        if (!target.closest('.dropdown')) {
+        if (!target.closest('.ex-dropdown')) {
           this.off()
           window.removeEventListener('click', close)
         }

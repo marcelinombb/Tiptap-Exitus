@@ -20,7 +20,7 @@ function showDropdown({ dropdown }: any) {
 }
 
 export function criaTabelaModal(style: any) {
-  return ({ editor }: { editor: ExitusEditor }) => {
+  return ({ editor }) => {
     const dropdown = new Dropdown(editor, {
       events: {
         open: showDropdown
