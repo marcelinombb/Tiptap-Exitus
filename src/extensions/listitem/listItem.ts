@@ -36,7 +36,7 @@ function listaBolinhaCheia(editor: ExitusEditor, dropdown: Dropdown, icon: strin
 
 function createDropDownContent(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
-  dropdownContent.className = '.ex-dropdownList-content'
+  dropdownContent.className = 'ex-dropdownList-content'
 
   const listFull = listaBolinhaCheia(editor, dropdown, listFullIcon)
   const listOredered = listaOrdenada(editor, dropdown, listOrederedIcon)

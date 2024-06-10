@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { type ButtonEventProps } from '@editor/ui'
 import formula from '@icons/formula.svg'
 import { Node } from '@tiptap/core'

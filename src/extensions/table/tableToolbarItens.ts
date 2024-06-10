@@ -3,7 +3,6 @@ import { Button, Dropdown } from '@editor/ui'
 import type ExitusEditor from 'src/ExitusEditor'
 
 let botaoAtivo: Button | null = null
-let dropdownsAbertos: Dropdown[] = []
 
 function ativaBotao(button: Button) {
   if (botaoAtivo) {
@@ -13,22 +12,12 @@ function ativaBotao(button: Button) {
   botaoAtivo = button
 }
 
-function fecharDropdownsAbertos() {
-  dropdownsAbertos.forEach(dropdown => {
-    dropdown.off()
-  })
-  dropdownsAbertos = []
-}
-
 function showDropdown({ event, dropdown }: any) {
   event.stopPropagation()
   if (dropdown.isOpen) {
     dropdown.off()
-    //dropdownsAbertos = dropdownsAbertos.filter(d => d !== dropdown)
   } else {
-    //fecharDropdownsAbertos()
     dropdown.on()
-    //dropdownsAbertos.push(dropdown)
   }
 }
 function colunaEsquerda(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
@@ -92,7 +81,7 @@ function colunaDelete(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
 
 function dropDownColunas(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
-  dropdownContent.className = '.ex-dropdownList-content'
+  dropdownContent.className = 'ex-dropdownList-content'
 
   const colunaHead = colunaHeader(editor, dropdown, 'Adicionar/remover cabeçalho à coluna')
   const colunaE = colunaEsquerda(editor, dropdown, 'Adicionar coluna à Esquerda')
@@ -191,7 +180,7 @@ function linhaHeader(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
 
 function dropDownLinhas(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
-  dropdownContent.className = '.ex-dropdownList-content'
+  dropdownContent.className = 'ex-dropdownList-content'
 
   const linhaHead = linhaHeader(editor, dropdown, 'Adicionar/remover cabeçalho à linha')
   const linhaE = linhaEsquerda(editor, dropdown, 'Adicionar linha em cima')
@@ -275,7 +264,7 @@ function splitCell(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
 
 function dropDownCell(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
-  dropdownContent.className = '.ex-dropdownList-content'
+  dropdownContent.className = 'ex-dropdownList-content'
 
   const cellHead = cellHeader(editor, dropdown, 'Adicionar/remover cabeçalho à célula')
   const cellMerge = mergeCell(editor, dropdown, 'Mesclar células')

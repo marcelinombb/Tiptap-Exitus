@@ -32,6 +32,15 @@ export class Balloon {
     this.render()
   }
 
+  destroy() {
+    this.off()
+    this.ballonMenu.parentElement!.removeChild(this.ballonMenu)
+  }
+
+  toggle(on: boolean) {
+    this.ballonMenu.style.display = on ? 'block' : 'none'
+  }
+
   on() {
     this.ballonMenu.style.display = 'block'
   }
@@ -42,6 +51,7 @@ export class Balloon {
 
   render() {
     this.ballonMenu = document.createElement('div')
+    this.ballonMenu.contentEditable = 'false'
     this.ballonMenu.className = 'balloon-menu ex-hidden'
 
     this.ballonPanel = this.ballonMenu.appendChild(document.createElement('div'))
@@ -59,6 +69,10 @@ export class Balloon {
 
   isOpen() {
     return !this.ballonMenu.classList.contains('ex-hidden')
+  }
+
+  setPanelContent(content: HTMLElement) {
+    this.ballonPanel.appendChild(content)
   }
 
   setPosition(x: number, y: number) {

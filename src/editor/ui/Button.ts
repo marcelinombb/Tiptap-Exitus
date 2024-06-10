@@ -1,13 +1,14 @@
 import { type Toolbar } from '@editor/toolbar'
 import { createHTMLElement } from '@editor/utils'
 import type ExitusEditor from '@src/ExitusEditor'
+import { type Editor } from '@tiptap/core'
 
 import { type Tool } from '../toolbar/Tool'
 
 import { type Dropdown } from '.'
 
 export type ButtonEventProps = {
-  editor: ExitusEditor
+  editor: Editor
   button: Button
   event: Event
 }
@@ -32,10 +33,10 @@ const defaultConfig: Partial<ButtonConfig> = {
 export class Button implements Tool {
   config: Partial<ButtonConfig>
   button: HTMLButtonElement
-  editor: ExitusEditor
+  editor: Editor
   dropdown!: Dropdown
   parentToolbar!: Toolbar
-  constructor(editor: ExitusEditor, config: Partial<ButtonConfig>) {
+  constructor(editor: Editor, config: Partial<ButtonConfig>) {
     this.config = { ...defaultConfig, ...config }
     this.editor = editor
     this.button = this.createButton()

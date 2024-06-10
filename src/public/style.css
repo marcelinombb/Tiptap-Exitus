@@ -8,6 +8,7 @@
   --color-success: #008a00;
   --color-cancel: #db3700;
   --color-base-text: #333;
+  --color-focused-background: rgba(158,201,250,.3);
 }
 
 .ProseMirror {
@@ -57,6 +58,10 @@
   max-width: 600px;
 }
 
+.single-cell-seleceted {
+  background-color: var(--color-focused-background);
+}
+
  td,
  th {
   min-width: 1em;
@@ -74,14 +79,14 @@
 }
 
  .selectedCell:after {
-  z-index: 2;
+  z-index: 1;
   position: absolute;
   content: "";
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
-  background: rgba(200, 200, 255, 0.4);
+  background: var(--color-focused-background);
   pointer-events: none;
 }
 
@@ -310,8 +315,8 @@
   }
 
   .ex-dropdownList-content {
-    display: flex;
-    flex-wrap: nowrap;
+    
+    padding: var(--spacing-md);
   }
 
   .ex-dropdown-table-cells {

@@ -157,7 +157,7 @@ function setecentosPx(dropdown: Dropdown, icon: string) {
 
 function criarDropDown(dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
-  dropdownContent.className = '.ex-dropdownList-content'
+  dropdownContent.className = 'ex-dropdownList-content'
 
   const original = originalPx(dropdown, 'Original')
   const pequeno = trezentosPx(dropdown, '300px')
