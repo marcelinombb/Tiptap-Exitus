@@ -108,9 +108,7 @@ export const Image = Node.create<ImageOptions>({
     return {
       toolbarButtonConfig: {
         icon: imageAdd,
-        events: {
-          click: addImage
-        },
+        click: addImage,
         checkActive: this.name
       }
     }

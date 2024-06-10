@@ -102,18 +102,14 @@ export const MathType = Node.create({
       toolbarButtonConfig: [
         {
           icon: mathIcon,
-          events: {
-            click: ({ editor }: ButtonEventProps) => {
-              editor.commands.openMathEditor()
-            }
+          click: ({ editor }: ButtonEventProps) => {
+            editor.commands.openMathEditor()
           }
         },
         {
           icon: chemIcon,
-          events: {
-            click: ({ editor }: ButtonEventProps) => {
-              editor.commands.openChemEditor()
-            }
+          click: ({ editor }: ButtonEventProps) => {
+            editor.commands.openChemEditor()
           }
         }
       ]

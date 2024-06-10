@@ -12,9 +12,7 @@ export const Strike = StrikeBase.extend({
     return {
       toolbarButtonConfig: {
         icon: strike,
-        events: {
-          click: toggleStrike
-        },
+        click: toggleStrike,
         checkActive: this.name
       }
     }

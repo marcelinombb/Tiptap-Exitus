@@ -12,9 +12,7 @@ export const Subscript = SubscriptBase.extend({
     return {
       toolbarButtonConfig: {
         icon: subscript,
-        events: {
-          click: togglesubscript
-        },
+        click: togglesubscript,
         checkActive: this.name
       }
     }

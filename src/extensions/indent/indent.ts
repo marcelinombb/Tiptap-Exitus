@@ -107,16 +107,12 @@ export const Indent = Extension.create({
       toolbarButtonConfig: [
         {
           icon: tiraEspaço,
-          events: {
-            click: delTab
-          },
+          click: delTab,
           checkActive: this.name
         },
         {
           icon: botaEspaco,
-          events: {
-            click: setTab
-          },
+          click: setTab,
           checkActive: this.name
         }
       ]

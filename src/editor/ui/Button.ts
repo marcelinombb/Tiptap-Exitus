@@ -1,7 +1,6 @@
 import { type Toolbar } from '@editor/toolbar'
 import { createHTMLElement } from '@editor/utils'
 import type ExitusEditor from '@src/ExitusEditor'
-import { type Editor } from '@tiptap/core'
 
 import { type Tool } from '../toolbar/Tool'
 
@@ -19,9 +18,7 @@ export interface ButtonConfig {
   title: string
   attributes: object[]
   classList: string[]
-  events: {
-    [key: string]: (obj: ButtonEventProps) => void
-  }
+  click: (obj: ButtonEventProps) => void
   checkActive: string | object
 }
 
@@ -35,10 +32,10 @@ const defaultConfig: Partial<ButtonConfig> = {
 export class Button implements Tool {
   config: Partial<ButtonConfig>
   button: HTMLButtonElement
-  editor: Editor
+  editor: ExitusEditor
   dropdown!: Dropdown
   parentToolbar!: Toolbar
-  constructor(editor: Editor, config: Partial<ButtonConfig>) {
+  constructor(editor: ExitusEditor, config: Partial<ButtonConfig>) {
     this.config = { ...defaultConfig, ...config }
     this.editor = editor
     this.button = this.createButton()
@@ -63,13 +60,15 @@ export class Button implements Tool {
   }
 
   bindEvents() {
-    const events = this.config.events
-    for (const key in events) {
-      this.bind(key, events[key])
+    const click = this.config.click
+    //for (const key in events) {
+    if (click != undefined) {
+      this.bind('click', click)
     }
+    //}
   }
 
-  bind(eventName: string, callback: (obj: any) => void) {
+  bind(eventName: string, callback: (obj: ButtonEventProps) => void) {
     this.button.addEventListener(eventName, event => {
       event.stopPropagation()
       event.preventDefault()

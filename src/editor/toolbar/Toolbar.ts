@@ -67,7 +67,7 @@ export class Toolbar {
             const button = new Button(this.editor, config)
             button.setParentToolbar(this)
             this.tools.push(button)
-            button.bind('click', config.events['click'])
+            button.bind('click', config.click)
             this.toolbarItemsDiv?.append(button.render())
           }
         })

@@ -11,9 +11,7 @@ export const Superscript = SuperscriptBase.extend({
     return {
       toolbarButtonConfig: {
         icon: superscript,
-        events: {
-          click: togglesuperscript
-        },
+        click: togglesuperscript,
         checkActive: this.name
       }
     }

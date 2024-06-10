@@ -87,9 +87,7 @@ export const Katex = Node.create({
     return {
       toolbarButtonConfig: {
         icon: formula,
-        events: {
-          click: click
-        },
+        click: click,
         checkActive: this.name
       }
     }

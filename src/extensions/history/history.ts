@@ -27,16 +27,12 @@ export const History = HistoryBase.extend({
       toolbarButtonConfig: [
         {
           icon: quote,
-          events: {
-            click: goBack
-          },
+          click: goBack,
           checkActive: this.name
         },
         {
           icon: quote2,
-          events: {
-            click: goFoward
-          },
+          click: goFoward,
           checkActive: this.name
         }
       ]

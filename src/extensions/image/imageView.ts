@@ -236,27 +236,21 @@ export class ImageView implements NodeView {
         toolbarButtonConfig: {
           icon: textDr,
           title: 'direita',
-          events: {
-            click: alinhaDireita(this)
-          }
+          click: alinhaDireita(this)
         }
       },
       alinhaMeio: {
         toolbarButtonConfig: {
           icon: textDm,
           title: 'meio',
-          events: {
-            click: alinhaMeio(this)
-          }
+          click: alinhaMeio(this)
         }
       },
       alinhaEsquerda: {
         toolbarButtonConfig: {
           icon: textDl,
           title: 'esquerda',
-          events: {
-            click: alinhaEsquerda(this)
-          }
+          click: alinhaEsquerda(this)
         }
       },
       tamanhoImg: {
