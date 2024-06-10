@@ -1,4 +1,4 @@
-import { BalloonPosition, type ButtonEventProps } from '@editor/ui'
+import { type ButtonEventProps } from '@editor/ui'
 import formula from '@icons/formula.svg'
 import { Node } from '@tiptap/core'
 // eslint-disable-next-line import-helpers/order-imports
@@ -45,7 +45,7 @@ function click({ editor, button }: ButtonEventProps) {
     },
     confirmButtonCallback,
     cancelButtonCallback,
-    BalloonPosition.FLOAT
+    'float'
   )
 
   const focus = () => {

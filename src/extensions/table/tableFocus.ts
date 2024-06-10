@@ -1,5 +1,5 @@
 import { Button } from '@editor/ui'
-import { setCaretAfterNode } from '@editor/utils'
+import { insertParagraph } from '@editor/utils'
 import setaCima from '@icons/corner-down-left-line.svg'
 import setaBaixo from '@icons/corner-down-right-line.svg'
 import selecionaIcon from '@icons/select-all.svg'
@@ -12,9 +12,11 @@ export class UpDownTable {
   tableView: TableView
   FocarCima!: HTMLElement
   FocarBaixo!: HTMLElement
+  editor: ExitusEditor
 
   constructor(tableView: TableView, editor: ExitusEditor) {
     this.tableView = tableView
+    this.editor = editor
     this.focaTabela(editor)
   }
 
@@ -23,35 +25,22 @@ export class UpDownTable {
     element.style.position = 'relative'
 
     const botaoCima = this.createButton(editor, setaCima, () => {
-      this.moveAlvoParaCima()
+      if (typeof this.tableView.getPos == 'function') {
+        const pos = this.tableView.getPos()
+        insertParagraph(this.editor, pos, true)
+      }
     })
     this.FocarCima = element.appendChild(botaoCima)
     this.FocarCima.classList.add('ex-bolinha', 'ex-bolinha-cima')
 
     const botaoBaixo = this.createButton(editor, setaBaixo, () => {
-      this.moveAlvoParaBaixo(editor)
+      if (typeof this.tableView.getPos == 'function') {
+        const pos = this.tableView.getPos() as number
+        insertParagraph(this.editor, pos + this.tableView.node.nodeSize)
+      }
     })
     this.FocarBaixo = element.appendChild(botaoBaixo)
     this.FocarBaixo.classList.add('ex-bolinha', 'ex-bolinha-baixo')
-  }
-
-  private moveAlvoParaCima() {
-    const paragrafo = '<p></p>'
-    this.tableView.dom.insertAdjacentHTML('beforebegin', paragrafo)
-  }
-
-  private moveAlvoParaBaixo(editor: ExitusEditor) {
-    /*  if (!editor || !editor.state || !editor.view) {
-      console.error('Editor ou suas propriedades estão indefinidos')
-      return
-    } */
-
-    const paragrafo = '<p></p>'
-    this.tableView.dom.insertAdjacentHTML('afterend', paragrafo)
-
-    /* const targetMouse = this.tableView.node
-
-    setCaretAfterNode(editor, targetMouse) */
   }
 
   private createButton(editor: ExitusEditor, icone: string, onClick: () => void): HTMLElement {

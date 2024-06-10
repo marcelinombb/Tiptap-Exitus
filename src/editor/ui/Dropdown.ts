@@ -75,7 +75,7 @@ export class Dropdown implements Tool {
 
       const close = (event: Event) => {
         const target = event.target as HTMLElement
-        if (target.closest('.dropdown')) {
+        if (!target.closest('.ex-dropdown')) {
           this.off()
           window.removeEventListener('click', close)
         }

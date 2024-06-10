@@ -20,7 +20,7 @@ function showDropdown({ dropdown }: any) {
 }
 
 export function criaTabelaModal(style: any) {
-  return ({ editor }: { editor: ExitusEditor }) => {
+  return ({ editor }) => {
     const dropdown = new Dropdown(editor, {
       events: {
         open: showDropdown
@@ -318,7 +318,6 @@ function createButton(editor: ExitusEditor, icone: string, onClick: () => void) 
   })
 
   button.bind('click', () => {
-    console.log(button.getButtonElement().parentElement?.querySelectorAll('button'))
     button
       .getButtonElement()
       .parentElement?.querySelectorAll('button')

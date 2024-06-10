@@ -1,4 +1,4 @@
-import { Button, Dropdown } from '@editor/ui'
+import { Button, DropDownEventProps, Dropdown } from '@editor/ui'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import listFullIcon from '@icons/list-check.svg'
 import listOrederedIcon from '@icons/list-ordered-2.svg'
@@ -46,7 +46,7 @@ function createDropDownContent(editor: ExitusEditor, dropdown: Dropdown) {
   return dropdownContent
 }
 
-function showDropdown({ event, dropdown }: any) {
+function showDropdown({ event, dropdown }: DropDownEventProps) {
   event.stopPropagation()
   if (dropdown.isOpen) {
     dropdown.off()
@@ -64,13 +64,6 @@ function listItemDropDown({ editor }: any) {
   })
 
   dropdown.setDropDownContent(createDropDownContent(editor, dropdown))
-
-  window.addEventListener('click', function (event: Event) {
-    const target = event.target as HTMLElement
-    if (!target.matches('.dropdown')) {
-      dropdown.off()
-    }
-  })
 
   return dropdown
 }

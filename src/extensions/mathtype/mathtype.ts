@@ -225,10 +225,5 @@ export const MathType = Node.create({
   onDestroy() {
     this.storage.currentInstances.get(this.editor.editorInstance).destroy()
     this.storage.currentInstances.delete(this.editor.editorInstance)
-  },
-  addOptions() {
-    return {
-      currentInstance: null
-    }
   }
 })
