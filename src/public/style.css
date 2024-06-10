@@ -210,7 +210,9 @@
     width: 21px;
     height: 24px;
     color: #fff;
-    margin: -4px -3px
+    margin: -7px -2px;
+    padding-right: 1px;
+
   }
   
   .resize-cursor {

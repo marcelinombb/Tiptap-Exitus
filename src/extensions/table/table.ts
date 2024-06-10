@@ -95,6 +95,12 @@ function tableDropDown({ editor }: ButtonEventProps) {
 
   dropdown.setDropDownContent(createDropDownContent(editor))
 
+  window.addEventListener('click', function (event: Event) {
+    event.stopPropagation()
+    if (dropdown.isOpen) {
+      dropdown.off()
+    }
+  })
   return dropdown
 }
 
