@@ -2,19 +2,19 @@ import { Balloon, type BalloonOptions, Button } from '@editor/ui'
 import { createHTMLElement } from '@editor/utils'
 import check from '@icons/check-line.svg'
 import close from '@icons/close-line.svg'
-import { type Editor } from '@tiptap/core'
+import type ExitusEditor from '@src/ExitusEditor'
 
 import { updateLatexDisplay } from './katexView'
 
 export class KatexBalloon {
-  editor: Editor
+  editor: ExitusEditor
   balloon: Balloon
   input: HTMLInputElement
   checkboxDisplay: HTMLInputElement
   preview: Element
 
   constructor(
-    editor: Editor,
+    editor: ExitusEditor,
     latexConfig: any,
     confirmCallback: (katexBalloon: KatexBalloon) => void,
     cancelCallback: (katexBalloon: KatexBalloon) => void,

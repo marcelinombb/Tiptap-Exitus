@@ -16,9 +16,7 @@ export const Bold = BoldBase.extend({
     return {
       toolbarButtonConfig: {
         icon: bold,
-        events: {
-          click: toggleBold
-        },
+        click: toggleBold,
         checkActive: this.name
       }
     }

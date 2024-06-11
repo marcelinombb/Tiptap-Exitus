@@ -16,9 +16,7 @@ export const Underline = UnderlineBase.extend({
     return {
       toolbarButtonConfig: {
         icon: underline,
-        events: {
-          click: toggleUnderline
-        },
+        click: toggleUnderline,
         checkActive: this.name
       }
     }

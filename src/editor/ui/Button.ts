@@ -8,7 +8,7 @@ import { type Tool } from '../toolbar/Tool'
 import { type Dropdown } from '.'
 
 export type ButtonEventProps = {
-  editor: ExitusEditor
+  editor: Editor
   button: Button
   event: Event
 }
@@ -19,9 +19,7 @@ export interface ButtonConfig {
   title: string
   attributes: object[]
   classList: string[]
-  events: {
-    [key: string]: (obj: ButtonEventProps) => void
-  }
+  click: (obj: ButtonEventProps) => void
   checkActive: string | object
 }
 
@@ -63,13 +61,15 @@ export class Button implements Tool {
   }
 
   bindEvents() {
-    const events = this.config.events
-    for (const key in events) {
-      this.bind(key, events[key])
+    const click = this.config.click
+    //for (const key in events) {
+    if (click != undefined) {
+      this.bind('click', click)
     }
+    //}
   }
 
-  bind(eventName: string, callback: (obj: any) => void) {
+  bind(eventName: string, callback: (obj: ButtonEventProps) => void) {
     this.button.addEventListener(eventName, event => {
       event.stopPropagation()
       event.preventDefault()

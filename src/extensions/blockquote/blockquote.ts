@@ -16,9 +16,7 @@ export const Blockquote = BlockquoteBase.extend({
     return {
       toolbarButtonConfig: {
         icon: quote,
-        events: {
-          click: toggleBlockQuote
-        },
+        click: toggleBlockQuote,
         checkActive: this.name
       }
     }

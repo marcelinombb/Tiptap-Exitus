@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-//@ts-nocheck
 import { Toolbar } from '@editor/toolbar'
-import { Button, Dropdown } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import tableCell from '@icons/merge-tableCells.svg'
@@ -10,36 +8,53 @@ import starredTable from '@icons/starred-table.svg'
 import tableColumns from '@icons/table-columns.svg'
 import tableRow from '@icons/table-lines.svg'
 import { type Editor } from '@tiptap/core'
-import { type Node as ProseMirrorNode, type ResolvedPos } from '@tiptap/pm/model'
-import { selectionCell } from '@tiptap/pm/tables'
+import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
 
-import { criaCellModal } from './itensModalCell'
 import { criaTabelaModal } from './itensModalTable'
 import { objParaCss } from './table'
+import { TableCellBalloon } from './TableCellBalloon'
 import TableFocus, { UpDownTable } from './tableFocus'
 import { criaDropCell, criaDropColuna, criaDropLinhas } from './tableToolbarItens'
 
 function clickHandler(tableView: TableView) {
-  tableView.table.addEventListener('click', event => {
+  tableView.table.addEventListener('click', () => {
     if (!tableView.balloon.isOpen()) {
       tableView.balloon.show()
     }
-    tableView.updateSelectedCell()
 
-    function clickOutside(event) {
+    function clickOutside(event: Event) {
       const target = event.target as HTMLElement
-
       if (target.closest('.tableWrapper') == null) {
         tableView.balloon.hide()
         tableView.tableWrapper.classList.remove('ex-selected')
-        document.removeEventListener('click', clickOutside)
+        window.removeEventListener('click', clickOutside)
       }
     }
 
-    document.addEventListener('click', clickOutside)
+    window.addEventListener('click', clickOutside)
   })
+}
+
+function clickCellHandler(tableView: TableView) {
+  function clickOutside(event: Event) {
+    const target = event.target as HTMLElement
+    if (target.closest('.balloon-menu') == null) {
+      tableView.tableCellBalloon.off()
+      window.removeEventListener('click', clickOutside)
+    }
+  }
+
+  window.addEventListener('click', clickOutside)
+}
+
+function showCellBalloon(tableView: TableView) {
+  return () => {
+    tableView.tableCellBalloon.updatePosition()
+    tableView.balloon.hide()
+    clickCellHandler(tableView)
+  }
 }
 
 export function updateColumns(
@@ -55,8 +70,8 @@ export function updateColumns(
   let nextDOM = colgroup.firstChild
   const row = node.firstChild
 
-  for (let i = 0, col = 0; i < row.childCount; i += 1) {
-    const { colspan, colwidth } = row.child(i).attrs
+  for (let i = 0, col = 0; i < row!.childCount; i += 1) {
+    const { colspan, colwidth } = row!.child(i).attrs
 
     for (let j = 0; j < colspan; j += 1, col += 1) {
       const hasWidth = overrideCol === col ? overrideValue : colwidth && colwidth[j]
@@ -83,7 +98,7 @@ export function updateColumns(
   while (nextDOM) {
     const after = nextDOM.nextSibling
 
-    nextDOM.parentNode.removeChild(nextDOM)
+    nextDOM!.parentNode!.removeChild(nextDOM)
     nextDOM = after
   }
 
@@ -102,6 +117,7 @@ export class TableView implements NodeView {
   table: HTMLElement
   colgroup: Element
   balloon: Balloon
+  tableCellBalloon: TableCellBalloon
   editor: Editor
   cellMinWidth: number
   tableWrapper: HTMLElement
@@ -109,7 +125,6 @@ export class TableView implements NodeView {
   getPos: boolean | (() => number)
   tableStyle: { [key: string]: string }
   tableWrapperStyle: { [key: string]: string }
-  selectedCell: ResolvedPos
 
   constructor(node: ProseMirrorNode, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
@@ -132,6 +147,7 @@ export class TableView implements NodeView {
 
     new TableFocus(this, this.editor)
     new UpDownTable(this, this.editor)
+    this.tableCellBalloon = new TableCellBalloon(editor)
 
     const configStorage = {
       celumnsTable: {
@@ -164,9 +180,9 @@ export class TableView implements NodeView {
       },
       cellStarred: {
         toolbarButtonConfig: {
-          icon: starredCell + arrowDropDown,
+          icon: starredCell,
           title: 'editar celula',
-          dropdown: criaCellModal(this)
+          click: showCellBalloon(this)
         }
       }
     }
@@ -208,12 +224,9 @@ export class TableView implements NodeView {
     }
   }
 
-  updateSelectedCell() {
-    this.selectedCell = selectionCell(this.editor.view.state)
-  }
-
-  getSelectedCell() {
-    return this.selectedCell
+  destroy() {
+    this.balloon.destroy()
+    this.tableCellBalloon.destroy()
   }
 
   update(node: ProseMirrorNode) {
@@ -243,6 +256,7 @@ export class TableView implements NodeView {
     if (mutation.type === 'attributes' && this.balloon.ballonMenu.contains(mutation.target)) {
       return true
     }
+    //@ts-ignore
     if (mutation.type === 'attributes' && mutation.target.classList.contains('ex-dropdown')) {
       return true
     }
@@ -251,7 +265,10 @@ export class TableView implements NodeView {
       return true
     }
 
-    return mutation.type === 'attributes' && (mutation.target === this.table || this.colgroup.contains(mutation.target))
+    return (
+      mutation.type === 'attributes' &&
+      (mutation.target === this.tableWrapper || mutation.target === this.table || this.colgroup.contains(mutation.target))
+    )
   }
 }
 function updateTableStyle(tableView: TableView) {

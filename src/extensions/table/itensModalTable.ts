@@ -99,7 +99,7 @@ export class ItensModalTable {
 
   public render() {
     const dropdownContent = document.createElement('div')
-    dropdownContent.className = '.ex-dropdownList-content'
+    dropdownContent.className = 'ex-dropdownList-content'
     dropdownContent.contentEditable = 'false'
 
     dropdownContent.addEventListener('click', event => {

@@ -3,8 +3,8 @@ import { insertParagraph } from '@editor/utils'
 import setaCima from '@icons/corner-down-left-line.svg'
 import setaBaixo from '@icons/corner-down-right-line.svg'
 import selecionaIcon from '@icons/select-all.svg'
+import { type Editor } from '@tiptap/core'
 import { NodeSelection } from '@tiptap/pm/state'
-import type ExitusEditor from 'src/ExitusEditor'
 
 import { type TableView } from './TableView'
 
@@ -12,15 +12,15 @@ export class UpDownTable {
   tableView: TableView
   FocarCima!: HTMLElement
   FocarBaixo!: HTMLElement
-  editor: ExitusEditor
+  editor: Editor
 
-  constructor(tableView: TableView, editor: ExitusEditor) {
+  constructor(tableView: TableView, editor: Editor) {
     this.tableView = tableView
     this.editor = editor
     this.focaTabela(editor)
   }
 
-  private focaTabela(editor: ExitusEditor) {
+  private focaTabela(editor: Editor) {
     const element = this.tableView.tableWrapper
     element.style.position = 'relative'
 
@@ -43,7 +43,7 @@ export class UpDownTable {
     this.FocarBaixo.classList.add('ex-bolinha', 'ex-bolinha-baixo')
   }
 
-  private createButton(editor: ExitusEditor, icone: string, onClick: () => void): HTMLElement {
+  private createButton(editor: Editor, icone: string, onClick: () => void): HTMLElement {
     const button = new Button(editor, {
       icon: icone,
       classList: ['ex-bolinha']
@@ -57,7 +57,7 @@ export default class TableFocus {
   tableView: TableView
   selectTable!: HTMLElement
 
-  constructor(tableView: TableView, editor: ExitusEditor) {
+  constructor(tableView: TableView, editor: Editor) {
     this.tableView = tableView
     this.getTable(editor)
   }
@@ -71,7 +71,7 @@ export default class TableFocus {
     }
   }
 
-  private getTable(editor: ExitusEditor) {
+  private getTable(editor: Editor) {
     const element = this.tableView.tableWrapper
     element.style.position = 'relative'
 
@@ -82,7 +82,7 @@ export default class TableFocus {
     this.selectTable.classList.add('ex-pegaTabela')
   }
 
-  private createButton(editor: ExitusEditor, icone: string, onClick: () => void): HTMLElement {
+  private createButton(editor: Editor, icone: string, onClick: () => void): HTMLElement {
     const button = new Button(editor, {
       icon: icone,
       classList: ['ex-getTable']

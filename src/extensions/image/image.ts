@@ -69,7 +69,7 @@ function createFileInput(editor: ExitusEditor) {
 }
 
 function addImage({ editor }: ButtonEventProps) {
-  const inputElement = createFileInput(editor) as HTMLInputElement
+  const inputElement = createFileInput(editor as ExitusEditor) as HTMLInputElement
   inputElement.click()
 }
 
@@ -108,9 +108,7 @@ export const Image = Node.create<ImageOptions>({
     return {
       toolbarButtonConfig: {
         icon: imageAdd,
-        events: {
-          click: addImage
-        },
+        click: addImage,
         checkActive: this.name
       }
     }
@@ -238,15 +236,8 @@ export const Image = Node.create<ImageOptions>({
       new Plugin({
         key: new PluginKey('eventHandler'),
         props: {
-          handlePaste: (view, event, slice) => {
-            const images = Array.from(event.clipboardData?.items || [])
-              .filter(item => /image/i.test(item.type))
-              .map(item => item.getAsFile())
-            if (images.length !== 0) event.preventDefault()
-            images.forEach(image => parseImagesToBase64(image as File, self.editor))
-          },
           handleDOMEvents: {
-            drop: (view, event) => {
+            drop: (_view, event) => {
               const hasFiles = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length
 
               if (hasFiles) {

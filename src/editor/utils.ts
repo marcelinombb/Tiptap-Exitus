@@ -101,3 +101,13 @@ export function deleteSelectedNode(editor: Editor): ChainedCommands {
     return true
   })
 }
+
+export function getNodeBoundingClientRect(editor: Editor, nodePos: number) {
+  const view = editor.view
+  const dom = view.nodeDOM(nodePos) // Get the DOM element for the node at position nodePos
+  if (dom) {
+    //@ts-ignore
+    return dom.getBoundingClientRect()
+  }
+  return null
+}

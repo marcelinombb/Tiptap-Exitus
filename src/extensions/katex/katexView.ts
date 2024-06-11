@@ -1,4 +1,5 @@
 import { createHTMLElement, setSelectionAfter } from '@editor/utils'
+import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
@@ -59,7 +60,7 @@ export class KatexView implements NodeView {
     }
 
     this.balloon = new KatexBalloon(
-      editor,
+      editor as ExitusEditor,
       {
         latexFormula,
         display

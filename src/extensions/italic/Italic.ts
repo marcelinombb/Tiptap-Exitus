@@ -12,9 +12,7 @@ export const Italic = ItalicBase.extend({
     return {
       toolbarButtonConfig: {
         icon: italic,
-        events: {
-          click: toggleItalic
-        },
+        click: toggleItalic,
         checkActive: this.name
       }
     }
