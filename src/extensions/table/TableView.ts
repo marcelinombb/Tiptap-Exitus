@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Toolbar } from '@editor/toolbar'
-import { type ButtonEventProps } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import tableCell from '@icons/merge-tableCells.svg'
@@ -20,18 +19,13 @@ import TableFocus, { UpDownTable } from './tableFocus'
 import { criaDropCell, criaDropColuna, criaDropLinhas } from './tableToolbarItens'
 
 function clickHandler(tableView: TableView) {
-  tableView.table.addEventListener('click', event => {
+  tableView.table.addEventListener('click', () => {
     if (!tableView.balloon.isOpen()) {
       tableView.balloon.show()
     }
 
     function clickOutside(event: Event) {
       const target = event.target as HTMLElement
-
-      if (target.closest('.balloon-menu') == null) {
-        tableView.tableCellBalloon.off()
-      }
-
       if (target.closest('.tableWrapper') == null) {
         tableView.balloon.hide()
         tableView.tableWrapper.classList.remove('ex-selected')
@@ -43,10 +37,23 @@ function clickHandler(tableView: TableView) {
   })
 }
 
+function clickCellHandler(tableView: TableView) {
+  function clickOutside(event: Event) {
+    const target = event.target as HTMLElement
+    if (target.closest('.balloon-menu') == null) {
+      tableView.tableCellBalloon.off()
+      window.removeEventListener('click', clickOutside)
+    }
+  }
+
+  window.addEventListener('click', clickOutside)
+}
+
 function showCellBalloon(tableView: TableView) {
-  return ({ editor }: ButtonEventProps) => {
+  return () => {
     tableView.tableCellBalloon.updatePosition()
     tableView.balloon.hide()
+    clickCellHandler(tableView)
   }
 }
 
@@ -173,7 +180,7 @@ export class TableView implements NodeView {
       },
       cellStarred: {
         toolbarButtonConfig: {
-          icon: starredCell + arrowDropDown,
+          icon: starredCell,
           title: 'editar celula',
           click: showCellBalloon(this)
         }
@@ -220,7 +227,6 @@ export class TableView implements NodeView {
   destroy() {
     this.balloon.destroy()
     this.tableCellBalloon.destroy()
-    console.log('destroy table')
   }
 
   update(node: ProseMirrorNode) {

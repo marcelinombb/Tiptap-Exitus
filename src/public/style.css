@@ -171,6 +171,10 @@
     border-radius: 5px;
   }
 
+  .ex-text-left {
+    text-align: left;
+  }
+
   .ex-mr-0 {
     margin-right: 0px;
   }

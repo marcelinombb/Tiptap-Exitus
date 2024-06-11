@@ -121,7 +121,7 @@ export class ItensModalCell {
   }
 
   updateBorderValue(attr: Attrs) {
-    if (attr.border) {
+    if (attr?.border) {
       const [width, style, color] = attr.border.split(' ')
       this.cellBorderWidth.value = width
       this.cellBorderStyles.value = style
@@ -130,7 +130,7 @@ export class ItensModalCell {
   }
 
   updateBackGroundValue(attr: Attrs) {
-    if (attr.background) {
+    if (attr?.background) {
       this.cellBackgroundColor.value = attr.background
     }
   }
@@ -138,8 +138,6 @@ export class ItensModalCell {
   updateSizeValue(attr: Attrs) {
     if (attr && attr?.style) {
       const style = attr.style
-      console.log(style)
-
       this.cellHeight.value = style?.height?.replace('px', '')
       this.cellWidth.value = style?.width?.replace('px', '')
     }

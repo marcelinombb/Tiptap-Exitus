@@ -49,7 +49,7 @@ function colunaDireita(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
 function colunaHeader(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
   const button = new Button(editor, {
     icon: icon,
-    classList: ['ex-mr-0']
+    classList: ['ex-mr-0', 'ex-text-left']
   })
 
   button.bind('click', () => {
@@ -161,7 +161,7 @@ function linhaDelete(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
 function linhaHeader(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
   const button = new Button(editor, {
     icon: icon,
-    classList: ['ex-mr-0']
+    classList: ['ex-mr-0', 'ex-text-left']
   })
 
   button.bind('click', () => {
@@ -217,7 +217,7 @@ export function criaDropLinhas() {
 function cellHeader(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
   const button = new Button(editor, {
     icon: icon,
-    classList: ['ex-mr-0']
+    classList: ['ex-mr-0', 'ex-text-left']
   })
 
   button.bind('click', () => {
