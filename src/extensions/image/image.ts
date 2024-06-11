@@ -237,7 +237,7 @@ export const Image = Node.create<ImageOptions>({
         key: new PluginKey('eventHandler'),
         props: {
           handleDOMEvents: {
-            drop: (view, event) => {
+            drop: (_view, event) => {
               const hasFiles = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length
 
               if (hasFiles) {

@@ -16,7 +16,7 @@ export class TableCellBalloon {
     this.balloon = new Balloon(editor, {
       position: 'float'
     })
-    this.itenModal = new ItensModalCell(editor)
+    this.itenModal = new ItensModalCell(editor, this)
     this.balloon.setPanelContent(this.itenModal.render())
     editor.view.dom!.parentElement!.appendChild(this.balloon.getBalloon())
   }
@@ -61,17 +61,18 @@ export class ItensModalCell {
   private cellHeight: HTMLInputElement
   private cellWidth: HTMLInputElement
   selectedCell!: ResolvedPos
+  balloon: TableCellBalloon
 
-  constructor(editor: Editor) {
+  constructor(editor: Editor, balloon: TableCellBalloon) {
     this.editor = editor
     this.cellBorderStyles = document.createElement('select')
     this.cellBorderStyles.style.width = '80px'
     this.cellBorderStyles.className = 'ex-selectInput'
-
+    this.balloon = balloon
     const borderStyles = {
       'sem borda': 'none',
       // eslint-disable-next-line prettier/prettier
-          sólida: 'solid',
+      'sólida': 'solid',
       pontilhada: 'dotted',
       tracejada: 'dashed',
       dupla: 'double',
@@ -81,9 +82,12 @@ export class ItensModalCell {
       'alto relevo': 'outset'
     }
 
-    Object.entries(borderStyles).forEach(([name, value]) => {
+    Object.entries(borderStyles).forEach(([name, value], index) => {
       const option = document.createElement('option')
       option.value = value
+      if (index === 0) {
+        option.setAttribute('selected', 'selected')
+      }
       option.textContent = name
       this.cellBorderStyles.appendChild(option)
     })
@@ -123,15 +127,35 @@ export class ItensModalCell {
   updateBorderValue(attr: Attrs) {
     if (attr?.border) {
       const [width, style, color] = attr.border.split(' ')
+      this.cellBorderStyles.querySelectorAll('option').forEach(option => {
+        if (option.value == style) {
+          option.setAttribute('selected', 'selected')
+        } else {
+          option.removeAttribute('selected')
+        }
+      })
       this.cellBorderWidth.value = width
       this.cellBorderStyles.value = style
       this.cellBorderColor.value = color
+    } else {
+      this.cellBorderStyles.querySelectorAll('option').forEach(option => {
+        if (option.value == 'none') {
+          option.setAttribute('selected', 'selected')
+        } else {
+          option.removeAttribute('selected')
+        }
+      })
+      this.cellBorderWidth.value = ''
+      this.cellBorderStyles.value = 'none'
+      this.cellBorderColor.value = ''
     }
   }
 
   updateBackGroundValue(attr: Attrs) {
     if (attr?.background) {
       this.cellBackgroundColor.value = attr.background
+    } else {
+      this.cellBackgroundColor.value = ''
     }
   }
 
@@ -140,6 +164,9 @@ export class ItensModalCell {
       const style = attr.style
       this.cellHeight.value = style?.height?.replace('px', '')
       this.cellWidth.value = style?.width?.replace('px', '')
+    } else {
+      this.cellHeight.value = ''
+      this.cellWidth.value = ''
     }
   }
 
@@ -282,6 +309,7 @@ export class ItensModalCell {
     const botaoConfirma = createButton(this.editor, 'Salvar', () => {
       this.aplicarEstiloBorda()
       this.aplicarDimensoesTabela()
+      this.balloon.off()
     })
     botaoConfirma.className = 'ex-botaoSalvar'
     botaoConfirma.appendChild(iconConfirma)
@@ -294,6 +322,7 @@ export class ItensModalCell {
         background: '',
         border: ''
       })
+      this.balloon.off()
     })
     botaoCancela.className = 'ex-botaoCancela'
     botaoCancela.appendChild(iconCancela)
