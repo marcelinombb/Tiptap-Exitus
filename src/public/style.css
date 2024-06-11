@@ -651,6 +651,9 @@
     margin-left: 10px;
     margin-left: 20px;
 }
+.ex-largura1:disabled, .color-picker-border .pcr-button:disabled {
+  cursor: not-allowed;
+}
 
 .ex-bloco8{
   display: flex;
@@ -674,7 +677,7 @@
 
 .ex-largura1{
   width: 73px;
-  margin-left: 14.4px;
+  margin: 0 14.4px;
 }
 
 .ex-inputDimensoes{
@@ -871,4 +874,26 @@ display: none;
   justify-items: start;
   margin-left: var(--spacing-sm);
   margin-top: var(--spacing-sm);
+}
+
+.pickr {
+  position: relative;
+  overflow: visible;
+  transform: translateY(0);
+  display: contents;
+}
+
+
+.pickr .pcr-button {
+  position: relative;
+  height: 2em;
+  /* width: 2em; */
+  flex-grow: 1;
+  padding: 0.5em;
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  border-radius: 0.15em;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' stroke='%2342445A' stroke-width='5px' stroke-linecap='round'><path d='M45,45L5,5'></path><path d='M45,5L5,45'></path></svg>") no-repeat center;
+  background-size: 0;
+  transition: all .3s;
 }

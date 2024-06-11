@@ -3,14 +3,52 @@ import { getNodeBoundingClientRect } from '@editor/utils'
 import textDr from '@icons/align-bottom.svg'
 import textDl from '@icons/align-top.svg'
 import textDm from '@icons/align-vertically.svg'
+import Pickr from '@simonwep/pickr'
 import { type Editor } from '@tiptap/core'
 import { type Attrs, type ResolvedPos } from '@tiptap/pm/model'
 import { selectionCell } from '@tiptap/pm/tables'
+import '@simonwep/pickr/dist/themes/nano.min.css'
+
+const createPickrInstance = (selector: string, onCancel: () => void): Pickr => {
+  const pickr = Pickr.create({
+    el: selector,
+    theme: 'nano',
+    swatches: [
+      'rgba(230, 77, 77, 1)',
+      'rgba(230, 153, 77, 1)',
+      'rgba(230, 230, 77, 1)',
+      'rgba(153, 230, 77, 1)',
+      'rgba(77, 153, 230, 1)',
+      'rgba(77, 77, 230, 1)',
+      'rgba(153, 77, 230, 1)'
+    ],
+    components: {
+      preview: true,
+      opacity: false,
+      hue: true,
+      interaction: {
+        hex: true,
+        rgba: true,
+        hsla: false,
+        hsva: false,
+        cmyk: false,
+        input: true,
+        cancel: true,
+        save: true
+      }
+    }
+  })
+
+  pickr.on('cancel', onCancel)
+
+  return pickr
+}
 
 export class TableCellBalloon {
   balloon: Balloon
   editor: Editor
   itenModal!: ItensModalCell
+
   constructor(editor: Editor) {
     this.editor = editor
     this.balloon = new Balloon(editor, {
@@ -38,12 +76,9 @@ export class TableCellBalloon {
   updatePosition() {
     try {
       const resPos = selectionCell(this.editor.view.state)
-
       const { top, height, left, width } = getNodeBoundingClientRect(this.editor, resPos.pos)
-
       const main = this.editor.view.dom.getBoundingClientRect()
       this.updateSyleDefaults(resPos)
-
       this.balloon.setPosition(left - main.left + width / 2, top - main.y + height)
       this.balloon.show()
     } catch (error) {
@@ -55,9 +90,9 @@ export class TableCellBalloon {
 export class ItensModalCell {
   private editor: Editor
   private cellBorderStyles: HTMLSelectElement
-  private cellBorderColor: HTMLInputElement
+  private cellBorderColorPickr: Pickr | null
   private cellBorderWidth: HTMLInputElement
-  private cellBackgroundColor: HTMLInputElement
+  private cellBackgroundColorPickr: Pickr | null
   private cellHeight: HTMLInputElement
   private cellWidth: HTMLInputElement
   selectedCell!: ResolvedPos
@@ -65,14 +100,15 @@ export class ItensModalCell {
 
   constructor(editor: Editor, balloon: TableCellBalloon) {
     this.editor = editor
+    this.balloon = balloon
+
     this.cellBorderStyles = document.createElement('select')
     this.cellBorderStyles.style.width = '80px'
     this.cellBorderStyles.className = 'ex-selectInput'
-    this.balloon = balloon
+
     const borderStyles = {
       'sem borda': 'none',
-      // eslint-disable-next-line prettier/prettier
-      'sólida': 'solid',
+      sólida: 'solid',
       pontilhada: 'dotted',
       tracejada: 'dashed',
       dupla: 'double',
@@ -92,29 +128,41 @@ export class ItensModalCell {
       this.cellBorderStyles.appendChild(option)
     })
 
-    this.cellBorderColor = createInput('color', 'Cor de Fundo')
-    this.cellBorderColor.className = 'ex-colorInput'
-    this.cellBorderColor.disabled = true
-    this.cellBorderColor.style.cursor = 'not-allowed'
-
     this.cellBorderWidth = createInput('number', 'Largura')
     this.cellBorderWidth.className = 'ex-largura1'
-    this.cellBorderWidth.disabled = true
-    this.cellBorderWidth.style.cursor = 'not-allowed'
-
-    this.cellBackgroundColor = createInput('color', 'Cor de Fundo')
-    this.cellBackgroundColor.className = 'ex-colorInput2'
-    //this.cellBackgroundColor.value = style.background
 
     this.cellHeight = createInput('number', 'Altura')
     this.cellHeight.className = 'ex-inputDimensoes'
 
     this.cellWidth = createInput('number', 'Largura')
     this.cellWidth.className = 'ex-inputDimensoes'
+
+    this.cellBorderColorPickr = null
+    this.cellBackgroundColorPickr = null
+
+    // Adicionar evento de mudança para o seletor de estilos de borda
+    this.cellBorderStyles.addEventListener('change', this.handleBorderStyleChange.bind(this))
   }
 
   setSelectedCell(selectedCell: ResolvedPos) {
     this.selectedCell = selectedCell
+  }
+
+  handleBorderStyleChange() {
+    const style = this.cellBorderStyles.value
+    if (style === 'none') {
+      this.cellBorderWidth.disabled = true
+      this.cellBorderWidth.style.cursor = 'not-allowed'
+      if (this.cellBorderColorPickr) {
+        this.cellBorderColorPickr.disable()
+      }
+    } else {
+      this.cellBorderWidth.disabled = false
+      this.cellBorderWidth.style.cursor = 'default'
+      if (this.cellBorderColorPickr) {
+        this.cellBorderColorPickr.enable()
+      }
+    }
   }
 
   updateStyles(attrs: Attrs) {
@@ -136,7 +184,8 @@ export class ItensModalCell {
       })
       this.cellBorderWidth.value = width
       this.cellBorderStyles.value = style
-      this.cellBorderColor.value = color
+      this.cellBorderColorPickr?.setColor(color)
+      this.handleBorderStyleChange() // Atualizar estado dos inputs
     } else {
       this.cellBorderStyles.querySelectorAll('option').forEach(option => {
         if (option.value == 'none') {
@@ -147,15 +196,16 @@ export class ItensModalCell {
       })
       this.cellBorderWidth.value = ''
       this.cellBorderStyles.value = 'none'
-      this.cellBorderColor.value = ''
+      this.cellBorderColorPickr?.setColor('')
+      this.handleBorderStyleChange()
     }
   }
 
   updateBackGroundValue(attr: Attrs) {
     if (attr?.background) {
-      this.cellBackgroundColor.value = attr.background
+      this.cellBackgroundColorPickr?.setColor(attr.background)
     } else {
-      this.cellBackgroundColor.value = ''
+      this.cellBackgroundColorPickr?.setColor('')
     }
   }
 
@@ -182,44 +232,6 @@ export class ItensModalCell {
     const hr = document.createElement('hr')
     dropdownContent.appendChild(hr)
 
-    this.cellBorderStyles.addEventListener('change', () => {
-      if (this.cellBorderStyles.value) {
-        this.cellBorderColor.disabled = false
-        this.cellBorderColor.style.cursor = 'pointer'
-      }
-    })
-
-    this.cellBorderColor.addEventListener('change', () => {
-      if (this.cellBorderColor.value) {
-        this.cellBorderWidth.disabled = false
-        this.cellBorderWidth.style.cursor = 'pointer'
-      }
-    })
-
-    this.cellBorderWidth.addEventListener('change', () => {
-      this.aplicarEstiloBorda()
-    })
-
-    this.cellBorderStyles.addEventListener('change', () => {
-      this.aplicarEstiloBorda()
-    })
-
-    this.cellBorderColor.addEventListener('change', () => {
-      this.aplicarEstiloBorda()
-    })
-
-    this.cellBackgroundColor.addEventListener('change', () => {
-      this.aplicarEstiloCelulas()
-    })
-
-    this.cellHeight.addEventListener('change', () => {
-      this.aplicarDimensoesTabela()
-    })
-
-    this.cellWidth.addEventListener('change', () => {
-      this.aplicarDimensoesTabela()
-    })
-
     const bloco1 = document.createElement('div')
     bloco1.className = 'ex-bloco1'
 
@@ -228,21 +240,49 @@ export class ItensModalCell {
     bordaLabel.textContent = 'Borda'
     bordaLabel.style.marginTop = '10px'
 
-    bloco1.append(bordaLabel, this.cellBorderStyles, this.cellBorderColor, this.cellBorderWidth)
+    const borderColorElement = document.createElement('div')
+    borderColorElement.className = 'color-picker-border'
+
+    bloco1.append(bordaLabel, this.cellBorderStyles, this.cellBorderWidth, borderColorElement)
     dropdownContent.appendChild(bloco1)
-
-    const corFundoLabel = document.createElement('strong')
-    corFundoLabel.textContent = 'Cor de Fundo'
-    corFundoLabel.className = 'ex-labels'
-    dropdownContent.appendChild(corFundoLabel)
-
-    dropdownContent.appendChild(this.cellBackgroundColor)
 
     const bloco2 = document.createElement('div')
     bloco2.className = 'ex-bloco2'
-    bloco2.appendChild(corFundoLabel)
-    bloco2.appendChild(this.cellBackgroundColor)
+
+    const corDeFundoLabel = document.createElement('strong')
+    corDeFundoLabel.textContent = 'Cor de Fundo'
+    corDeFundoLabel.className = 'ex-labels'
+    corDeFundoLabel.style.marginTop = '10px'
+
+    const backgroundColorElement = document.createElement('div')
+    backgroundColorElement.className = 'color-picker-background'
+
+    bloco2.append(corDeFundoLabel, backgroundColorElement)
     dropdownContent.appendChild(bloco2)
+
+    document.body.appendChild(dropdownContent)
+
+    this.cellBorderColorPickr = createPickrInstance('.color-picker-border', () => {
+      this.balloon.off()
+      this.cellBorderColorPickr?.hide()
+    })
+    this.cellBackgroundColorPickr = createPickrInstance('.color-picker-background', () => {
+      this.cellBackgroundColorPickr?.hide()
+      this.balloon.off()
+    })
+
+    this.cellBorderColorPickr.on('save', (color: any) => {
+      const rgbaColor = color.toRGBA().toString()
+      this.cellBorderColorPickr?.hide()
+      this.aplicarEstiloBorda(rgbaColor)
+    })
+
+    this.cellBackgroundColorPickr.on('save', (color: any) => {
+      const rgbaColor = color.toRGBA().toString()
+      this.cellBackgroundColorPickr?.hide()
+      this.aplicarEstiloCelulas(rgbaColor)
+    })
+    this.handleBorderStyleChange()
 
     const dimensoesLabel = document.createElement('strong')
     dimensoesLabel.textContent = 'Dimensões'
@@ -305,16 +345,17 @@ export class ItensModalCell {
     const iconCancela = document.createElement('span')
     iconCancela.className = 'ex-icone-cancelamento'
 
-    // Botão de salvar
     const botaoConfirma = createButton(this.editor, 'Salvar', () => {
-      this.aplicarEstiloBorda()
+      /* const borderColor = this.cellBorderColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
+      const backgroundColor = this.cellBackgroundColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
+      this.aplicarEstiloBorda(borderColor)
+      this.aplicarEstiloCelulas(backgroundColor) */
       this.aplicarDimensoesTabela()
       this.balloon.off()
     })
     botaoConfirma.className = 'ex-botaoSalvar'
     botaoConfirma.appendChild(iconConfirma)
 
-    // Botão de cancelar
     const botaoCancela = createButton(this.editor, 'Cancelar', () => {
       this.editor.commands.setCellAttributes(this.selectedCell, {
         height: '',
@@ -335,35 +376,33 @@ export class ItensModalCell {
     return dropdownContent
   }
 
-  private aplicarEstiloBorda() {
+  private aplicarEstiloBorda(color: string) {
     const selectedValue = this.cellBorderStyles.value
-    const cor = this.cellBorderColor.value
-    const largura = this.cellBorderWidth.value
+    const width = this.cellBorderWidth.value
 
-    if (selectedValue && cor && largura) {
+    if (selectedValue && color && width) {
       this.editor.commands.setCellAttributes(this.selectedCell, {
-        border: `${largura}px ${selectedValue} ${cor}`
+        border: `${width}px ${selectedValue} ${color}`
       })
     }
   }
 
-  private aplicarEstiloCelulas() {
-    const cor2 = this.cellBackgroundColor.value
-
-    if (cor2) {
+  private aplicarEstiloCelulas(color: string) {
+    if (color) {
       this.editor.commands.setCellAttributes(this.selectedCell, {
-        background: cor2
+        background: color
       })
     }
   }
 
   public aplicarDimensoesTabela() {
-    const altura = this.cellHeight.value
-    const largura = this.cellWidth.value
-    if (altura && largura) {
+    const height = this.cellHeight.value
+    const width = this.cellWidth.value
+
+    if (height && width) {
       this.editor.commands.setCellAttributes(this.selectedCell, {
-        height: `${altura}px`,
-        width: `${largura}px`
+        height: `${height}px`,
+        width: `${width}px`
       })
     }
   }

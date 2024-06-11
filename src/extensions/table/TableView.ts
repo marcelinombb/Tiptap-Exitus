@@ -40,6 +40,14 @@ function clickHandler(tableView: TableView) {
 function clickCellHandler(tableView: TableView) {
   function clickOutside(event: Event) {
     const target = event.target as HTMLElement
+
+    // Verifica se o clique foi dentro do menu do Pickr
+    if (target.closest('.pcr-app') !== null) {
+      // O clique foi dentro do Pickr, então não faz nada
+      return
+    }
+
+    // Verifica se o clique foi fora do menu balloon
     if (target.closest('.balloon-menu') == null) {
       tableView.tableCellBalloon.off()
       window.removeEventListener('click', clickOutside)
