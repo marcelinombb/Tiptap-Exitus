@@ -705,22 +705,24 @@
 
 .ex-icone-confirmacao::after {
   content: '\2714';
-    font-family: Arial, sans-serif;
-    color: green;
-    font-size: 28px;
-    right: 72px;
-    position: relative;
-    top: 3px;
+  font-family: Arial, sans-serif;
+  color: green;
+  font-size: 28px;
+  right: 64px;
+  position: relative;
+  top: 4px;
 }
+
+
 
 .ex-icone-cancelamento::after {
   content: '\2716'; 
   font-family: Arial, sans-serif; 
   color: red;
   font-size: 24px;
-    right: 91px;
+    right: 79px;
     position: relative;
-    top: 3px;
+    top: 4px;
 }
 
 .ex-indicator {

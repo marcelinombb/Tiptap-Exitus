@@ -140,7 +140,6 @@ export class ItensModalCell {
     this.cellBorderColorPickr = null
     this.cellBackgroundColorPickr = null
 
-    // Adicionar evento de mudança para o seletor de estilos de borda
     this.cellBorderStyles.addEventListener('change', this.handleBorderStyleChange.bind(this))
   }
 
@@ -185,7 +184,7 @@ export class ItensModalCell {
       this.cellBorderWidth.value = width
       this.cellBorderStyles.value = style
       this.cellBorderColorPickr?.setColor(color)
-      this.handleBorderStyleChange() // Atualizar estado dos inputs
+      this.handleBorderStyleChange()
     } else {
       this.cellBorderStyles.querySelectorAll('option').forEach(option => {
         if (option.value == 'none') {
@@ -277,8 +276,8 @@ export class ItensModalCell {
       this.aplicarEstiloBorda(rgbaColor)
     })
 
-    this.cellBackgroundColorPickr.on('save', (color: any) => {
-      const rgbaColor = color.toRGBA().toString()
+    this.cellBackgroundColorPickr.on('save', (corFundo: any) => {
+      const rgbaColor = corFundo.toRGBA().toString()
       this.cellBackgroundColorPickr?.hide()
       this.aplicarEstiloCelulas(rgbaColor)
     })
@@ -292,6 +291,9 @@ export class ItensModalCell {
     const bloco6 = document.createElement('div')
     bloco6.className = 'ex-bloco6'
     bloco6.append(this.cellHeight, (document.createElement('span').textContent = '×'), this.cellWidth)
+
+    this.cellWidth.addEventListener('change', () => this.aplicarDimensoesTabela())
+    this.cellHeight.addEventListener('change', () => this.aplicarDimensoesTabela())
 
     const bloco3 = document.createElement('div')
     bloco3.className = 'ex-bloco3'
@@ -346,10 +348,10 @@ export class ItensModalCell {
     iconCancela.className = 'ex-icone-cancelamento'
 
     const botaoConfirma = createButton(this.editor, 'Salvar', () => {
-      /* const borderColor = this.cellBorderColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
+      const borderColor = this.cellBorderColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
       const backgroundColor = this.cellBackgroundColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
       this.aplicarEstiloBorda(borderColor)
-      this.aplicarEstiloCelulas(backgroundColor) */
+      this.aplicarEstiloCelulas(backgroundColor)
       this.aplicarDimensoesTabela()
       this.balloon.off()
     })
@@ -384,14 +386,16 @@ export class ItensModalCell {
       this.editor.commands.setCellAttributes(this.selectedCell, {
         border: `${width}px ${selectedValue} ${color}`
       })
+      this.selectedCell = this.editor.view.state.doc.resolve(this.selectedCell.pos)
     }
   }
 
-  private aplicarEstiloCelulas(color: string) {
-    if (color) {
+  private aplicarEstiloCelulas(corFundo: string) {
+    if (corFundo) {
       this.editor.commands.setCellAttributes(this.selectedCell, {
-        background: color
+        background: corFundo
       })
+      this.selectedCell = this.editor.view.state.doc.resolve(this.selectedCell.pos)
     }
   }
 
@@ -404,6 +408,7 @@ export class ItensModalCell {
         height: `${height}px`,
         width: `${width}px`
       })
+      this.selectedCell = this.editor.view.state.doc.resolve(this.selectedCell.pos)
     }
   }
 }
