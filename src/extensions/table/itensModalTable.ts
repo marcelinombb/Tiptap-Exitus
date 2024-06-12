@@ -4,14 +4,50 @@ import { Button, Dropdown } from '@editor/ui'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
+import Pickr from '@simonwep/pickr'
 import type ExitusEditor from 'src/ExitusEditor'
+import '@simonwep/pickr/dist/themes/nano.min.css'
+
+const createPickrInstance = (selector: string, onCancel: () => void): Pickr => {
+  const pickr = Pickr.create({
+    el: selector,
+    theme: 'nano',
+    swatches: [
+      'rgba(230, 77, 77, 1)',
+      'rgba(230, 153, 77, 1)',
+      'rgba(230, 230, 77, 1)',
+      'rgba(153, 230, 77, 1)',
+      'rgba(77, 153, 230, 1)',
+      'rgba(77, 77, 230, 1)',
+      'rgba(153, 77, 230, 1)'
+    ],
+    components: {
+      preview: true,
+      opacity: false,
+      hue: true,
+      interaction: {
+        hex: true,
+        rgba: true,
+        hsla: false,
+        hsva: false,
+        cmyk: false,
+        input: true,
+        cancel: true,
+        save: true
+      }
+    }
+  })
+
+  pickr.on('cancel', onCancel)
+
+  return pickr
+}
 
 function fecharDropdownsAbertos() {
   Dropdown.instances.forEach(dropdown => dropdown.off())
 }
 
 function showDropdown({ dropdown }: any) {
-  // event.stopPropagation()
   if (dropdown.isOpen) {
     dropdown.off()
   } else {
@@ -36,9 +72,9 @@ export class ItensModalTable {
   private editor: ExitusEditor
   private style: any
   private selectInput: HTMLSelectElement
-  private inputBackgroundColor1: HTMLInputElement
+  private cellBackgroundColorPickr: Pickr | null
   private larguraBloco1: HTMLInputElement
-  private inputBackgroundColor2: HTMLInputElement
+  private cellBorderColorPickr: Pickr | null
   private inputAltura: HTMLInputElement
   private inputLargura: HTMLInputElement
 
@@ -48,6 +84,7 @@ export class ItensModalTable {
 
     this.selectInput = document.createElement('select')
     this.selectInput.style.width = '80px'
+    this.selectInput.style.marginRight = '14.4px'
 
     const borderStyles = {
       'sem borda': 'none',
@@ -70,12 +107,6 @@ export class ItensModalTable {
 
     const [size = '', border = 'none', color = ''] = (this.style.border ?? '').split(' ')
 
-    this.inputBackgroundColor1 = createInput('color', 'Cor de Fundo')
-    this.inputBackgroundColor1.className = 'ex-colorInput'
-    this.inputBackgroundColor1.disabled = true
-    this.inputBackgroundColor1.style.cursor = 'not-allowed'
-    this.inputBackgroundColor1.value = color
-
     this.selectInput.value = border
 
     this.larguraBloco1 = createInput('number', 'Largura')
@@ -84,9 +115,8 @@ export class ItensModalTable {
     this.larguraBloco1.style.cursor = 'not-allowed'
     this.larguraBloco1.value = size.replace('px', '')
 
-    this.inputBackgroundColor2 = createInput('color', 'Cor de Fundo')
-    this.inputBackgroundColor2.className = 'ex-colorInput2'
-    this.inputBackgroundColor2.value = style.background
+    this.cellBorderColorPickr = null
+    this.cellBackgroundColorPickr = null
 
     this.inputAltura = createInput('number', 'Altura')
     this.inputAltura.className = 'ex-inputDimensoes'
@@ -113,42 +143,12 @@ export class ItensModalTable {
     const hr = document.createElement('hr')
     dropdownContent.appendChild(hr)
 
-    this.selectInput.addEventListener('change', () => {
-      if (this.selectInput.value) {
-        this.inputBackgroundColor1.disabled = false
-        this.inputBackgroundColor1.style.cursor = 'pointer'
-      }
-    })
-
-    this.inputBackgroundColor1.addEventListener('change', () => {
-      if (this.inputBackgroundColor1.value) {
-        this.larguraBloco1.disabled = false
-        this.larguraBloco1.style.cursor = 'pointer'
-      }
-    })
-
     this.larguraBloco1.addEventListener('change', () => {
       this.aplicarEstiloBorda()
     })
 
     this.selectInput.addEventListener('change', () => {
       this.aplicarEstiloBorda()
-    })
-
-    this.inputBackgroundColor1.addEventListener('change', () => {
-      this.aplicarEstiloBorda()
-    })
-
-    this.inputBackgroundColor2.addEventListener('change', () => {
-      this.aplicarEstiloCelulas()
-    })
-
-    this.inputAltura.addEventListener('change', () => {
-      this.aplicarDimensoesTabela()
-    })
-
-    this.inputLargura.addEventListener('change', () => {
-      this.aplicarDimensoesTabela()
     })
 
     const bloco1 = document.createElement('div')
@@ -159,26 +159,57 @@ export class ItensModalTable {
     bordaLabel.textContent = 'Borda'
     bordaLabel.style.marginTop = '10px'
 
-    bloco1.append(bordaLabel, this.selectInput, this.inputBackgroundColor1, this.larguraBloco1)
+    const borderColorElement = document.createElement('div')
+    borderColorElement.className = 'color-picker-border'
+
+    bloco1.append(bordaLabel, this.selectInput, borderColorElement, this.larguraBloco1)
     dropdownContent.appendChild(bloco1)
 
     const corFundoLabel = document.createElement('strong')
     corFundoLabel.textContent = 'Cor de Fundo'
     corFundoLabel.className = 'ex-labels'
-    dropdownContent.appendChild(corFundoLabel)
-
-    dropdownContent.appendChild(this.inputBackgroundColor2)
 
     const bloco2 = document.createElement('div')
     bloco2.className = 'ex-bloco2'
-    bloco2.appendChild(corFundoLabel)
-    bloco2.appendChild(this.inputBackgroundColor2)
+    const backgroundColorElement = document.createElement('div')
+    backgroundColorElement.className = 'color-picker-background'
+
+    bloco2.append(corFundoLabel, backgroundColorElement)
     dropdownContent.appendChild(bloco2)
+
+    document.body.appendChild(dropdownContent)
+
+    this.cellBorderColorPickr = createPickrInstance('.color-picker-border', () => {
+      this.cellBorderColorPickr?.hide()
+    })
+
+    this.cellBackgroundColorPickr = createPickrInstance('.color-picker-background', () => {
+      this.cellBackgroundColorPickr?.hide()
+    })
+
+    this.cellBorderColorPickr.on('save', (color: any) => {
+      const rgbaColor = color.toRGBA().toString()
+      this.cellBorderColorPickr?.hide()
+      this.aplicarEstiloBorda(rgbaColor)
+    })
+
+    this.cellBackgroundColorPickr.on('save', (corFundo: any) => {
+      const rgbaColor = corFundo.toRGBA().toString()
+      this.cellBackgroundColorPickr?.hide()
+      this.aplicarEstiloCelulas(rgbaColor)
+    })
+
+    this.inputAltura.addEventListener('change', () => {
+      this.aplicarDimensoesTabela()
+    })
+
+    this.inputLargura.addEventListener('change', () => {
+      this.aplicarDimensoesTabela()
+    })
 
     const dimensoesLabel = document.createElement('strong')
     dimensoesLabel.textContent = 'Dimensões'
     dimensoesLabel.className = 'ex-labels'
-    dropdownContent.appendChild(dimensoesLabel)
 
     const bloco6 = document.createElement('div')
     bloco6.className = 'ex-bloco6'
@@ -193,7 +224,6 @@ export class ItensModalTable {
     const alinhamentoLabel = document.createElement('strong')
     alinhamentoLabel.textContent = 'Alinhamento'
     alinhamentoLabel.className = 'ex-labels'
-    dropdownContent.appendChild(alinhamentoLabel)
 
     const bloco8 = document.createElement('div')
     bloco8.className = 'ex-bloco8'
@@ -241,8 +271,10 @@ export class ItensModalTable {
 
     // Botão de salvar
     const botaoConfirma = createButton(this.editor, 'Salvar', () => {
-      fecharDropdownsAbertos()
-      this.aplicarEstiloBorda()
+      const borderColor = this.cellBorderColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
+      const backgroundColor = this.cellBackgroundColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
+      this.aplicarEstiloBorda(borderColor)
+      this.aplicarEstiloCelulas(backgroundColor)
       this.aplicarDimensoesTabela()
     })
     botaoConfirma.className = 'ex-botaoSalvar'
@@ -269,9 +301,8 @@ export class ItensModalTable {
     return dropdownContent
   }
 
-  private aplicarEstiloBorda() {
+  private aplicarEstiloBorda(cor: string = '') {
     const selectedValue = this.selectInput.value
-    const cor = this.inputBackgroundColor1.value
     const largura = this.larguraBloco1.value
 
     if (selectedValue && cor && largura) {
@@ -281,12 +312,10 @@ export class ItensModalTable {
     }
   }
 
-  private aplicarEstiloCelulas() {
-    const cor2 = this.inputBackgroundColor2.value
-
-    if (cor2) {
+  private aplicarEstiloCelulas(cor: string = '') {
+    if (cor) {
       this.editor.commands.setTableStyle({
-        background: cor2
+        background: cor
       })
     }
   }
