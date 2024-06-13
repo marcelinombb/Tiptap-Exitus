@@ -140,7 +140,7 @@ export const Katex = Node.create({
       latexFormula: {
         default: '',
         parseHTML(element) {
-          return element.innerText
+          return parseLatex(element.innerText)
         }
       },
       display: {

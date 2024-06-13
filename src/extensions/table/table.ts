@@ -5,20 +5,21 @@ import { mergeAttributes } from '@tiptap/core'
 import { createColGroup, Table } from '@tiptap/extension-table'
 import { findParentNodeOfType } from 'prosemirror-utils'
 
-import { type ButtonEventProps, Dropdown } from '../../editor/ui'
+import { Button, type ButtonEventProps, Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
 import { TableView } from './TableView'
 
-function onSelectTableRowColumn(event): EventListener {
-  const onColumn = parseInt(event.target.getAttribute('data-column'))
-  const onRow = parseInt(event.target.getAttribute('data-row'))
+function onSelectTableRowColumn({ event }: ButtonEventProps) {
+  const element = event.target as HTMLElement
+  const onColumn = parseInt(element.getAttribute('data-column'))
+  const onRow = parseInt(element.getAttribute('data-row'))
   const indicator = document.querySelector('.ex-indicator')
   if (indicator) {
     indicator.textContent = `${onRow} × ${onColumn}`
   }
 
-  const buttons = event.target.parentNode.querySelectorAll('button') as HTMLCollectionOf<HTMLButtonElement>
+  const buttons = element.parentNode.querySelectorAll('button') as HTMLCollectionOf<HTMLButtonElement>
 
   Array.from(buttons).forEach(element => {
     const column = parseInt(element.getAttribute('data-column') as string)
@@ -31,13 +32,11 @@ function onSelectTableRowColumn(event): EventListener {
   })
 }
 
-function insertTableRowColumn(editor: ExitusEditor): EventListener {
-  return event => {
-    const target = event.target as HTMLElement
-    const columns = parseInt(target.getAttribute('data-column') as string)
-    const rows = parseInt(target.getAttribute('data-row') as string)
-    editor.commands.insertTable({ rows: rows, cols: columns, withHeaderRow: false })
-  }
+function insertTableRowColumn({ editor }: ButtonEventProps) {
+  const target = event.target as HTMLElement
+  const columns = parseInt(target.getAttribute('data-column') as string)
+  const rows = parseInt(target.getAttribute('data-row') as string)
+  editor.commands.insertTable({ rows: rows, cols: columns, withHeaderRow: false })
 }
 
 function createDropDownContent(editor: ExitusEditor) {
@@ -51,13 +50,23 @@ function createDropDownContent(editor: ExitusEditor) {
 
   for (let row = 1; row <= 10; row++) {
     for (let column = 1; column <= 10; column++) {
-      const button = document.createElement('button')
+      const button = new Button(editor, {
+        classList: ['ex-grid-button'],
+        attributes: {
+          'data-row': `${row}`,
+          'data-column': `${column}`
+        }
+      })
+
+      button.bind('pointerover', onSelectTableRowColumn)
+      button.bind('click', insertTableRowColumn)
+      /* const button = document.createElement('button')
       button.classList.add('ex-grid-button')
       button.setAttribute('data-row', `${row}`)
       button.setAttribute('data-column', `${column}`)
       button.addEventListener('pointerover', onSelectTableRowColumn)
-      button.addEventListener('click', insertTableRowColumn(editor))
-      dropdownContent.appendChild(button)
+      button.addEventListener('click', insertTableRowColumn(editor)) */
+      dropdownContent.appendChild(button.render())
     }
   }
 

@@ -12,12 +12,14 @@ export type ButtonEventProps = {
   button: Button
   event: Event
 }
-
+interface Attrs {
+  [key: string]: any
+}
 export interface ButtonConfig {
   icon: string
   label: string
   title: string
-  attributes: object[]
+  attributes: Attrs
   classList: string[]
   click: (obj: ButtonEventProps) => void
   checkActive: string | object
@@ -76,7 +78,7 @@ export class Button implements Tool {
       callback({
         editor: this.editor,
         button: this,
-        event
+        event: event as Event
       })
     })
   }

@@ -142,8 +142,13 @@ export const Image = Node.create<ImageOptions>({
         default: '',
         parseHTML: element => {
           const parent = element!.parentNode as HTMLElement
-          if (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure') {
+          if (
+            ['ex-image-wrapper', 'image', 'image-inline'].some(className => parent.classList.contains(className)) ||
+            parent.tagName.toLocaleLowerCase() == 'figure'
+          ) {
             return `width: ${parent.style.width}`
+          } else if (element.style.width !== '') {
+            return `width: ${element.style.width}`
           } else {
             return null
           }

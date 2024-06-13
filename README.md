@@ -2,9 +2,9 @@
 
 Editor de texto construido com o framework Tiptap
 
-documentação : https://tiptap.dev/docs/editor/introduction
+documentação : <https://tiptap.dev/docs/editor/introduction>
 
-icones : https://remixicon.com/
+icones : <https://remixicon.com/>
 
 ## Como instalar e utilizar
 

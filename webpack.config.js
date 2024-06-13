@@ -3,12 +3,13 @@ const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = (env, argv) => {
-  //const isProduction = argv.mode === 'production'
+  const isProduction = argv.mode === 'production'
   return {
     entry: path.resolve(__dirname, 'src/main.ts'),
     performance: { hints: false },
+    target: 'web',
     output: {
-      publicPath: 'resources/exitus/libs/exitus-editor/dist/',
+      publicPath: isProduction ? 'resources/exitus/libs/exitus-editor/dist/' : 'auto',
       path: path.resolve(__dirname, 'dist'),
       filename: 'exituseditor.js',
       library: 'ExitusEditor',
@@ -73,6 +74,10 @@ module.exports = (env, argv) => {
           {
             from: path.resolve(__dirname, 'src/public'),
             to: path.resolve(__dirname, 'dist')
+          },
+          {
+            from: path.resolve(__dirname, 'README.md'),
+            to: path.resolve(__dirname, 'dist')
           }
         ]
       })
@@ -95,6 +100,6 @@ module.exports = (env, argv) => {
         })
       ]
     },
-    devtool: 'source-map'
+    devtool: isProduction ? false : 'eval'
   }
 }

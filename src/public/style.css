@@ -17,6 +17,8 @@
   --ex-font-size-normal: 1em;
   --ex-font-size-big: 1.4em;
   --ex-font-size-large: 1.8em;
+  --ex-focus-ring: 1px solid var(--active-blue);
+  --ex-inner-shadow: 2px 2px 3px rgba(0,0,0,.1) inset;
 }
 
 .ProseMirror {
@@ -24,11 +26,15 @@
   padding: 1cm 1cm 1cm;
   background: #fff;
   text-align: left;
-  /* overflow: auto;
-  overflow-y: hidden; */
 }
 
-.ProseMirror {
+.ProseMirror:focus {
+  outline: none;
+  border: var(--ex-focus-ring);
+  box-shadow: var(--ex-inner-shadow), 0 0;
+}
+
+.tiptap {
   word-wrap: break-word;
   white-space: normal!important;
   white-space: break-spaces;
@@ -40,6 +46,10 @@
 .tiptap {
   box-sizing: border-box;
   border: 1px hsl(0, 0%, 82.7%) solid;
+}
+
+.tiptap-paper {
+  font-size: 12px;
 }
 
 .ex-reset-all {
@@ -68,7 +78,7 @@
   margin: 0 0 9px;
 }
 
-.ProseMirror {
+.tiptap {
   table {
     border-collapse: collapse;
     table-layout: fixed;
@@ -127,7 +137,8 @@
   .tableWrapper {
     overflow-x: auto;
     margin: 0.9em auto;
-    display: table;
+    display: table!important;
+    width: auto!important;
   }
 
   .ex-toolbar-editor , .ex-toolbar-items {
@@ -248,13 +259,9 @@
   }
 
   .editor-shell {
-    /* margin: 20px auto; */
     border-radius: 2px;
     /* max-width: 1100px; */
-    color: #000;
     position: relative;
-    line-height: 1.7;
-    font-weight: 400;
   }
 
   .editor-scroller {
@@ -271,7 +278,6 @@
     padding: calc(2 * calc(0.6em * 1.5));
     background: #fafafa;
   }
-
 
   .editor-scroller::-webkit-scrollbar {
     width: 8px;
@@ -791,7 +797,7 @@ display: none;
 }
 
 
-.ProseMirror .latex-editor {
+.tiptap .latex-editor {
   border-radius: .25rem;
   background: #202020;
   color: #fff;
@@ -801,7 +807,7 @@ display: none;
   min-width: 30px;
 }
 
-.ProseMirror .latex-editor:hover {
+.tiptap .latex-editor:hover {
   cursor: text;
 }
 

@@ -200,21 +200,21 @@ export class ItensModalTable {
 
     const TableEsquerda = createButton(this.editor, textDl, () => {
       this.editor.commands.setWrapperStyle({
-        'margin-rigth': 'auto',
+        'margin-right': 'auto',
         'margin-left': '0'
       })
     })
 
     const TableMeio = createButton(this.editor, textDm, () => {
       this.editor.commands.setWrapperStyle({
-        'margin-rigth': 'auto',
+        'margin-right': 'auto',
         'margin-left': 'auto'
       })
     })
 
     const TableDireito = createButton(this.editor, textDr, () => {
       this.editor.commands.setWrapperStyle({
-        'margin-rigth': '0',
+        'margin-right': '0',
         'margin-left': 'auto'
       })
     })
