@@ -61,7 +61,8 @@ export function criaTabelaModal(style: any) {
       events: {
         open: showDropdown
       },
-      classes: ['ex-dropdown-balloonModal']
+      classes: ['ex-dropdown-balloonModal'],
+      fecha: false
     })
     dropdown.setDropDownContent(new ItensModalTable(editor, style).render())
     return dropdown
@@ -84,7 +85,6 @@ export class ItensModalTable {
 
     this.selectInput = document.createElement('select')
     this.selectInput.style.width = '80px'
-    this.selectInput.style.marginRight = '14.4px'
 
     const borderStyles = {
       'sem borda': 'none',
@@ -105,7 +105,7 @@ export class ItensModalTable {
       this.selectInput.appendChild(option)
     })
 
-    const [size = '', border = 'none', color = ''] = (this.style.border ?? '').split(' ')
+    const [size = '', border = 'none'] = (this.style.border ?? '').split(' ')
 
     this.selectInput.value = border
 
@@ -148,6 +148,7 @@ export class ItensModalTable {
     })
 
     this.selectInput.addEventListener('change', () => {
+      this.toggleBorderInputs()
       this.aplicarEstiloBorda()
     })
 
@@ -162,7 +163,7 @@ export class ItensModalTable {
     const borderColorElement = document.createElement('div')
     borderColorElement.className = 'color-picker-border'
 
-    bloco1.append(bordaLabel, this.selectInput, borderColorElement, this.larguraBloco1)
+    bloco1.append(bordaLabel, this.selectInput, this.larguraBloco1, borderColorElement)
     dropdownContent.appendChild(bloco1)
 
     const corFundoLabel = document.createElement('strong')
@@ -182,6 +183,7 @@ export class ItensModalTable {
     this.cellBorderColorPickr = createPickrInstance('.color-picker-border', () => {
       this.cellBorderColorPickr?.hide()
     })
+    this.cellBorderColorPickr.disable()
 
     this.cellBackgroundColorPickr = createPickrInstance('.color-picker-background', () => {
       this.cellBackgroundColorPickr?.hide()
@@ -276,6 +278,7 @@ export class ItensModalTable {
       this.aplicarEstiloBorda(borderColor)
       this.aplicarEstiloCelulas(backgroundColor)
       this.aplicarDimensoesTabela()
+      fecharDropdownsAbertos()
     })
     botaoConfirma.className = 'ex-botaoSalvar'
     botaoConfirma.appendChild(iconConfirma)
@@ -310,6 +313,14 @@ export class ItensModalTable {
         border: `${largura}px ${selectedValue} ${cor}`
       })
     }
+  }
+
+  private toggleBorderInputs() {
+    const isBorderNone = this.selectInput.value === 'none'
+    this.larguraBloco1.disabled = isBorderNone
+    this.larguraBloco1.style.cursor = isBorderNone ? 'not-allowed' : 'default'
+    this.cellBorderColorPickr.setColor(isBorderNone ? 'rgba(0, 0, 0, 0)' : this.cellBorderColorPickr.getColor().toRGBA().toString())
+    this.cellBorderColorPickr?.enable()
   }
 
   private aplicarEstiloCelulas(cor: string = '') {

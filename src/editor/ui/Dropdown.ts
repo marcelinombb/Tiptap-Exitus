@@ -12,6 +12,7 @@ export interface DropdownConfig {
     [key: string]: (obj: DropDownEventProps) => void
   }
   classes: string[]
+  fecha: boolean
 }
 
 export class Dropdown implements Tool {
@@ -21,8 +22,10 @@ export class Dropdown implements Tool {
   dropdownContent!: HTMLElement
   config: DropdownConfig = {
     classes: [],
-    events: {}
+    events: {},
+    fecha: true
   }
+
   button!: Button
   editor: ExitusEditor
   parentToolbar!: Toolbar
@@ -72,16 +75,18 @@ export class Dropdown implements Tool {
   render() {
     this.button.bind('click', ({ editor, event, button }) => {
       this.config.events['open']({ editor, event, button, dropdown: this })
-
-      const close = (event: Event) => {
-        const target = event.target as HTMLElement
-        if (!target.closest('.ex-dropdown')) {
-          this.off()
-          window.removeEventListener('click', close)
+      if (this.config.fecha) {
+        const close = (event: Event) => {
+          const target = event.target as HTMLElement
+          if (!target.closest('.ex-dropdown')) {
+            this.off()
+            window.removeEventListener('click', close)
+            console.log('dsfgfds')
+          }
         }
-      }
 
-      window.addEventListener('click', close)
+        window.addEventListener('click', close)
+      }
     })
 
     this.dropdownContentContainer.appendChild(this.dropdownContent)

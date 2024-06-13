@@ -368,7 +368,7 @@
     flex-direction: row;
     flex-wrap: nowrap;
     z-index: 3 !important;
-    width: 360px;
+    width: 22em;
   }
  
   .ex-dropdown-baloon {
@@ -791,7 +791,9 @@ display: none;
 
 
 .ex-bolinha-baixo {
-  transform: translate(543px,calc(-50% - 0.5px));
+  bottom: 0;
+  transform: translate(0,calc(50% - 1.5px));
+  left: 90%;
   margin: 0 0;
 }
 
