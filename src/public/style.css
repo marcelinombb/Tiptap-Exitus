@@ -56,7 +56,7 @@
   font-family: sans-serif, Arial, Verdana, "Trebuchet MS";
   color: #333 !important;
   font-size: 14px;
-  line-height: 1.3em; 
+  line-height: 1.3em;
 }
 
 .tiptap blockquote {
@@ -68,33 +68,35 @@
   margin: 0 0 9px;
 }
 
- table {
-  border-collapse: collapse;
-  table-layout: fixed;
-  width: 100%;
-  overflow: hidden;
-  max-width: 600px;
+.ProseMirror {
+  table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    overflow: hidden;
+    max-width: 600px;
+  }
+
+  td,
+   th {
+     min-width: 1em;
+    border: 2px solid #ced4da;
+    padding: 3px 5px;
+    vertical-align: top;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+   th {
+     font-weight: bold;
+     text-align: left;
+     background-color: #f1f3f5;
+    }
 }
 
-.single-cell-seleceted {
-  background-color: var(--color-focused-background);
-}
-
- td,
- th {
-  min-width: 1em;
-  border: 2px solid #ced4da;
-  padding: 3px 5px;
-  vertical-align: top;
-  box-sizing: border-box;
-  position: relative;
-}
-
- th {
-  font-weight: bold;
-  text-align: left;
-  background-color: #f1f3f5;
-}
+  .single-cell-seleceted {
+    background-color: var(--color-focused-background);
+  }
 
  .selectedCell:after {
   z-index: 1;
@@ -241,7 +243,7 @@
     padding-right: 1px;
 
   }
-  
+
   .resize-cursor {
     cursor: ew-resize;
     cursor: col-resize;
@@ -250,7 +252,7 @@
   .editor-shell {
     /* margin: 20px auto; */
     border-radius: 2px;
-    max-width: 1100px;
+    /* max-width: 1100px; */
     color: #000;
     position: relative;
     line-height: 1.7;
@@ -272,7 +274,7 @@
     background: #fafafa;
   }
 
-  
+
   .editor-scroller::-webkit-scrollbar {
     width: 8px;
     scrollbar-width: thin;
@@ -283,16 +285,16 @@
     background: #f1f1f1;
     border-radius: 10px;
   }
-    
+
   /* Handle */
   .editor-scroller::-webkit-scrollbar-thumb {
-    background: #888; 
+    background: #888;
     border-radius: 10px;
   }
 
   /* Handle on hover */
   .editor-scroller::-webkit-scrollbar-thumb:hover {
-    background: #555; 
+    background: #555;
   }
 
   .editor-shell {
@@ -339,13 +341,13 @@
   }
 
   .ex-dropdownList-content {
-    
+
     padding: var(--spacing-md);
   }
 
   .ex-dropdown-table-cells {
     flex-direction: row;
-    width: calc(12px * 10 + 2px * 10) /* calc(width * 10 + margin(left + right) * 10 + padding(left + right)) */ 
+    width: calc(12px * 10 + 2px * 10) /* calc(width * 10 + margin(left + right) * 10 + padding(left + right)) */
   }
 
   .ex-dropdown-alignments {
@@ -370,7 +372,7 @@
     z-index: 3 !important;
     width: 22em;
   }
- 
+
   .ex-dropdown-baloon {
     flex-direction: row;
     flex-wrap: nowrap;
@@ -474,7 +476,7 @@
 }
 
 .balloon-panel {
-  position: relative; 
+  position: relative;
   min-height: 30px;
   padding: 1px;
   border-radius: 5px;
@@ -559,10 +561,10 @@
 }
 
 .quadrado {
-  width: 10px; 
-  height: 10px; 
-  background-color: #3779eb; 
-  position: absolute; 
+  width: 10px;
+  height: 10px;
+  background-color: #3779eb;
+  position: absolute;
   display: block;
 }
 
@@ -626,7 +628,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: space-between; 
+  justify-content: space-between;
   width: 100%;
   margin-top: 10px;
   /* gap: 117px; */
@@ -716,8 +718,8 @@
 
 
 .ex-icone-cancelamento::after {
-  content: '\2716'; 
-  font-family: Arial, sans-serif; 
+  content: '\2716';
+  font-family: Arial, sans-serif;
   color: red;
   font-size: 24px;
     right: 79px;
@@ -736,22 +738,22 @@
 .ex-bolinha {
   width: 19px;
   height: 19px;
-  background-color: hsl(218,81.8%,56.9%); 
-  border-radius: 50%; 
-  position: absolute; 
-  cursor: pointer; 
-  z-index: 0; 
+  background-color: hsl(218,81.8%,56.9%);
+  border-radius: 50%;
+  position: absolute;
+  cursor: pointer;
+  z-index: 0;
   display: none;
 }
 
 .ex-getTable{
 width: 20px;
 height: 19px;
-background-color: hsl(218,81.8%,56.9%); 
-border-radius: 50%; 
-position: absolute; 
-cursor: pointer; 
-z-index: 0; 
+background-color: hsl(218,81.8%,56.9%);
+border-radius: 50%;
+position: absolute;
+cursor: pointer;
+z-index: 0;
 display: none;
 }
 

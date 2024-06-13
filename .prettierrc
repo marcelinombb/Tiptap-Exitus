@@ -5,6 +5,6 @@
     "tabWidth": 2,
     "semi": false,
     "arrowParens": "avoid",
-    "endOfLine": "auto",
+    "endOfLine": "lf",
     "ignore": ["**/__tests__/**", "**/*.test.ts", "**/*.spec.ts"]
   }

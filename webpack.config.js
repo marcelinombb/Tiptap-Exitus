@@ -8,6 +8,7 @@ module.exports = (env, argv) => {
     entry: path.resolve(__dirname, 'src/main.ts'),
     performance: { hints: false },
     output: {
+      publicPath: 'resources/exitus/libs/exitus-editor/dist/',
       path: path.resolve(__dirname, 'dist'),
       filename: 'exituseditor.js',
       library: 'ExitusEditor',
