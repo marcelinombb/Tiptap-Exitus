@@ -81,7 +81,6 @@ export class Dropdown implements Tool {
           if (!target.closest('.ex-dropdown')) {
             this.off()
             window.removeEventListener('click', close)
-            console.log('dsfgfds')
           }
         }
 
