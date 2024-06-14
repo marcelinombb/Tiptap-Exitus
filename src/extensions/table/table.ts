@@ -32,14 +32,14 @@ function onSelectTableRowColumn({ event }: ButtonEventProps) {
   })
 }
 
-function insertTableRowColumn({ editor }: ButtonEventProps) {
+function insertTableRowColumn({ editor, event }: ButtonEventProps) {
   const target = event.target as HTMLElement
   const columns = parseInt(target.getAttribute('data-column') as string)
   const rows = parseInt(target.getAttribute('data-row') as string)
-  editor.commands.insertTable({ rows: rows, cols: columns, withHeaderRow: false })
+  editor.chain().insertTable({ rows: rows, cols: columns, withHeaderRow: false }).focus().run()
 }
 
-function createDropDownContent(editor: ExitusEditor) {
+function createDropDownContent(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdown-content ex-dropdown-table-cells'
   dropdownContent.setAttribute('id', 'ex-dropdown-content')
@@ -59,13 +59,11 @@ function createDropDownContent(editor: ExitusEditor) {
       })
 
       button.bind('pointerover', onSelectTableRowColumn)
-      button.bind('click', insertTableRowColumn)
-      /* const button = document.createElement('button')
-      button.classList.add('ex-grid-button')
-      button.setAttribute('data-row', `${row}`)
-      button.setAttribute('data-column', `${column}`)
-      button.addEventListener('pointerover', onSelectTableRowColumn)
-      button.addEventListener('click', insertTableRowColumn(editor)) */
+      button.bind('click', (btnEvents: ButtonEventProps) => {
+        insertTableRowColumn(btnEvents)
+        removeSelectionFromGridButtons(dropdown)
+        dropdown.off()
+      })
       dropdownContent.appendChild(button.render())
     }
   }
@@ -102,7 +100,7 @@ function tableDropDown({ editor }: ButtonEventProps) {
     }
   })
 
-  dropdown.setDropDownContent(createDropDownContent(editor))
+  dropdown.setDropDownContent(createDropDownContent(editor, dropdown))
 
   return dropdown
 }
