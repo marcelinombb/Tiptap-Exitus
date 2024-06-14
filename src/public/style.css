@@ -265,7 +265,7 @@
   }
 
   .editor-scroller {
-    height: 200px;
+    height: calc(201px + (2 * calc(2 * calc(0.6em * 1.5))));
     border: 0;
     position: relative;
     outline: 0;
@@ -390,6 +390,7 @@
     margin: 1px;
     border: 1px solid var(--border-gray);
     padding: calc( 0.6em *0.3);
+    border-radius: 0;
   }
 
   .ex-grid-button-hover {
