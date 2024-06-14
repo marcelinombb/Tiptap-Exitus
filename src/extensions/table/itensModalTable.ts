@@ -62,7 +62,9 @@ export function criaTabelaModal(style: any) {
         open: showDropdown
       },
       classes: ['ex-dropdown-balloonModal'],
-      fecha: false
+      closeDropDown: (elem: HTMLElement) => {
+        return !elem.closest('.pcr-app')
+      }
     })
     dropdown.setDropDownContent(new ItensModalTable(editor, style).render())
     return dropdown
