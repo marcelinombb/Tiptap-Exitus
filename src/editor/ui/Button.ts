@@ -12,12 +12,14 @@ export type ButtonEventProps = {
   button: Button
   event: Event
 }
-
+interface Attrs {
+  [key: string]: any
+}
 export interface ButtonConfig {
   icon: string
   label: string
   title: string
-  attributes: object[]
+  attributes: Attrs
   classList: string[]
   click: (obj: ButtonEventProps) => void
   checkActive: string | object
@@ -50,7 +52,8 @@ export class Button implements Tool {
     const button = createHTMLElement<HTMLButtonElement>('button', {
       class: ['ex-toolbar-button', ...(this.config.classList as string[])].join(' '),
       id: `${Math.floor(Math.random() * 100) + 1}`,
-      title: this.config.title as string
+      title: this.config.title as string,
+      ...this.config.attributes
     })
 
     return button
@@ -76,7 +79,7 @@ export class Button implements Tool {
       callback({
         editor: this.editor,
         button: this,
-        event
+        event: event as Event
       })
     })
   }

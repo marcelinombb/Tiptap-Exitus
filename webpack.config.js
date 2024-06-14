@@ -74,6 +74,10 @@ module.exports = (env, argv) => {
           {
             from: path.resolve(__dirname, 'src/public'),
             to: path.resolve(__dirname, 'dist')
+          },
+          {
+            from: path.resolve(__dirname, 'README.md'),
+            to: path.resolve(__dirname, 'dist')
           }
         ]
       })
@@ -96,6 +100,6 @@ module.exports = (env, argv) => {
         })
       ]
     },
-    devtool: 'source-map'
+    devtool: isProduction ? false : 'eval'
   }
 }

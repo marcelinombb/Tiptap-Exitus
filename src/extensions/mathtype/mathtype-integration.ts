@@ -25,9 +25,9 @@ export class ExitusEditorIntegration extends IntegrationModel {
   constructor(integrationModelProperties: IntegrationModelProperties) {
     const editor = integrationModelProperties.editorObject as Editor
 
-    let options
+    const options = integrationModelProperties.integrationParameters
 
-    if (typeof editor !== 'undefined' && (options = getExtensionOptions(editor, 'mathtype')) !== null) {
+    if (typeof options !== 'undefined') {
       integrationModelProperties.integrationParameters = options
     }
     /**

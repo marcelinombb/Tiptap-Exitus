@@ -9,12 +9,12 @@ import { AllSelection, TextSelection } from 'prosemirror-state'
 
 function setTab({ editor, button }) {
   editor.commands.indent()
-  button.toggle(editor.isActive('indent'))
+  button.toggleActive(editor.isActive('indent'))
 }
 
 function delTab({ editor, button }) {
   editor.commands.outdent()
-  button.toggle(editor.isActive('indent'))
+  button.toggleActive(editor.isActive('indent'))
 }
 
 export const clamp = (val, min, max) => {
