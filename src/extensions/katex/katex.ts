@@ -109,7 +109,7 @@ export const Katex = Node.create({
     ]
   },
   renderHTML({ HTMLAttributes }) {
-    return ['span', { class: 'math-tex' }, HTMLAttributes.latexFormula]
+    return ['span', { class: 'math-tex' }, `\\(${HTMLAttributes.latexFormula}\\)`]
   },
   addCommands() {
     return {
