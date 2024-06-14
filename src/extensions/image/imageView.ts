@@ -95,74 +95,27 @@ function alinhaMeio(imageView: ImageView) {
   }
 }
 
-function originalPx(dropdown: Dropdown, icon: string) {
+function sizeButton(dropdown: Dropdown, label: string, size: number) {
   const button = new Button(dropdown.editor, {
-    icon: icon,
+    label,
     classList: ['ex-mr-0']
   })
 
   button.bind('click', () => {
-    /* if (!image.classList.contains('')) {
-      //dropdown.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
-      button.on()
-      image.classList.remove('ex-grande', 'ex-pequeno', 'ex-medio')
-    } else {
-      button.off()
-      image.classList.remove('ex-grande', 'ex-pequeno', 'ex-medio')
-      dropdown.off()
-    } */
+    dropdown.editor.commands.setImageWidth(`${size}px`)
   })
 
   return button.render()
 }
 
-function trezentosPx(dropdown: Dropdown, icon: string) {
-  const button = new Button(dropdown.editor, {
-    icon: icon,
-    classList: ['ex-mr-0']
-  })
-
-  button.bind('click', () => {
-    dropdown.editor.commands.setImageWidth('300px')
-  })
-
-  return button.render()
-}
-
-function quatrocentosPx(dropdown: Dropdown, icon: string) {
-  const button = new Button(dropdown.editor, {
-    icon: icon,
-    classList: ['ex-mr-0']
-  })
-
-  button.bind('click', () => {
-    dropdown.editor.commands.setImageWidth('400px')
-  })
-
-  return button.render()
-}
-
-function setecentosPx(dropdown: Dropdown, icon: string) {
-  const button = new Button(dropdown.editor, {
-    icon: icon,
-    classList: ['ex-mr-0']
-  })
-
-  button.bind('click', () => {
-    dropdown.editor.commands.setImageWidth('700px')
-  })
-
-  return button.render()
-}
-
-function criarDropDown(dropdown: Dropdown) {
+function criarDropDown(dropdown: Dropdown, originalSize: number) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdownList-content'
 
-  const original = originalPx(dropdown, 'Original')
-  const pequeno = trezentosPx(dropdown, '300px')
-  const medio = quatrocentosPx(dropdown, '400px')
-  const grande = setecentosPx(dropdown, '700px')
+  const original = sizeButton(dropdown, `original`, originalSize)
+  const pequeno = sizeButton(dropdown, '300px', 300)
+  const medio = sizeButton(dropdown, '400px', 400)
+  const grande = sizeButton(dropdown, '700px', 700)
 
   dropdownContent?.append(original, pequeno, medio, grande)
 
@@ -178,7 +131,7 @@ function showDropdown({ event, dropdown }: DropDownEventProps) {
   }
 }
 
-function balloonDropDown() {
+function balloonDropDown(originalSize: number) {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
       events: {
@@ -187,7 +140,7 @@ function balloonDropDown() {
       classes: ['ex-dropdown-listItem']
     })
 
-    dropdown.setDropDownContent(criarDropDown(dropdown))
+    dropdown.setDropDownContent(criarDropDown(dropdown, originalSize))
 
     window.addEventListener('click', function (event: Event) {
       const target = event.target as HTMLElement
@@ -209,6 +162,7 @@ export class ImageView implements NodeView {
   editor: Editor
   getPos: boolean | (() => number)
   resizer: ResizableImage
+  originalSize: number
 
   constructor(node: Node, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node
@@ -221,6 +175,7 @@ export class ImageView implements NodeView {
     this.image = this.imageWrapper.appendChild(document.createElement('img'))
 
     this.setImageAttributes(this.image, node)
+    this.originalSize = this.image.width
 
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
 
@@ -257,7 +212,7 @@ export class ImageView implements NodeView {
         toolbarButtonConfig: {
           icon: imgSize + arrowDropDown,
           title: 'Aumenta e diminui',
-          dropdown: balloonDropDown()
+          dropdown: balloonDropDown(this.originalSize)
         }
       }
     }
