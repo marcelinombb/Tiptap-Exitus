@@ -13,10 +13,10 @@ import { TableView } from './TableView'
 function onSelectTableRowColumn(event): EventListener {
   const onColumn = parseInt(event.target.getAttribute('data-column'))
   const onRow = parseInt(event.target.getAttribute('data-row'))
-  const indicator = document.querySelector('.ex-indicator')
-  if (indicator) {
+  const indicators = document.querySelectorAll('.ex-indicator')
+  indicators.forEach(indicator => {
     indicator.textContent = `${onRow} × ${onColumn}`
-  }
+  })
 
   const buttons = event.target.parentNode.querySelectorAll('button') as HTMLCollectionOf<HTMLButtonElement>
 
@@ -95,6 +95,12 @@ function tableDropDown({ editor }: ButtonEventProps) {
 
   dropdown.setDropDownContent(createDropDownContent(editor))
 
+  window.addEventListener('click', function (event: Event) {
+    event.stopPropagation()
+    if (dropdown.isOpen) {
+      dropdown.off()
+    }
+  })
   return dropdown
 }
 

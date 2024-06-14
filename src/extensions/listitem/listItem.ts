@@ -1,4 +1,4 @@
-import { Button, DropDownEventProps, Dropdown } from '@editor/ui'
+import { Button, Dropdown, type DropDownEventProps } from '@editor/ui'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import listFullIcon from '@icons/list-check.svg'
 import listOrederedIcon from '@icons/list-ordered-2.svg'

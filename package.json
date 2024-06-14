@@ -65,6 +65,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
+    "@simonwep/pickr": "^1.9.1",
     "@tiptap/pm": "^2.2.5",
     "@wiris/mathtype-html-integration-devkit": "^1.17.2",
     "katex": "^0.16.10"
