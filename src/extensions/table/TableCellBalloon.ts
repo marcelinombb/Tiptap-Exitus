@@ -309,25 +309,25 @@ export class ItensModalCell {
     const bloco8 = document.createElement('div')
     bloco8.className = 'ex-bloco8'
 
-    const TableEsquerda = createButton(this.editor, textDl, () => {
+    const AlinhaTopo = createButton(this.editor, textDl, () => {
       this.editor.commands.setCellAttributes(this.selectedCell, {
         'vertical-align': 'top'
       })
     })
 
-    const TableMeio = createButton(this.editor, textDm, () => {
+    const AlinhaMeio = createButton(this.editor, textDm, () => {
       this.editor.commands.setCellAttributes(this.selectedCell, {
         'vertical-align': 'middle'
       })
     })
 
-    const TableDireito = createButton(this.editor, textDr, () => {
+    const AlinhaBaixo = createButton(this.editor, textDr, () => {
       this.editor.commands.setCellAttributes(this.selectedCell, {
         'vertical-align': 'bottom'
       })
     })
 
-    bloco8.append(TableEsquerda, TableMeio, TableDireito)
+    bloco8.append(AlinhaTopo, AlinhaMeio, AlinhaBaixo)
 
     const bloco4 = document.createElement('div')
     bloco4.className = 'ex-bloco4'
@@ -348,11 +348,11 @@ export class ItensModalCell {
     iconCancela.className = 'ex-icone-cancelamento'
 
     const botaoConfirma = createButton(this.editor, 'Salvar', () => {
-      const borderColor = this.cellBorderColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
+      /* const borderColor = this.cellBorderColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
       const backgroundColor = this.cellBackgroundColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
       this.aplicarEstiloBorda(borderColor)
       this.aplicarEstiloCelulas(backgroundColor)
-      this.aplicarDimensoesTabela()
+      this.aplicarDimensoesTabela() */
       this.balloon.off()
     })
     botaoConfirma.className = 'ex-botaoSalvar'

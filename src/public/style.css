@@ -728,9 +728,9 @@
 
 .ex-indicator {
   position: absolute;
-  top: 135px;
-  left: 65px;
+  left: 64px;
   right: auto;
+  bottom: 0;
 }
 
 
