@@ -26,6 +26,12 @@ function clickHandler(tableView: TableView) {
 
     function clickOutside(event: Event) {
       const target = event.target as HTMLElement
+
+      if (target.closest('.pcr-app') !== null) {
+        console.log(target.closest('.pcr-app'))
+        return
+      }
+
       if (target.closest('.tableWrapper') == null) {
         tableView.balloon.hide()
         tableView.tableWrapper.classList.remove('ex-selected')
@@ -40,6 +46,11 @@ function clickHandler(tableView: TableView) {
 function clickCellHandler(tableView: TableView) {
   function clickOutside(event: Event) {
     const target = event.target as HTMLElement
+
+    if (target.closest('.pcr-app') !== null) {
+      return
+    }
+
     if (target.closest('.balloon-menu') == null) {
       tableView.tableCellBalloon.off()
       window.removeEventListener('click', clickOutside)

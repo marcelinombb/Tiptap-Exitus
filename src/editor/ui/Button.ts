@@ -52,7 +52,8 @@ export class Button implements Tool {
     const button = createHTMLElement<HTMLButtonElement>('button', {
       class: ['ex-toolbar-button', ...(this.config.classList as string[])].join(' '),
       id: `${Math.floor(Math.random() * 100) + 1}`,
-      title: this.config.title as string
+      title: this.config.title as string,
+      ...this.config.attributes
     })
 
     return button

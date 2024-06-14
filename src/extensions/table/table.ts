@@ -14,7 +14,7 @@ function onSelectTableRowColumn({ event }: ButtonEventProps) {
   const element = event.target as HTMLElement
   const onColumn = parseInt(element.getAttribute('data-column'))
   const onRow = parseInt(element.getAttribute('data-row'))
-  const indicator = document.querySelector('.ex-indicator')
+  const indicator = element.parentNode.querySelector('.ex-indicator')
   if (indicator) {
     indicator.textContent = `${onRow} × ${onColumn}`
   }
@@ -102,6 +102,12 @@ function tableDropDown({ editor }: ButtonEventProps) {
 
   dropdown.setDropDownContent(createDropDownContent(editor, dropdown))
 
+  window.addEventListener('click', function (event: Event) {
+    event.stopPropagation()
+    if (dropdown.isOpen) {
+      dropdown.off()
+    }
+  })
   return dropdown
 }
 
