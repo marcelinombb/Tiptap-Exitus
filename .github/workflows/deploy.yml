@@ -35,7 +35,7 @@ jobs:
       run: npm install
 
     - name: Build the project
-      run: npm run build
+      run: npm run pages_build
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
