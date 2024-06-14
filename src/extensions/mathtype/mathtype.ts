@@ -15,7 +15,7 @@ import chemIcon from './icons/ckeditor5-chem.svg'
 import mathIcon from './icons/ckeditor5-formula.svg'
 import { ExitusEditorIntegration } from './mathtype-integration'
 
-function _addIntegration(editor: Editor) {
+function _addIntegration(editor: Editor, integrationParameters) {
   /**
    * Integration model constructor attributes.
    * @type {integrationModelProperties}
@@ -32,6 +32,8 @@ function _addIntegration(editor: Editor) {
   integrationProperties.target = editor.view.dom.parentElement
   integrationProperties.scriptName = 'bundle.js'
   integrationProperties.managesLanguage = true
+  integrationProperties.integrationParameters = integrationParameters['mathTypeParameters']
+
   // etc
 
   // There are platforms like Drupal that initialize CKEditor but they hide or remove the container element.
@@ -199,7 +201,8 @@ export const MathType = Node.create({
   onCreate({ editor }) {
     try {
       if (getExtensionStorage(editor).currentInstances.has(editor.editorInstance)) return
-      const integration = _addIntegration(editor)
+
+      const integration = _addIntegration(editor, this.options)
       getExtensionStorage(editor).currentInstances.set(editor.editorInstance, integration)
 
       window.WirisPlugin = {
@@ -216,6 +219,24 @@ export const MathType = Node.create({
       }
     } catch (e) {
       console.error(e)
+    }
+  },
+  addOptions() {
+    return {
+      mathTypeParameters: {
+        editorParameters: {
+          fontFamily: 'Arial',
+          fontStyle: 'normal',
+          fontSize: '14px',
+          fonts: [
+            {
+              id: 'inherit',
+              label: 'Arial'
+            }
+          ],
+          language: 'pt_br'
+        }
+      }
     }
   },
   onDestroy() {

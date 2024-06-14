@@ -2,9 +2,14 @@ import { Toolbar } from '@editor/toolbar'
 import { createHTMLElement } from '@editor/utils'
 import { type AnyExtension, Editor, type EditorOptions } from '@tiptap/core'
 
+interface Config {
+  [key: string]: any
+}
+
 export interface ExitusEditorOptions extends EditorOptions {
   container: Element
   toolbarOrder: string[]
+  config: Config
 }
 
 function generateUUID() {
@@ -25,7 +30,19 @@ class ExitusEditor extends Editor {
   static toolbarOrder: string[]
 
   constructor(options: Partial<ExitusEditorOptions> = {}) {
-    super({ ...options, extensions: ExitusEditor.extensions })
+    let ext = ExitusEditor.extensions
+    if (options.config !== undefined) {
+      ext = ExitusEditor.extensions.map(ext => {
+        const conf = options!.config![ext.name]
+        if (conf) {
+          return ext.configure(conf)
+        }
+
+        return ext
+      })
+    }
+
+    super({ ...options, extensions: ext })
     this.editorInstance = generateUUID()
 
     const toolbarOrder: string[] = [...ExitusEditor.toolbarOrder, ...(options.toolbarOrder ?? [])]
