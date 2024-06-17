@@ -28,12 +28,14 @@ export const History = HistoryBase.extend({
         {
           icon: quote,
           click: goBack,
-          checkActive: this.name
+          checkActive: this.name,
+          tooltip: 'Desfazer (Ctrl + Z))'
         },
         {
           icon: quote2,
           click: goFoward,
-          checkActive: this.name
+          checkActive: this.name,
+          tooltip: 'Refazer (Ctrl + Y))'
         }
       ]
     }

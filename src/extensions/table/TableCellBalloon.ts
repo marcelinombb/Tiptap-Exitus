@@ -80,7 +80,6 @@ export class TableCellBalloon {
       const main = this.editor.view.dom.getBoundingClientRect()
       this.updateSyleDefaults(resPos)
       this.balloon.setPosition(left - main.left + width / 2, top - main.y + height)
-      this.balloon.show()
     } catch (error) {
       console.error(error)
     }
@@ -221,8 +220,9 @@ export class ItensModalCell {
 
   public render() {
     const dropdownContent = document.createElement('div')
-    dropdownContent.className = 'ex-dropdownList-content'
     dropdownContent.contentEditable = 'false'
+    dropdownContent.className = 'ex-p-lg'
+    dropdownContent.style.width = '320px'
 
     const propriedadesLabel = document.createElement('strong')
     propriedadesLabel.textContent = 'Propriedades da Celula'

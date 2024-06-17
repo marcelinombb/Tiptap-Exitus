@@ -67,7 +67,7 @@ export class KatexView implements NodeView {
       },
       confirmBalloon.bind(this),
       cancelBalloon.bind(this),
-      'bottom'
+      'float'
     )
 
     this.renderedLatex = document.createElement('span')
@@ -87,8 +87,9 @@ export class KatexView implements NodeView {
     })
 
     const balloon = this.balloon.getBalloon()
+    this.editor.view.dom!.parentElement!.appendChild(balloon)
 
-    this.dom.append(balloon, this.renderedLatex)
+    this.dom.append(this.renderedLatex)
 
     if (this.isEditing()) {
       this.selected()
@@ -121,14 +122,16 @@ export class KatexView implements NodeView {
     this.editing = true
     this.balloon.input.setSelectionRange(0, 0)
     this.balloon.input.focus()
-    window.addEventListener('click', this.bindDeselected)
-    this.balloon.show()
+    if (typeof this.getPos === 'function') {
+      this.balloon.updatePosition(this.getPos())
+      window.addEventListener('click', this.bindDeselected)
+    }
   }
 
   deselected(event: Event) {
     const target = event.target as HTMLElement
 
-    if (target.closest('.math-tex') === null) {
+    if (target.closest('.balloon-menu') === null && target.closest('.math-tex') === null) {
       this.cancelEditting()
     }
   }
@@ -187,10 +190,6 @@ export class KatexView implements NodeView {
   }
 
   stopEvent(event: Event) {
-    if (event.target != undefined && (event.target as HTMLElement).classList.contains('latex-confirm')) {
-      return false
-    }
-
     if (event.type === 'dragstart' && this.isEditing()) {
       event.preventDefault()
     }

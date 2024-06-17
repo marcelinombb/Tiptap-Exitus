@@ -1,5 +1,5 @@
 import { Balloon, type BalloonOptions, Button } from '@editor/ui'
-import { createHTMLElement } from '@editor/utils'
+import { createHTMLElement, getNodeBoundingClientRect } from '@editor/utils'
 import check from '@icons/check-line.svg'
 import close from '@icons/close-line.svg'
 import type ExitusEditor from '@src/ExitusEditor'
@@ -85,5 +85,17 @@ export class KatexBalloon {
 
   hide() {
     this.balloon.hide()
+  }
+
+  updatePosition(pos: number) {
+    try {
+      //const resPos = selectionCell(this.editor.view.state)
+      const { top, height, left, width } = getNodeBoundingClientRect(this.editor, pos)
+      const main = this.editor.view.dom.getBoundingClientRect()
+      this.balloon.setPosition(left - main.left + width / 2, top - main.y + height)
+      //this.balloon.show()
+    } catch (error) {
+      console.error(error)
+    }
   }
 }

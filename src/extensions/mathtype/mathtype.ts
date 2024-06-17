@@ -106,13 +106,15 @@ export const MathType = Node.create({
           icon: mathIcon,
           click: ({ editor }: ButtonEventProps) => {
             editor.commands.openMathEditor()
-          }
+          },
+          tooltip: 'Fórmulas Matemáticas - MathType'
         },
         {
           icon: chemIcon,
           click: ({ editor }: ButtonEventProps) => {
             editor.commands.openChemEditor()
-          }
+          },
+          tooltip: 'Fórmulas Quimicas - ChemType'
         }
       ]
     }
