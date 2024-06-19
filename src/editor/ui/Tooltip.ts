@@ -8,8 +8,13 @@ export class Tooltip {
     tooltipText.innerHTML = text
     this.tooltipBalloon.appendChild(tooltipText)
     parent.appendChild(this.tooltipBalloon)
+    let cancel: any
+    parent.addEventListener('pointerup', () => {
+      clearTimeout(cancel)
+      this.hide()
+    })
     parent.addEventListener('mouseenter', () => {
-      const cancel = setTimeout(() => this.show(), 500)
+      cancel = setTimeout(() => this.show(), 500)
       parent.addEventListener('mouseleave', () => {
         clearTimeout(cancel)
         this.hide()

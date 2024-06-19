@@ -1,35 +1,34 @@
 //@ts-nocheck
+import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import table from '@icons/table-2.svg'
 import { mergeAttributes } from '@tiptap/core'
 import { createColGroup, Table } from '@tiptap/extension-table'
 import { findParentNodeOfType } from 'prosemirror-utils'
 
-import { Button, type ButtonEventProps, Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
 import { TableView } from './TableView'
 
-function onSelectTableRowColumn({ event }: ButtonEventProps) {
+function onSelectTableRowColumn(event, indicator) {
   const element = event.target as HTMLElement
   const onColumn = parseInt(element.getAttribute('data-column'))
   const onRow = parseInt(element.getAttribute('data-row'))
-  const indicator = element.parentNode.querySelector('.ex-indicator')
   if (indicator) {
     indicator.textContent = `${onRow} × ${onColumn}`
   }
 
   const buttons = element.parentNode.querySelectorAll('button') as HTMLCollectionOf<HTMLButtonElement>
 
-  Array.from(buttons).forEach(element => {
-    const column = parseInt(element.getAttribute('data-column') as string)
-    const row = parseInt(element.getAttribute('data-row') as string)
+  for (const button of buttons) {
+    const column = parseInt(button.getAttribute('data-column') as string)
+    const row = parseInt(button.getAttribute('data-row') as string)
     if (row <= onRow && column <= onColumn) {
-      element.classList.add('ex-grid-button-hover')
+      button.classList.add('ex-grid-button-hover')
     } else {
-      element.classList.remove('ex-grid-button-hover')
+      button.classList.remove('ex-grid-button-hover')
     }
-  })
+  }
 }
 
 function insertTableRowColumn({ editor, event }: ButtonEventProps) {
@@ -41,12 +40,15 @@ function insertTableRowColumn({ editor, event }: ButtonEventProps) {
 
 function createDropDownContent(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
-  dropdownContent.className = 'ex-dropdown-content ex-dropdown-table-cells'
+  dropdownContent.className = 'ex-dropdown-content'
   dropdownContent.setAttribute('id', 'ex-dropdown-content')
 
   const indicator = document.createElement('div')
   indicator.className = 'ex-indicator'
   dropdownContent.appendChild(indicator)
+
+  const div = document.createElement('div')
+  div.className = 'ex-dropdown-table-cells'
 
   for (let row = 1; row <= 10; row++) {
     for (let column = 1; column <= 10; column++) {
@@ -58,15 +60,18 @@ function createDropDownContent(editor: ExitusEditor, dropdown: Dropdown) {
         }
       })
 
-      button.bind('pointerover', onSelectTableRowColumn)
+      button.bind('pointerover', ({ event }) => {
+        onSelectTableRowColumn(event, indicator)
+      })
       button.bind('click', (btnEvents: ButtonEventProps) => {
         insertTableRowColumn(btnEvents)
         removeSelectionFromGridButtons(dropdown)
         dropdown.off()
       })
-      dropdownContent.appendChild(button.render())
+      div.appendChild(button.render())
     }
   }
+  dropdownContent.append(div, indicator)
 
   return dropdownContent
 }

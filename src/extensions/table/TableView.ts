@@ -68,10 +68,17 @@ function showCellBalloon(tableView: TableView) {
   }
 }
 
+function getContentWidth(element: HTMLElement) {
+  const widthWithPaddings = element.clientWidth
+  const elementComputedStyle = window.getComputedStyle(element, null)
+  return widthWithPaddings - parseFloat(elementComputedStyle.paddingLeft) - parseFloat(elementComputedStyle.paddingRight)
+}
+
 export function updateColumns(
   node: ProseMirrorNode,
+  editor: Editor,
   colgroup: Element,
-  table: HTMLElement,
+  tableWrapper: HTMLElement,
   cellMinWidth: number,
   overrideCol?: number,
   overrideValue?: any
@@ -113,13 +120,14 @@ export function updateColumns(
     nextDOM = after
   }
 
-  if (fixedWidth) {
+  /* if (fixedWidth) {
     table.style.width = `${totalWidth}px`
     table.style.minWidth = ''
-  } else {
-    table.style.width = ''
-    table.style.minWidth = `${totalWidth}px`
-  }
+  } else { */
+  const totalEditorWidth = getContentWidth(editor.view.dom)
+  const widthPercent = (totalWidth * 100) / totalEditorWidth
+  tableWrapper.style.width = `${widthPercent > 100 ? 100 : widthPercent}%`
+  //}
 }
 
 export class TableView implements NodeView {
@@ -144,6 +152,7 @@ export class TableView implements NodeView {
     this.cellMinWidth = 100
     this.dom = document.createElement('div')
     this.tableWrapper = document.createElement('div')
+    this.dom = this.tableWrapper
     this.tableWrapper.classList.add('tableWrapper', 'tiptap-widget')
     this.table = this.tableWrapper.appendChild(document.createElement('table'))
     this.colgroup = this.table.appendChild(document.createElement('colgroup'))
@@ -153,7 +162,7 @@ export class TableView implements NodeView {
 
     updateTableStyle(this)
 
-    updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
+    updateColumns(node, this.editor, this.colgroup, this.tableWrapper, this.cellMinWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
 
     new TableFocus(this, this.editor)
@@ -164,36 +173,37 @@ export class TableView implements NodeView {
       celumnsTable: {
         toolbarButtonConfig: {
           icon: tableColumns + arrowDropDown,
-          title: 'coluna',
-          dropdown: criaDropColuna()
+          dropdown: criaDropColuna(),
+          tooltip: 'Colunas'
         }
       },
       RowTable: {
         toolbarButtonConfig: {
           icon: tableRow + arrowDropDown,
-          title: 'linha',
-          dropdown: criaDropLinhas()
+          dropdown: criaDropLinhas(),
+          tooltip: 'Linhas'
         }
       },
       cellTable: {
         toolbarButtonConfig: {
           icon: tableCell + arrowDropDown,
-          title: 'mesclar células',
-          dropdown: criaDropCell()
+          dropdown: criaDropCell(),
+          tooltip: 'Mesclar Células'
         }
       },
       tableStarred: {
         toolbarButtonConfig: {
           icon: starredTable + arrowDropDown,
           title: 'editar tabela',
-          dropdown: criaTabelaModal(node.attrs.style)
+          dropdown: criaTabelaModal(node.attrs.style),
+          tooltip: 'Propriedades da Tabela'
         }
       },
       cellStarred: {
         toolbarButtonConfig: {
           icon: starredCell,
-          title: 'editar celula',
-          click: showCellBalloon(this)
+          click: showCellBalloon(this),
+          tooltip: 'Propriedades da Célula'
         }
       }
     }
@@ -211,7 +221,7 @@ export class TableView implements NodeView {
 
     this.tableWrapper.appendChild(this.balloon.getBalloon())
 
-    this.dom.appendChild(this.tableWrapper)
+    //this.dom.appendChild(this.tableWrapper)
 
     clickHandler(this)
   }
@@ -251,7 +261,7 @@ export class TableView implements NodeView {
     this.tableWrapperStyle = node.attrs.styleTableWrapper
     updateTableStyle(this)
 
-    updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
+    updateColumns(node, this.editor, this.colgroup, this.tableWrapper, this.cellMinWidth)
 
     return true
   }
@@ -284,6 +294,6 @@ export class TableView implements NodeView {
 }
 function updateTableStyle(tableView: TableView) {
   const { table, tableWrapperStyle, tableWrapper, tableStyle } = tableView
-  table.setAttribute('style', objParaCss(tableStyle))
+  table.setAttribute('style', objParaCss({ ...tableStyle, width: '100%' }))
   tableWrapper.setAttribute('style', objParaCss(tableWrapperStyle))
 }
