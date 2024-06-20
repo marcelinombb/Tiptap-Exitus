@@ -78,7 +78,7 @@ export function updateColumns(
   node: ProseMirrorNode,
   editor: Editor,
   colgroup: Element,
-  tableWrapper: HTMLElement,
+  tableView: TableView,
   cellMinWidth: number,
   overrideCol?: number,
   overrideValue?: any
@@ -87,15 +87,31 @@ export function updateColumns(
   let fixedWidth = true
   let nextDOM = colgroup.firstChild
   const row = node.firstChild
+  //console.log(row!.childCount)
 
+  //tableView.table.style.width = `100%`
+  //tableView.table.style.minWidth = `unset`
+
+  const totalEditorWidth = getContentWidth(editor.view.dom)
+  const colMaxWidth = totalEditorWidth / row!.childCount
+  const colMinWidth = cellMinWidth
+  const nCols = row!.childCount
   for (let i = 0, col = 0; i < row!.childCount; i += 1) {
     const { colspan, colwidth } = row!.child(i).attrs
 
     for (let j = 0; j < colspan; j += 1, col += 1) {
       const hasWidth = overrideCol === col ? overrideValue : colwidth && colwidth[j]
-      const cssWidth = hasWidth ? `${hasWidth}px` : ''
+      let cssWidth = `${hasWidth}px`
 
-      totalWidth += hasWidth || cellMinWidth
+      if (!hasWidth || hasWidth < colMinWidth) {
+        cssWidth = `${colMinWidth}px`
+        totalWidth += colMinWidth
+      } else if (hasWidth && hasWidth > totalEditorWidth) {
+        cssWidth = `${totalEditorWidth - totalWidth}px`
+        totalWidth += totalEditorWidth - totalWidth
+      } else {
+        totalWidth += hasWidth
+      }
 
       if (!hasWidth) {
         fixedWidth = false
@@ -119,15 +135,30 @@ export function updateColumns(
     nextDOM!.parentNode!.removeChild(nextDOM)
     nextDOM = after
   }
+  console.log(totalWidth)
 
-  /* if (fixedWidth) {
-    table.style.width = `${totalWidth}px`
-    table.style.minWidth = ''
-  } else { */
-  const totalEditorWidth = getContentWidth(editor.view.dom)
+  /* if (hasWidth > totalEditorWidth) {
+    console.log(hasWidth, totalEditorWidth)
+
+    cssWidth = '100%'
+  } else if (!hasWidth || hasWidth < 50) {
+  } else if (!hasWidth || hasWidth < 50) {
+    cssWidth = `${(50 * 100) / totalWidth}%`
+  } else {
+    cssWidth = `${(hasWidth * 100) / totalWidth}%`
+  }
+
   const widthPercent = (totalWidth * 100) / totalEditorWidth
-  tableWrapper.style.width = `${widthPercent > 100 ? 100 : widthPercent}%`
-  //}
+  tableView.tableWrapper.style.width = `${widthPercent > 100 ? 100 : widthPercent}%` */
+
+  //if (fixedWidth) {
+  console.log(totalWidth, totalEditorWidth)
+  tableView.table.style.width = `${totalWidth > totalEditorWidth ? totalEditorWidth : totalWidth}px`
+  tableView.table.style.minWidth = `${nCols * colMinWidth}px`
+  tableView.tableWrapper.style.width = `${totalWidth > totalEditorWidth ? totalEditorWidth : totalWidth}px`
+  //} else {
+  //tableView.table.style.width = ''
+  //tableView.table.style.minWidth = `${totalWidth}px`
 }
 
 export class TableView implements NodeView {
@@ -149,7 +180,7 @@ export class TableView implements NodeView {
     this.node = node
     this.editor = editor
     this.getPos = getPos
-    this.cellMinWidth = 100
+    this.cellMinWidth = 50
     this.dom = document.createElement('div')
     this.tableWrapper = document.createElement('div')
     this.dom = this.tableWrapper
@@ -162,7 +193,7 @@ export class TableView implements NodeView {
 
     updateTableStyle(this)
 
-    updateColumns(node, this.editor, this.colgroup, this.tableWrapper, this.cellMinWidth)
+    updateColumns(node, this.editor, this.colgroup, this, this.cellMinWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
 
     new TableFocus(this, this.editor)
@@ -261,7 +292,7 @@ export class TableView implements NodeView {
     this.tableWrapperStyle = node.attrs.styleTableWrapper
     updateTableStyle(this)
 
-    updateColumns(node, this.editor, this.colgroup, this.tableWrapper, this.cellMinWidth)
+    updateColumns(node, this.editor, this.colgroup, this, this.cellMinWidth)
 
     return true
   }
@@ -294,6 +325,6 @@ export class TableView implements NodeView {
 }
 function updateTableStyle(tableView: TableView) {
   const { table, tableWrapperStyle, tableWrapper, tableStyle } = tableView
-  table.setAttribute('style', objParaCss({ ...tableStyle, width: '100%' }))
+  //table.setAttribute('style', objParaCss({ ...tableStyle, width: '100%' }))
   tableWrapper.setAttribute('style', objParaCss(tableWrapperStyle))
 }

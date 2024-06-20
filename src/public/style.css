@@ -84,6 +84,8 @@
   border-collapse: collapse;
   table-layout: fixed;
   width: 100%;
+  height: 100%;
+  border-spacing: 0;
   overflow: hidden;
 }
 
