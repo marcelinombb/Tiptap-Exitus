@@ -74,7 +74,8 @@ export function updateColumns(
   table: HTMLElement,
   cellMinWidth: number,
   overrideCol?: number,
-  overrideValue?: any
+  overrideValue?: any,
+  tableMaxWidth: number
 ) {
   let totalWidth = 0
   let fixedWidth = true
@@ -86,9 +87,20 @@ export function updateColumns(
 
     for (let j = 0; j < colspan; j += 1, col += 1) {
       const hasWidth = overrideCol === col ? overrideValue : colwidth && colwidth[j]
-      const cssWidth = hasWidth ? `${hasWidth}px` : ''
-
-      totalWidth += hasWidth || cellMinWidth
+      let cssWidth = ''
+      if (!hasWidth) {
+        cssWidth = ''
+        totalWidth += cellMinWidth
+      } else if (hasWidth < cellMinWidth) {
+        cssWidth = `${cellMinWidth}px`
+        totalWidth += cellMinWidth
+      } else if (hasWidth && hasWidth > tableMaxWidth) {
+        totalWidth += tableMaxWidth
+        cssWidth = `${tableMaxWidth}px`
+      } else {
+        totalWidth += hasWidth
+        cssWidth = `${hasWidth}px`
+      }
 
       if (!hasWidth) {
         fixedWidth = false
@@ -113,13 +125,13 @@ export function updateColumns(
     nextDOM = after
   }
 
-  if (fixedWidth) {
+  /*  if (fixedWidth) {
     table.style.width = `${totalWidth}px`
     table.style.minWidth = ''
-  } else {
-    table.style.width = ''
-    table.style.minWidth = `${totalWidth}px`
-  }
+  } else { */
+  table.style.width = ''
+  table.style.minWidth = `${totalWidth > tableMaxWidth ? tableMaxWidth : totalWidth}px`
+  //}
 }
 
 export class TableView implements NodeView {
@@ -153,7 +165,9 @@ export class TableView implements NodeView {
 
     updateTableStyle(this)
 
-    updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
+    const tableMaxWidth = getContentWidth(this.editor.view.dom)
+
+    updateColumns(node, this.colgroup, this.table, this.cellMinWidth, undefined, undefined, tableMaxWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
 
     new TableFocus(this, this.editor)
@@ -250,8 +264,8 @@ export class TableView implements NodeView {
     this.tableStyle = node.attrs.style
     this.tableWrapperStyle = node.attrs.styleTableWrapper
     updateTableStyle(this)
-
-    updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
+    const tableMaxWidth = getContentWidth(this.editor.view.dom)
+    updateColumns(node, this.colgroup, this.table, this.cellMinWidth, undefined, undefined, tableMaxWidth)
 
     return true
   }
