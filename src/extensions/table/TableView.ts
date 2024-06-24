@@ -13,6 +13,7 @@ import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
 
 import { criaTabelaModal } from './itensModalTable'
+import { updateColumnsOnResize } from './prosemirror-tables/src'
 import { objParaCss } from './table'
 import { TableCellBalloon } from './TableCellBalloon'
 import TableFocus, { UpDownTable } from './tableFocus'
@@ -68,72 +69,6 @@ function showCellBalloon(tableView: TableView) {
   }
 }
 
-export function updateColumns(
-  node: ProseMirrorNode,
-  colgroup: Element,
-  table: HTMLElement,
-  cellMinWidth: number,
-  overrideCol?: number,
-  overrideValue?: any,
-  tableMaxWidth: number
-) {
-  let totalWidth = 0
-  let fixedWidth = true
-  let nextDOM = colgroup.firstChild
-  const row = node.firstChild
-
-  for (let i = 0, col = 0; i < row!.childCount; i += 1) {
-    const { colspan, colwidth } = row!.child(i).attrs
-
-    for (let j = 0; j < colspan; j += 1, col += 1) {
-      const hasWidth = overrideCol === col ? overrideValue : colwidth && colwidth[j]
-      let cssWidth = ''
-      if (!hasWidth) {
-        cssWidth = ''
-        totalWidth += cellMinWidth
-      } else if (hasWidth < cellMinWidth) {
-        cssWidth = `${cellMinWidth}px`
-        totalWidth += cellMinWidth
-      } else if (hasWidth && hasWidth > tableMaxWidth) {
-        totalWidth += tableMaxWidth
-        cssWidth = `${tableMaxWidth}px`
-      } else {
-        totalWidth += hasWidth
-        cssWidth = `${hasWidth}px`
-      }
-
-      if (!hasWidth) {
-        fixedWidth = false
-      }
-
-      if (!nextDOM) {
-        colgroup.appendChild(document.createElement('col')).style.width = cssWidth
-      } else {
-        if ((nextDOM as HTMLElement).style.width !== cssWidth) {
-          ;(nextDOM as HTMLElement).style.width = cssWidth
-        }
-
-        nextDOM = nextDOM.nextSibling
-      }
-    }
-  }
-
-  while (nextDOM) {
-    const after = nextDOM.nextSibling
-
-    nextDOM!.parentNode!.removeChild(nextDOM)
-    nextDOM = after
-  }
-
-  /*  if (fixedWidth) {
-    table.style.width = `${totalWidth}px`
-    table.style.minWidth = ''
-  } else { */
-  table.style.width = ''
-  table.style.minWidth = `${totalWidth > tableMaxWidth ? tableMaxWidth : totalWidth}px`
-  //}
-}
-
 export class TableView implements NodeView {
   node: ProseMirrorNode
   dom: Element
@@ -165,9 +100,7 @@ export class TableView implements NodeView {
 
     updateTableStyle(this)
 
-    const tableMaxWidth = getContentWidth(this.editor.view.dom)
-
-    updateColumns(node, this.colgroup, this.table, this.cellMinWidth, undefined, undefined, tableMaxWidth)
+    updateColumnsOnResize(node, this.colgroup, this.table, this.cellMinWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
 
     new TableFocus(this, this.editor)
@@ -264,8 +197,7 @@ export class TableView implements NodeView {
     this.tableStyle = node.attrs.style
     this.tableWrapperStyle = node.attrs.styleTableWrapper
     updateTableStyle(this)
-    const tableMaxWidth = getContentWidth(this.editor.view.dom)
-    updateColumns(node, this.colgroup, this.table, this.cellMinWidth, undefined, undefined, tableMaxWidth)
+    updateColumnsOnResize(node, this.colgroup, this.table, this.cellMinWidth)
 
     return true
   }

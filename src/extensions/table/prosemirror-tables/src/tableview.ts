@@ -51,13 +51,14 @@ export function updateColumnsOnResize(
   let nextDOM = colgroup.firstChild as HTMLElement;
   const row = node.firstChild;
   if (!row) return;
-
+  const { width } = table.getBoundingClientRect()
   for (let i = 0, col = 0; i < row.childCount; i++) {
     const { colspan, colwidth } = row.child(i).attrs as CellAttrs;
     for (let j = 0; j < colspan; j++, col++) {
       const hasWidth =
-        overrideCol == col ? overrideValue : colwidth && colwidth[j];
-      const cssWidth = hasWidth ? hasWidth + 'px' : '';
+        (overrideCol == col ? overrideValue : colwidth && colwidth[j]) ?? 100;
+
+      const cssWidth = hasWidth + 'px';
       totalWidth += hasWidth || cellMinWidth;
       if (!hasWidth) fixedWidth = false;
       if (!nextDOM) {
@@ -76,11 +77,12 @@ export function updateColumnsOnResize(
     nextDOM = after as HTMLElement;
   }
 
-  if (fixedWidth) {
-    table.style.width = totalWidth + 'px';
-    table.style.minWidth = '';
-  } else {
+  //if (fixedWidth) {
+    table.parentElement!.style.width = totalWidth + 'px';
+    table.parentElement!.style.maxWidth = '100%';
+    //table.style.width = '100%';
+  /* } else {
     table.style.width = '';
     table.style.minWidth = totalWidth + 'px';
-  }
+  } */
 }

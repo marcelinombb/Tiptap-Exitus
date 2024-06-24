@@ -62,7 +62,8 @@ ExitusEditor.extensions = [
   }),
   TableCustom.configure({
     resizable: true,
-    allowTableNodeSelection: true
+    allowTableNodeSelection: true,
+    cellMinWidth: 100
   }),
   TableRow,
   TableHeader,

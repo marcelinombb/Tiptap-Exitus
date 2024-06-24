@@ -82,11 +82,10 @@
 .tiptap table {
   border-collapse: collapse;
   table-layout: fixed;
-  /* width: 100%; */
+  width: 100%;
   height: 100%;
   border-spacing: 0;
   overflow: hidden;
-  max-width: 600px;
 }
 
 .tiptap td,
@@ -138,8 +137,7 @@ p {
 .tableWrapper {
   overflow-x: auto;
   margin: 0.9em auto;
-  display: table !important;
-  width: auto !important;
+  display: table;
 }
 
 .ex-toolbar-editor,
