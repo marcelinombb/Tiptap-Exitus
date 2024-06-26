@@ -72,8 +72,8 @@ function showCellBalloon(tableView: TableView) {
 export class TableView implements NodeView {
   node: ProseMirrorNode
   dom: Element
-  table: HTMLElement
-  colgroup: Element
+  table: HTMLTableElement
+  colgroup: HTMLTableColElement
   balloon: Balloon
   tableCellBalloon: TableCellBalloon
   editor: Editor

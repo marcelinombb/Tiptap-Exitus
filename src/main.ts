@@ -11,8 +11,6 @@ import { OrderedList } from '@tiptap/extension-ordered-list'
 // eslint-disable-next-line import-helpers/order-imports
 import { Paragraph } from '@tiptap/extension-paragraph'
 
-//import TableCell from '@tiptap/extension-table-cell'
-
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import { Text } from '@tiptap/extension-text'

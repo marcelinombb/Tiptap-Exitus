@@ -1,17 +1,13 @@
 //@ts-nocheck
+import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import table from '@icons/table-2.svg'
 import { mergeAttributes } from '@tiptap/core'
-import { createColGroup, Table } from '@tiptap/extension-table'
-import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
-//import { columnResizing, tableEditing } from '@tiptap/pm/tables'
-import { type NodeView } from '@tiptap/pm/view'
 import { findParentNodeOfType } from 'prosemirror-utils'
 
-import { Button, type ButtonEventProps, Dropdown } from '../../editor/ui'
 import type ExitusEditor from '../../ExitusEditor'
 
-import { columnResizing, tableEditing } from './prosemirror-tables/dist'
+import { createColGroup, Table } from './extension-table/src'
 import { TableView } from './TableView'
 
 function onSelectTableRowColumn({ event }: ButtonEventProps) {
@@ -147,88 +143,6 @@ export function objParaCss(styles: { [key: string]: string }): string {
   return cssString.trim()
 }
 
-export function updateColumns(
-  node: ProseMirrorNode,
-  colgroup: Element,
-  table: Element,
-  cellMinWidth: number,
-  overrideCol?: number,
-  overrideValue?: any
-) {
-  let totalWidth = 0
-  let fixedWidth = true
-  let nextDOM = colgroup.firstChild
-  const row = node.firstChild
-
-  for (let i = 0, col = 0; i < row.childCount; i += 1) {
-    const { colspan, colwidth } = row.child(i).attrs
-
-    for (let j = 0; j < colspan; j += 1, col += 1) {
-      const hasWidth = overrideCol === col ? overrideValue : colwidth && colwidth[j]
-      const cssWidth = hasWidth ? `${hasWidth}px` : ''
-
-      totalWidth += hasWidth || cellMinWidth
-
-      if (!hasWidth) {
-        fixedWidth = false
-      }
-
-      if (!nextDOM) {
-        colgroup.appendChild(document.createElement('col')).style.width = cssWidth
-      } else {
-        if (nextDOM.style.width !== cssWidth) {
-          nextDOM.style.width = cssWidth
-        }
-
-        nextDOM = nextDOM.nextSibling
-      }
-    }
-  }
-
-  while (nextDOM) {
-    const after = nextDOM.nextSibling
-
-    nextDOM.parentNode.removeChild(nextDOM)
-    nextDOM = after
-  }
-
-  if (fixedWidth) {
-    table.style.width = `${totalWidth}px`
-    table.style.minWidth = ''
-  } else {
-    table.style.width = ''
-    table.style.minWidth = `${totalWidth}px`
-    console.log('eoq man')
-  }
-}
-
-export class TableView2 implements NodeView {
-  node: ProseMirrorNode
-
-  cellMinWidth: number
-
-  dom: Element
-
-  table: Element
-
-  colgroup: Element
-
-  contentDOM: Element
-
-  constructor(node: ProseMirrorNode, cellMinWidth: number, editor) {
-    console.log(editor)
-
-    this.node = node
-    this.cellMinWidth = cellMinWidth
-    this.dom = document.createElement('div')
-    this.dom.className = 'tableWrapper'
-    this.table = this.dom.appendChild(document.createElement('table'))
-    this.colgroup = this.table.appendChild(document.createElement('colgroup'))
-    //updateColumns(node, this.colgroup, this.table, cellMinWidth)
-    this.contentDOM = this.table.appendChild(document.createElement('tbody'))
-  }
-}
-
 export const TableCustom = Table.extend({
   addStorage() {
     return {
@@ -265,13 +179,13 @@ export const TableCustom = Table.extend({
     }
   },
   renderHTML({ node, HTMLAttributes }) {
-    const { colgroup } = createColGroup(node, this.options.cellMinWidth)
+    const { colgroup, tableWidth } = createColGroup(node, this.options.cellMinWidth)
 
     const style = HTMLAttributes.style || {}
     const styleTableWrapper = HTMLAttributes.styleTableWrapper || {}
 
     const mergedAttributes = mergeAttributes(this.options.HTMLAttributes, {
-      style: objParaCss(style)
+      style: objParaCss({ width: tableWidth, ...style })
     })
 
     const table: DOMOutputSpec = [
@@ -350,27 +264,5 @@ export const TableCustom = Table.extend({
     return ({ node, editor, getPos }) => {
       return new TableView(node, editor, getPos)
     }
-  },
-  addProseMirrorPlugins() {
-    const isResizable = this.options.resizable && this.editor.isEditable
-
-    return [
-      ...(isResizable
-        ? [
-            columnResizing({
-              handleWidth: this.options.handleWidth,
-              cellMinWidth: this.options.cellMinWidth,
-              // @ts-ignore (incorrect type)
-              View: this.options.View,
-              // TODO: PR for @types/prosemirror-tables
-              // @ts-ignore (incorrect type)
-              lastColumnResizable: this.options.lastColumnResizable
-            })
-          ]
-        : []),
-      tableEditing({
-        allowTableNodeSelection: this.options.allowTableNodeSelection
-      })
-    ]
   }
 })

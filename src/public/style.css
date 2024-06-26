@@ -127,7 +127,6 @@
   bottom: -2px;
   width: 4px;
   background-color: #adf;
-  pointer-events: none;
 }
 
 p {
@@ -160,7 +159,6 @@ p {
 
 .tiptap-widget:hover {
   outline-color: #ffc83d;
-  cursor: pointer;
 }
 
 .tiptap-widget-isEditing {
@@ -786,10 +784,6 @@ p {
   .ex-bolinha {
     background-color: #ffc83d;
   }
-}
-
-.tiptap-widget > table {
-  cursor: text;
 }
 
 .ex-bolinha-cima {
