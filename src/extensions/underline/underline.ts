@@ -4,11 +4,7 @@ import { Underline as UnderlineBase } from '@tiptap/extension-underline'
 
 function toggleUnderline({ editor, button }) {
   editor.chain().focus().toggleUnderline().run()
-  if (editor.isActive('underline')) {
-    button.classList.add('ex-button-active')
-  } else {
-    button.classList.remove('ex-button-active')
-  }
+  button.toggleActive(editor.isActive('underline'))
 }
 
 export const Underline = UnderlineBase.extend({

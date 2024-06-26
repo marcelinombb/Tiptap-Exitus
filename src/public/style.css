@@ -188,6 +188,7 @@ p {
 
 .ex-toolbar-button {
   display: flex;
+  position: relative;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-sm);
@@ -902,4 +903,34 @@ p {
     no-repeat center;
   background-size: 0;
   transition: all 0.3s;
+}
+
+.ex-tooltip-text {
+  color: #fff;
+  font-size: .9em;
+  line-height: 1.5;
+}
+
+.ex-tooltip {
+  position: absolute;
+  z-index: 3;
+  border-radius: 2px;
+  border: 1px solid var(--color-base-text);
+  background: var(--color-base-text);
+  padding: 0 var(--spacing-md);
+  top: calc(100% + 4px);
+}
+
+.ex-tooltip-arrow::after {
+  content: "";
+  z-index: 3;
+  position: absolute;
+  border-style: solid;
+  height: 0;
+  width: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -4px;
+  border-width: 0 4px 4px 4px;
+  border-color: transparent transparent var(--color-base-text) transparent;
 }

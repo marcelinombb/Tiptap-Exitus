@@ -7,7 +7,6 @@
   ],
   "main": "./dist/exituseditor.js",
   "scripts": {
-    "pages_build": "webpack --mode pages",
     "build": "webpack --mode production",
     "dev": "npx webpack-dev-server --mode development",
     "lint": "eslint . --ext .ts",

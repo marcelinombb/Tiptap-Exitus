@@ -68,12 +68,38 @@ export class Toolbar {
             button.setParentToolbar(this)
             this.tools.push(button)
             button.bind('click', config.click)
-            this.toolbarItemsDiv?.append(button.render())
+            this.toolbarItemsDiv?.append(this.createTooltip(button.render(), item))
           }
         })
       }
     })
 
     return this.toolbarItemsDiv
+  }
+
+  createTooltip(parent: HTMLButtonElement, tooltipText: string) {
+    const tooltip = document.createElement('div')
+    tooltip.className = 'ex-tooltip ex-tooltip-arrow ex-reset-all ex-hidden'
+    const tooltipMessage = tooltip.appendChild(document.createElement('span'))
+    tooltipMessage.className = 'ex-tooltip-text'
+    tooltipMessage.innerText = tooltipText
+    parent.appendChild(tooltip)
+    parent.addEventListener('pointerover', () => {
+      const showDelay = setTimeout(() => {
+        tooltip.classList.remove('ex-hidden')
+      }, 500)
+
+      parent.addEventListener('pointerleave', () => {
+        tooltip.classList.add('ex-hidden')
+        clearTimeout(showDelay)
+      })
+
+      parent.addEventListener('click', () => {
+        tooltip.classList.add('ex-hidden')
+        clearTimeout(showDelay)
+      })
+    })
+
+    return parent
   }
 }

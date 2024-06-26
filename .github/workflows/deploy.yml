@@ -8,6 +8,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  PUBLIC_PATH: auto
+
 # Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
 permissions:
   contents: read
@@ -35,7 +38,7 @@ jobs:
       run: npm install
 
     - name: Build the project
-      run: npm run pages_build
+      run: npm run build
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
