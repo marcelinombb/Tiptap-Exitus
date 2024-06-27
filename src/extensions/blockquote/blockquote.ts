@@ -17,7 +17,8 @@ export const Blockquote = BlockquoteBase.extend({
       toolbarButtonConfig: {
         icon: quote,
         click: toggleBlockQuote,
-        checkActive: this.name
+        checkActive: this.name,
+        tooltip: 'Bloco de citação'
       }
     }
   }

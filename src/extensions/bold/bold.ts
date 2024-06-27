@@ -17,7 +17,8 @@ export const Bold = BoldBase.extend({
       toolbarButtonConfig: {
         icon: bold,
         click: toggleBold,
-        checkActive: this.name
+        checkActive: this.name,
+        tooltip: 'Negrito (Ctrl + B)'
       }
     }
   }

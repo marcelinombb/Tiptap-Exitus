@@ -109,7 +109,8 @@ export const Image = Node.create<ImageOptions>({
       toolbarButtonConfig: {
         icon: imageAdd,
         click: addImage,
-        checkActive: this.name
+        checkActive: this.name,
+        tooltip: 'Carregar imagem'
       }
     }
   },

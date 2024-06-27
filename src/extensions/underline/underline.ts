@@ -13,7 +13,8 @@ export const Underline = UnderlineBase.extend({
       toolbarButtonConfig: {
         icon: underline,
         click: toggleUnderline,
-        checkActive: this.name
+        checkActive: this.name,
+        tooltip: 'Sublinhado (Ctrl + U)'
       }
     }
   }

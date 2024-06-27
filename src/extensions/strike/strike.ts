@@ -13,7 +13,8 @@ export const Strike = StrikeBase.extend({
       toolbarButtonConfig: {
         icon: strike,
         click: toggleStrike,
-        checkActive: this.name
+        checkActive: this.name,
+        tooltip: 'Tachado (Ctrl + Shift + S)'
       }
     }
   }

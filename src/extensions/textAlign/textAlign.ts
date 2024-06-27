@@ -63,7 +63,8 @@ export const TextAlign = TextAlignBase.extend({
     return {
       toolbarButtonConfig: {
         icon: alignLeftIcon + arrowDropDown,
-        dropdown: textAlignDropDown
+        dropdown: textAlignDropDown,
+        tooltip: 'Alinhamento de texto'
       }
     }
   }

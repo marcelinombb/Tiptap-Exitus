@@ -149,7 +149,8 @@ export const TableCustom = Table.extend({
       toolbarButtonConfig: [
         {
           icon: table + arrowDropDown,
-          dropdown: tableDropDown
+          dropdown: tableDropDown,
+          tooltip: 'Inserir tabela'
         }
       ]
     }

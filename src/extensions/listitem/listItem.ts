@@ -73,7 +73,8 @@ export const ListItem = ListitemBase.extend({
     return {
       toolbarButtonConfig: {
         icon: listIcon + arrowDropDown,
-        dropdown: listItemDropDown
+        dropdown: listItemDropDown,
+        tooltip: 'Listas'
       }
     }
   }

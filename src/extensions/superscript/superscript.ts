@@ -12,7 +12,8 @@ export const Superscript = SuperscriptBase.extend({
       toolbarButtonConfig: {
         icon: superscript,
         click: togglesuperscript,
-        checkActive: this.name
+        checkActive: this.name,
+        tooltip: 'Sobrescrito (Ctrl + .)'
       }
     }
   }

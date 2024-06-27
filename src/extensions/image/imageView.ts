@@ -190,29 +190,29 @@ export class ImageView implements NodeView {
       alinhaDireita: {
         toolbarButtonConfig: {
           icon: textDr,
-          title: 'direita',
-          click: alinhaDireita(this)
+          click: alinhaDireita(this),
+          tooltip: 'Imagem alinhada a direita'
         }
       },
       alinhaMeio: {
         toolbarButtonConfig: {
           icon: textDm,
-          title: 'meio',
-          click: alinhaMeio(this)
+          click: alinhaMeio(this),
+          tooltip: 'Imagem centralizada'
         }
       },
       alinhaEsquerda: {
         toolbarButtonConfig: {
           icon: textDl,
-          title: 'esquerda',
-          click: alinhaEsquerda(this)
+          click: alinhaEsquerda(this),
+          tooltip: 'Imagem alinhada a asquerda'
         }
       },
       tamanhoImg: {
         toolbarButtonConfig: {
           icon: imgSize + arrowDropDown,
-          title: 'Aumenta e diminui',
-          dropdown: balloonDropDown(this.originalSize)
+          dropdown: balloonDropDown(this.originalSize),
+          tooltip: 'Redimensionar imagem'
         }
       }
     }

@@ -1,4 +1,4 @@
-import { Button, type ButtonConfig } from '@editor/ui'
+import { Button, type ButtonConfig, type Dropdown } from '@editor/ui'
 import type ExitusEditor from '@src/ExitusEditor'
 
 import { type Tool } from './Tool'
@@ -57,7 +57,7 @@ export class Toolbar {
 
         toolbarButtonConfig.forEach((config: any) => {
           if (config?.dropdown) {
-            const dropdown = config?.dropdown({ editor: this.editor })
+            const dropdown = config?.dropdown({ editor: this.editor }) as Dropdown
             const button = new Button(this.editor, config)
             dropdown.setParentToolbar(this)
             dropdown.setButton(button)
@@ -68,38 +68,12 @@ export class Toolbar {
             button.setParentToolbar(this)
             this.tools.push(button)
             button.bind('click', config.click)
-            this.toolbarItemsDiv?.append(this.createTooltip(button.render(), item))
+            this.toolbarItemsDiv?.append(button.render())
           }
         })
       }
     })
 
     return this.toolbarItemsDiv
-  }
-
-  createTooltip(parent: HTMLButtonElement, tooltipText: string) {
-    const tooltip = document.createElement('div')
-    tooltip.className = 'ex-tooltip ex-tooltip-arrow ex-reset-all ex-hidden'
-    const tooltipMessage = tooltip.appendChild(document.createElement('span'))
-    tooltipMessage.className = 'ex-tooltip-text'
-    tooltipMessage.innerText = tooltipText
-    parent.appendChild(tooltip)
-    parent.addEventListener('pointerover', () => {
-      const showDelay = setTimeout(() => {
-        tooltip.classList.remove('ex-hidden')
-      }, 500)
-
-      parent.addEventListener('pointerleave', () => {
-        tooltip.classList.add('ex-hidden')
-        clearTimeout(showDelay)
-      })
-
-      parent.addEventListener('click', () => {
-        tooltip.classList.add('ex-hidden')
-        clearTimeout(showDelay)
-      })
-    })
-
-    return parent
   }
 }

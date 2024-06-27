@@ -111,36 +111,36 @@ export class TableView implements NodeView {
       celumnsTable: {
         toolbarButtonConfig: {
           icon: tableColumns + arrowDropDown,
-          title: 'coluna',
-          dropdown: criaDropColuna()
+          dropdown: criaDropColuna(),
+          tooltip: 'Coluna'
         }
       },
       RowTable: {
         toolbarButtonConfig: {
           icon: tableRow + arrowDropDown,
-          title: 'linha',
-          dropdown: criaDropLinhas()
+          dropdown: criaDropLinhas(),
+          tooltip: 'Linha'
         }
       },
       cellTable: {
         toolbarButtonConfig: {
           icon: tableCell + arrowDropDown,
-          title: 'mesclar células',
-          dropdown: criaDropCell()
+          dropdown: criaDropCell(),
+          tooltip: 'Mesclar células'
         }
       },
       tableStarred: {
         toolbarButtonConfig: {
           icon: starredTable + arrowDropDown,
-          title: 'editar tabela',
-          dropdown: criaTabelaModal(node.attrs.style)
+          dropdown: criaTabelaModal(node.attrs.style),
+          tooltip: 'Propriedades da tabela'
         }
       },
       cellStarred: {
         toolbarButtonConfig: {
           icon: starredCell,
-          title: 'editar celula',
-          click: showCellBalloon(this)
+          click: showCellBalloon(this),
+          tooltip: 'Propriedades da célula'
         }
       }
     }

@@ -108,12 +108,14 @@ export const Indent = Extension.create({
         {
           icon: tiraEspaço,
           click: delTab,
-          checkActive: this.name
+          checkActive: this.name,
+          tooltip: 'Diminuir recuo'
         },
         {
           icon: botaEspaco,
           click: setTab,
-          checkActive: this.name
+          checkActive: this.name,
+          tooltip: 'Aumentar recuo'
         }
       ]
     }

@@ -13,7 +13,8 @@ export const Subscript = SubscriptBase.extend({
       toolbarButtonConfig: {
         icon: subscript,
         click: togglesubscript,
-        checkActive: this.name
+        checkActive: this.name,
+        tooltip: 'Subscrito (Ctrl + ,)'
       }
     }
   }

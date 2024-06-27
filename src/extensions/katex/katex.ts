@@ -89,7 +89,8 @@ export const Katex = Node.create({
       toolbarButtonConfig: {
         icon: formula,
         click: click,
-        checkActive: this.name
+        checkActive: this.name,
+        tooltip: 'Fórmula matemática - Latex'
       }
     }
   },
