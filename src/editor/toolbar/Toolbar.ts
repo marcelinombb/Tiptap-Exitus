@@ -63,18 +63,12 @@ export class Toolbar {
             dropdown.setButton(button)
             this.tools.push(dropdown)
             this.toolbarItemsDiv?.append(dropdown.render())
-            if (config.tooltip !== undefined) {
-              new Tooltip(button.button, config.tooltip)
-            }
           } else {
             const button = new Button(this.editor, config)
             button.setParentToolbar(this)
             this.tools.push(button)
             button.bind('click', config.click)
             this.toolbarItemsDiv?.append(button.render())
-            if (config.tooltip !== undefined) {
-              new Tooltip(button.button, config.tooltip)
-            }
           }
         })
       }
