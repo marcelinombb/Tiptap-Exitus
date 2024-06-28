@@ -183,7 +183,7 @@ p {
   outline-style: solid;
   outline-width: 3px;
   user-select: auto;
-  /* transition: outline-color 200ms ease; */
+  transition: outline-color 200ms ease;
 }
 
 .ex-toolbar-button {
