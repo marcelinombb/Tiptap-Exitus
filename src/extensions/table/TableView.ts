@@ -88,7 +88,7 @@ export class TableView implements NodeView {
     this.node = node
     this.editor = editor
     this.getPos = getPos
-    this.cellMinWidth = 50
+    this.cellMinWidth = 100
     this.dom = document.createElement('div')
     this.tableWrapper = document.createElement('div')
     this.dom = this.tableWrapper
