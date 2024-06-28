@@ -116,6 +116,8 @@ export const Indent = Extension.create({
           click: setTab,
           checkActive: this.name,
           tooltip: 'Aumentar recuo'
+          checkActive: this.name,
+          tooltip: 'Aumentar recuo'
         }
       ]
     }

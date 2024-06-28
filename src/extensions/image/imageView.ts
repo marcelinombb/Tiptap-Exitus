@@ -199,6 +199,8 @@ export class ImageView implements NodeView {
           icon: textDm,
           click: alinhaMeio(this),
           tooltip: 'Imagem centralizada'
+          click: alinhaMeio(this),
+          tooltip: 'Imagem centralizada'
         }
       },
       alinhaEsquerda: {

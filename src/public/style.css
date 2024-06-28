@@ -3,6 +3,7 @@
   --border-gray: #ccced1;
   --spacing-sm: calc(0.6em * 0.3);
   --spacing-md: calc(0.6em * 0.5);
+  --spacing-mdd: calc(0.6em * 0.8);
   --spacing-lg: calc(0.6em * 1);
   --color-success: #008a00;
   --color-cancel: #db3700;
@@ -85,6 +86,8 @@
   width: 100%;
   height: 100%;
   border-spacing: 0;
+  height: 100%;
+  border-spacing: 0;
   overflow: hidden;
 }
 
@@ -96,6 +99,7 @@
   vertical-align: top;
   box-sizing: border-box;
   position: relative;
+  cursor: text;
 }
 
 .tiptap th {
@@ -136,6 +140,7 @@ p {
 .tableWrapper {
   overflow-x: auto;
   margin: 0.9em auto;
+  display: table;
   display: table;
 }
 
@@ -188,6 +193,7 @@ p {
 
 .ex-toolbar-button {
   display: flex;
+  position: relative;
   position: relative;
   align-items: center;
   justify-content: center;
@@ -336,9 +342,8 @@ p {
   position: absolute;
   background-color: #fff;
   box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.15);
-  padding: 10px;
+  padding: var(--spacing-lg);
   z-index: 1;
-  padding-bottom: 20px;
 }
 
 .ex-dropdown-content {
@@ -346,11 +351,9 @@ p {
   flex-wrap: wrap;
 }
 
-.ex-dropdownList-content {
-  padding: var(--spacing-md);
-}
-
 .ex-dropdown-table-cells {
+  display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   width: calc(12px * 10 + 2px * 10); /* calc(width * 10 + margin(left + right) * 10 + padding(left + right)) */
 }
@@ -367,18 +370,30 @@ p {
 .ex-dropdown-balloonTable {
   flex-direction: row;
   flex-wrap: nowrap;
-  z-index: 3 !important;
+  z-index: 3;
   min-width: 240px;
 }
 
 .ex-dropdown-balloonModal {
   flex-direction: row;
   flex-wrap: nowrap;
-  z-index: 3 !important;
+  z-index: 3;
   width: 22em;
 }
 
-.ex-dropdown-baloon {
+.ex-p-sm {
+  padding: var(--spacing-sm);
+}
+
+.ex-p-md {
+  padding: var(--spacing-md);
+}
+
+.ex-p-lg {
+  padding: var(--spacing-lg);
+}
+
+.ex-dropdown-balloon {
   flex-direction: row;
   flex-wrap: nowrap;
 }
@@ -485,7 +500,7 @@ p {
 .balloon-panel {
   position: relative;
   min-height: 30px;
-  padding: 1px;
+  padding: var(--spacing-sm);
   border-radius: 5px;
   background-color: rgb(255, 255, 255);
 
@@ -626,7 +641,6 @@ p {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  width: 90%;
 }
 
 .ex-bloco4 {
@@ -642,14 +656,13 @@ p {
   justify-content: space-between;
   width: 100%;
   margin-top: 10px;
-  /* gap: 117px; */
+  gap: 10px;
 }
 
 .ex-bloco6 {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  width: 32%;
   gap: 5px;
 }
 
@@ -694,8 +707,7 @@ p {
 }
 
 .ex-inputDimensoes {
-  min-width: 100%;
-  width: 0;
+  width: 100%;
   height: 22px;
 }
 
@@ -737,10 +749,7 @@ p {
 }
 
 .ex-indicator {
-  position: absolute;
-  left: 64px;
-  right: auto;
-  bottom: 0;
+  margin: 0 auto;
 }
 
 .ex-bolinha {
@@ -837,8 +846,7 @@ p {
 
 .latex-editting-container {
   display: flex;
-  margin: 10px;
-  padding: 1px;
+  margin: 5px;
   flex-direction: column;
 }
 

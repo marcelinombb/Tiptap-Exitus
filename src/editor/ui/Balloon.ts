@@ -84,7 +84,7 @@ export class Balloon {
 
     requestAnimationFrame(() => {
       this.ballonMenu.classList.add(`balloon-menu-${this.options.position}-center`)
-      this.fixBalloonOverFlows(x)
+      this.fixBalloonOverflows(x)
     })
   }
 
@@ -102,11 +102,11 @@ export class Balloon {
         return
       }
 
-      this.fixBalloonOverFlows(spanRect.x)
+      this.fixBalloonOverflows(spanRect.x)
     })
   }
 
-  fixBalloonOverFlows(balloonX: number) {
+  fixBalloonOverflows(balloonX: number) {
     const { width } = this.ballonMenu.getBoundingClientRect()
     const { left, right } = this.editor.view.dom.getBoundingClientRect()
     const isOverflowLeft = overFlowLeft(balloonX, left, width)

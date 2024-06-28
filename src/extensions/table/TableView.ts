@@ -88,9 +88,10 @@ export class TableView implements NodeView {
     this.node = node
     this.editor = editor
     this.getPos = getPos
-    this.cellMinWidth = 100
+    this.cellMinWidth = 50
     this.dom = document.createElement('div')
     this.tableWrapper = document.createElement('div')
+    this.dom = this.tableWrapper
     this.tableWrapper.classList.add('tableWrapper', 'tiptap-widget')
     this.table = this.tableWrapper.appendChild(document.createElement('table'))
     this.colgroup = this.table.appendChild(document.createElement('colgroup'))
@@ -158,7 +159,7 @@ export class TableView implements NodeView {
 
     this.tableWrapper.appendChild(this.balloon.getBalloon())
 
-    this.dom.appendChild(this.tableWrapper)
+    //this.dom.appendChild(this.tableWrapper)
 
     clickHandler(this)
   }
@@ -230,6 +231,6 @@ export class TableView implements NodeView {
 }
 function updateTableStyle(tableView: TableView) {
   const { table, tableWrapperStyle, tableWrapper, tableStyle } = tableView
-  table.setAttribute('style', objParaCss(tableStyle))
+  //table.setAttribute('style', objParaCss({ ...tableStyle, width: '100%' }))
   tableWrapper.setAttribute('style', objParaCss(tableWrapperStyle))
 }
