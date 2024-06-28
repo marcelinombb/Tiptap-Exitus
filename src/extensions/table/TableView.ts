@@ -13,6 +13,7 @@ import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
 
 import { criaTabelaModal } from './itensModalTable'
+import { updateColumnsOnResize } from './prosemirror-tables/src'
 import { objParaCss } from './table'
 import { TableCellBalloon } from './TableCellBalloon'
 import TableFocus, { UpDownTable } from './tableFocus'
@@ -68,104 +69,11 @@ function showCellBalloon(tableView: TableView) {
   }
 }
 
-function getContentWidth(element: HTMLElement) {
-  const widthWithPaddings = element.clientWidth
-  const elementComputedStyle = window.getComputedStyle(element, null)
-  return widthWithPaddings - parseFloat(elementComputedStyle.paddingLeft) - parseFloat(elementComputedStyle.paddingRight)
-}
-
-export function updateColumns(
-  node: ProseMirrorNode,
-  editor: Editor,
-  colgroup: Element,
-  tableView: TableView,
-  cellMinWidth: number,
-  overrideCol?: number,
-  overrideValue?: any
-) {
-  let totalWidth = 0
-  let fixedWidth = true
-  let nextDOM = colgroup.firstChild
-  const row = node.firstChild
-  //console.log(row!.childCount)
-
-  //tableView.table.style.width = `100%`
-  //tableView.table.style.minWidth = `unset`
-
-  const totalEditorWidth = getContentWidth(editor.view.dom)
-  const colMaxWidth = totalEditorWidth / row!.childCount
-  const colMinWidth = cellMinWidth
-  const nCols = row!.childCount
-  for (let i = 0, col = 0; i < row!.childCount; i += 1) {
-    const { colspan, colwidth } = row!.child(i).attrs
-
-    for (let j = 0; j < colspan; j += 1, col += 1) {
-      const hasWidth = overrideCol === col ? overrideValue : colwidth && colwidth[j]
-      let cssWidth = `${hasWidth}px`
-
-      if (!hasWidth || hasWidth < colMinWidth) {
-        cssWidth = `${colMinWidth}px`
-        totalWidth += colMinWidth
-      } else if (hasWidth && hasWidth > totalEditorWidth) {
-        cssWidth = `${totalEditorWidth - totalWidth}px`
-        totalWidth += totalEditorWidth - totalWidth
-      } else {
-        totalWidth += hasWidth
-      }
-
-      if (!hasWidth) {
-        fixedWidth = false
-      }
-
-      if (!nextDOM) {
-        colgroup.appendChild(document.createElement('col')).style.width = cssWidth
-      } else {
-        if ((nextDOM as HTMLElement).style.width !== cssWidth) {
-          ;(nextDOM as HTMLElement).style.width = cssWidth
-        }
-
-        nextDOM = nextDOM.nextSibling
-      }
-    }
-  }
-
-  while (nextDOM) {
-    const after = nextDOM.nextSibling
-
-    nextDOM!.parentNode!.removeChild(nextDOM)
-    nextDOM = after
-  }
-  console.log(totalWidth)
-
-  /* if (hasWidth > totalEditorWidth) {
-    console.log(hasWidth, totalEditorWidth)
-
-    cssWidth = '100%'
-  } else if (!hasWidth || hasWidth < 50) {
-  } else if (!hasWidth || hasWidth < 50) {
-    cssWidth = `${(50 * 100) / totalWidth}%`
-  } else {
-    cssWidth = `${(hasWidth * 100) / totalWidth}%`
-  }
-
-  const widthPercent = (totalWidth * 100) / totalEditorWidth
-  tableView.tableWrapper.style.width = `${widthPercent > 100 ? 100 : widthPercent}%` */
-
-  //if (fixedWidth) {
-  console.log(totalWidth, totalEditorWidth)
-  tableView.table.style.width = `${totalWidth > totalEditorWidth ? totalEditorWidth : totalWidth}px`
-  tableView.table.style.minWidth = `${nCols * colMinWidth}px`
-  tableView.tableWrapper.style.width = `${totalWidth > totalEditorWidth ? totalEditorWidth : totalWidth}px`
-  //} else {
-  //tableView.table.style.width = ''
-  //tableView.table.style.minWidth = `${totalWidth}px`
-}
-
 export class TableView implements NodeView {
   node: ProseMirrorNode
   dom: Element
-  table: HTMLElement
-  colgroup: Element
+  table: HTMLTableElement
+  colgroup: HTMLTableColElement
   balloon: Balloon
   tableCellBalloon: TableCellBalloon
   editor: Editor
@@ -193,7 +101,7 @@ export class TableView implements NodeView {
 
     updateTableStyle(this)
 
-    updateColumns(node, this.editor, this.colgroup, this, this.cellMinWidth)
+    updateColumnsOnResize(node, this.colgroup, this.table, this.cellMinWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
 
     new TableFocus(this, this.editor)
@@ -205,36 +113,35 @@ export class TableView implements NodeView {
         toolbarButtonConfig: {
           icon: tableColumns + arrowDropDown,
           dropdown: criaDropColuna(),
-          tooltip: 'Colunas'
+          tooltip: 'Coluna'
         }
       },
       RowTable: {
         toolbarButtonConfig: {
           icon: tableRow + arrowDropDown,
           dropdown: criaDropLinhas(),
-          tooltip: 'Linhas'
+          tooltip: 'Linha'
         }
       },
       cellTable: {
         toolbarButtonConfig: {
           icon: tableCell + arrowDropDown,
           dropdown: criaDropCell(),
-          tooltip: 'Mesclar Células'
+          tooltip: 'Mesclar células'
         }
       },
       tableStarred: {
         toolbarButtonConfig: {
           icon: starredTable + arrowDropDown,
-          title: 'editar tabela',
           dropdown: criaTabelaModal(node.attrs.style),
-          tooltip: 'Propriedades da Tabela'
+          tooltip: 'Propriedades da tabela'
         }
       },
       cellStarred: {
         toolbarButtonConfig: {
           icon: starredCell,
           click: showCellBalloon(this),
-          tooltip: 'Propriedades da Célula'
+          tooltip: 'Propriedades da célula'
         }
       }
     }
@@ -291,8 +198,7 @@ export class TableView implements NodeView {
     this.tableStyle = node.attrs.style
     this.tableWrapperStyle = node.attrs.styleTableWrapper
     updateTableStyle(this)
-
-    updateColumns(node, this.editor, this.colgroup, this, this.cellMinWidth)
+    updateColumnsOnResize(node, this.colgroup, this.table, this.cellMinWidth)
 
     return true
   }

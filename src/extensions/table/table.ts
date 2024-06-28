@@ -1,16 +1,14 @@
 //@ts-nocheck
 import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
+import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import table from '@icons/table-2.svg'
 import { mergeAttributes } from '@tiptap/core'
-import { createColGroup, Table } from '@tiptap/extension-table'
-import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
-import { columnResizing } from '@tiptap/pm/tables'
-import { type NodeView } from '@tiptap/pm/view'
 import { findParentNodeOfType } from 'prosemirror-utils'
 
 import type ExitusEditor from '../../ExitusEditor'
 
+import { createColGroup, Table } from './extension-table/src'
 import { TableView } from './TableView'
 
 function onSelectTableRowColumn(event, indicator) {
@@ -240,7 +238,7 @@ export const TableCustom = Table.extend({
         {
           icon: table + arrowDropDown,
           dropdown: tableDropDown,
-          tooltip: 'Tabela'
+          tooltip: 'Inserir tabela'
         }
       ]
     }
@@ -270,13 +268,13 @@ export const TableCustom = Table.extend({
     }
   },
   renderHTML({ node, HTMLAttributes }) {
-    const { colgroup } = createColGroup(node, this.options.cellMinWidth)
+    const { colgroup, tableWidth } = createColGroup(node, this.options.cellMinWidth)
 
     const style = HTMLAttributes.style || {}
     const styleTableWrapper = HTMLAttributes.styleTableWrapper || {}
 
     const mergedAttributes = mergeAttributes(this.options.HTMLAttributes, {
-      style: objParaCss(style)
+      style: objParaCss({ width: tableWidth, ...style })
     })
 
     const table: DOMOutputSpec = [
@@ -349,12 +347,6 @@ export const TableCustom = Table.extend({
           return true
         }
       }
-    }
-  },
-  addOptions() {
-    return {
-      ...this.parent?.(),
-      View: TableView2
     }
   },
   addNodeView() {

@@ -1,13 +1,13 @@
 import { Balloon, Button } from '@editor/ui'
 import { getNodeBoundingClientRect } from '@editor/utils'
+import { selectionCell } from '@extensions/table/prosemirror-tables/src'
 import textDr from '@icons/align-bottom.svg'
 import textDl from '@icons/align-top.svg'
 import textDm from '@icons/align-vertically.svg'
 import Pickr from '@simonwep/pickr'
+import '@simonwep/pickr/dist/themes/nano.min.css'
 import { type Editor } from '@tiptap/core'
 import { type Attrs, type ResolvedPos } from '@tiptap/pm/model'
-import { selectionCell } from '@tiptap/pm/tables'
-import '@simonwep/pickr/dist/themes/nano.min.css'
 
 const createPickrInstance = (selector: string, onCancel: () => void): Pickr => {
   const pickr = Pickr.create({

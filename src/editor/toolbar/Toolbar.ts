@@ -1,5 +1,4 @@
-import { Button, type ButtonConfig } from '@editor/ui'
-import { Tooltip } from '@editor/ui/Tooltip'
+import { Button, type ButtonConfig, type Dropdown } from '@editor/ui'
 import type ExitusEditor from '@src/ExitusEditor'
 
 import { type Tool } from './Tool'
@@ -58,7 +57,7 @@ export class Toolbar {
 
         toolbarButtonConfig.forEach((config: any) => {
           if (config?.dropdown) {
-            const dropdown = config?.dropdown({ editor: this.editor })
+            const dropdown = config?.dropdown({ editor: this.editor }) as Dropdown
             const button = new Button(this.editor, config)
             dropdown.setParentToolbar(this)
             dropdown.setButton(button)

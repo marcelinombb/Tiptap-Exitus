@@ -91,8 +91,10 @@ export const TableCell = Node.create<TableCellOptions>({
   renderHTML({ HTMLAttributes }) {
     const attributesMerged = mergeAttributes(this.options.HTMLAttributes, {
       ...HTMLAttributes,
+      colwidth: HTMLAttributes.colwidth ?? [100],
       style: objParaCss(HTMLAttributes.style)
     })
+
     const celula: DOMOutputSpec = ['td', attributesMerged, 0]
 
     return celula

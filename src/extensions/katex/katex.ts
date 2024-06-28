@@ -90,7 +90,7 @@ export const Katex = Node.create({
         icon: formula,
         click: click,
         checkActive: this.name,
-        tooltip: 'Fórmulas Latex'
+        tooltip: 'Fórmula matemática - Latex'
       }
     }
   },

@@ -23,6 +23,7 @@ export interface ButtonConfig {
   classList: string[]
   click: (obj: ButtonEventProps) => void
   checkActive: string | object
+  tooltip?: string
 }
 
 const defaultConfig: Partial<ButtonConfig> = {
@@ -111,9 +112,38 @@ export class Button implements Tool {
     }
   }
 
+  createTooltip(parent: HTMLButtonElement, tooltipText: string) {
+    const tooltip = document.createElement('div')
+    tooltip.className = 'ex-tooltip ex-tooltip-arrow ex-reset-all ex-hidden'
+    const tooltipMessage = tooltip.appendChild(document.createElement('span'))
+    tooltipMessage.className = 'ex-tooltip-text'
+    tooltipMessage.innerText = tooltipText
+    parent.appendChild(tooltip)
+    parent.addEventListener('pointerover', () => {
+      const showDelay = setTimeout(() => {
+        tooltip.classList.remove('ex-hidden')
+      }, 500)
+
+      parent.addEventListener('pointerleave', () => {
+        tooltip.classList.add('ex-hidden')
+        clearTimeout(showDelay)
+      })
+
+      parent.addEventListener('click', () => {
+        tooltip.classList.add('ex-hidden')
+        clearTimeout(showDelay)
+      })
+    })
+
+    return parent
+  }
+
   render() {
     this.editorCheckActive()
     this.button.innerHTML = (this.config?.icon as string) + (this.config?.label as string)
+    if (this.config.tooltip) {
+      this.createTooltip(this.button, this.config.tooltip)
+    }
     return this.button
   }
 

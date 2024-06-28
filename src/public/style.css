@@ -86,6 +86,8 @@
   width: 100%;
   height: 100%;
   border-spacing: 0;
+  height: 100%;
+  border-spacing: 0;
   overflow: hidden;
 }
 
@@ -129,11 +131,6 @@
   bottom: -2px;
   width: 4px;
   background-color: #adf;
-
-}
-
-.column-resize-handle:hover {
-  cursor: col-resize!important;
 }
 
 p {
@@ -143,6 +140,7 @@ p {
 .tableWrapper {
   overflow-x: auto;
   margin: 0.9em auto;
+  display: table;
   display: table;
 }
 
@@ -166,7 +164,6 @@ p {
 
 .tiptap-widget:hover {
   outline-color: #ffc83d;
-  cursor: pointer;
 }
 
 .tiptap-widget-isEditing {
@@ -191,11 +188,12 @@ p {
   outline-style: solid;
   outline-width: 3px;
   user-select: auto;
-  /* transition: outline-color 200ms ease; */
+  transition: outline-color 200ms ease;
 }
 
 .ex-toolbar-button {
   display: flex;
+  position: relative;
   position: relative;
   align-items: center;
   justify-content: center;
@@ -798,8 +796,6 @@ p {
   }
 }
 
-
-
 .ex-bolinha-cima {
   top: 0;
   transform: translate(0, calc(-50% - 1.5px));
@@ -917,32 +913,32 @@ p {
   transition: all 0.3s;
 }
 
-.ex-tooltip-balloon {
-  position: absolute;
-  top: calc(100% + 5px);
-  position: absolute;
-  z-index: 1;
-  border-radius: 2px;
-  background-color: var(--color-base-text);
-  padding: 0 var(--spacing-mdd);
-}
-
-.ex-tooltip-balloon::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  border-style: solid;
-  height: 0;
-  width: 0;
-  margin-left: calc(4px * -1);
-  top: calc(4px * -1);
-  border-color: transparent transparent var(--color-base-text) transparent;
-  margin-top: 0px;
-  border-width: 0 4px 4px 4px;
-}
-
 .ex-tooltip-text {
   color: #fff;
   font-size: .9em;
   line-height: 1.5;
+}
+
+.ex-tooltip {
+  position: absolute;
+  z-index: 3;
+  border-radius: 2px;
+  border: 1px solid var(--color-base-text);
+  background: var(--color-base-text);
+  padding: 0 var(--spacing-md);
+  top: calc(100% + 4px);
+}
+
+.ex-tooltip-arrow::after {
+  content: "";
+  z-index: 3;
+  position: absolute;
+  border-style: solid;
+  height: 0;
+  width: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -4px;
+  border-width: 0 4px 4px 4px;
+  border-color: transparent transparent var(--color-base-text) transparent;
 }

@@ -14,7 +14,7 @@ export const Strike = StrikeBase.extend({
         icon: strike,
         click: toggleStrike,
         checkActive: this.name,
-        tooltip: 'Taxado (Ctrl + Shift + S)'
+        tooltip: 'Tachado (Ctrl + Shift + S)'
       }
     }
   }

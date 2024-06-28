@@ -14,7 +14,7 @@ export const Italic = ItalicBase.extend({
         icon: italic,
         click: toggleItalic,
         checkActive: this.name,
-        tooltip: 'Itálico (Ctrl + i)'
+        tooltip: 'Itálico (Ctrl + I)'
       }
     }
   }
