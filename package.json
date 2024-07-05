@@ -24,7 +24,6 @@
     "@tiptap/extension-heading": "^2.4.0",
     "@tiptap/extension-history": "^2.4.0",
     "@tiptap/extension-horizontal-rule": "^2.4.0",
-    "@tiptap/extension-image": "^2.4.0",
     "@tiptap/extension-italic": "^2.4.0",
     "@tiptap/extension-list-item": "^2.4.0",
     "@tiptap/extension-ordered-list": "^2.4.0",
@@ -67,6 +66,6 @@
     "@simonwep/pickr": "^1.9.1",
     "@tiptap/pm": "^2.4.0",
     "@wiris/mathtype-html-integration-devkit": "^1.17.3",
-    "katex": "^0.16.10"
+    "katex": "^0.16.11"
   }
 }

@@ -9,6 +9,17 @@ import { ImageView } from './imageView'
 
 const inputID = 'editorImagePicker'
 
+export async function convertImageToBase64Service(url: string): Promise<string> {
+  try {
+    const response = await fetch(`http://localhost:8080/base64?url=${url}`)
+    const data = await response.json()
+    return data.url
+  } catch (error) {
+    console.error('Error ao tentar converter imagem: ', error)
+    return url
+  }
+}
+
 export function convertToBase64(img: HTMLImageElement, callback: (base64Url: string) => void) {
   return function () {
     const maxHeight = img.height > 700 ? 700 : img.height
@@ -77,6 +88,7 @@ export interface ImageOptions {
   inline: boolean
   allowBase64: boolean
   HTMLAttributes: Record<string, any>
+  conversionService: ((url: string) => Promise<string>) | null
 }
 
 declare module '@tiptap/core' {
@@ -100,7 +112,8 @@ export const Image = Node.create<ImageOptions>({
     return {
       inline: false,
       allowBase64: false,
-      HTMLAttributes: {}
+      HTMLAttributes: {},
+      conversionService: null
     }
   },
 
@@ -236,7 +249,7 @@ export const Image = Node.create<ImageOptions>({
   },
   addNodeView() {
     return ({ node, editor, getPos }) => {
-      return new ImageView(node, editor, getPos)
+      return new ImageView(node, editor, getPos, this.options.conversionService)
     }
   },
   addProseMirrorPlugins() {

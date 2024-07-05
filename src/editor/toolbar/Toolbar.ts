@@ -1,16 +1,7 @@
-import { Button, type ButtonConfig, type Dropdown } from '@editor/ui'
+import { type ButtonConfig } from '@editor/ui'
 import type ExitusEditor from '@src/ExitusEditor'
 
 import { type Tool } from './Tool'
-
-function getExtensionStorage(configStorage: ConfigStorage, name: string) {
-  const storage = configStorage[name]
-  return storage
-}
-
-function isEmptyObject(obj: object) {
-  return Object.keys(obj).length === 0
-}
 
 type ConfigStorage = {
   [key: string]: { toolbarButtonConfig: object | object[] }
@@ -23,25 +14,51 @@ export interface ToolbarConfig {
   }
 }
 export class Toolbar {
-  editor: ExitusEditor
-  toolbarConfig: ToolbarConfig
+  //toolbarConfig: ToolbarConfig
   toolbarItemsDiv!: HTMLDivElement
-  tools: Tool[] = []
+  private tools = new Map<string, Tool>()
+  constructor(
+    public editor: ExitusEditor,
+    public toolbarOrder: string[]
+  ) {}
 
-  constructor(exitusEditor: ExitusEditor, toolbarConfig: ToolbarConfig) {
-    this.editor = exitusEditor
-    this.toolbarConfig = toolbarConfig
+  setTool(name: string, tool: Tool) {
+    if (this.tools.has(name)) {
+      throw new Error('Duplicated Tool')
+    }
+    this.tools.set(name, tool)
   }
 
-  setToolbarConfig(toolbarConfig: ToolbarConfig) {
-    this.toolbarConfig = toolbarConfig
+  getTool(name: string) {
+    return this.tools.get(name)
   }
 
+  /* setToolbarConfig(toolbarConfig: ToolbarConfig) {
+    this.toolbarConfig = toolbarConfig
+  }
+ */
   closeAllTools() {
     this.tools.forEach(tool => tool.off())
   }
 
-  createToolbar() {
+  render() {
+    this.toolbarItemsDiv = document.createElement('div')
+    this.toolbarItemsDiv.className = 'ex-toolbar-items'
+    this.toolbarOrder.forEach(item => {
+      if (item == '|') {
+        const separator = document.createElement('span')
+        separator.className = 'ex-toolbar-separator'
+        this.toolbarItemsDiv?.append(separator)
+      } else {
+        const tool = this.getTool(item)
+        if (tool) {
+          this.toolbarItemsDiv?.append(tool.render())
+        }
+      }
+    })
+  }
+
+  /* createToolbar() {
     this.toolbarItemsDiv = document.createElement('div')
     this.toolbarItemsDiv.className = 'ex-toolbar-items'
 
@@ -75,5 +92,5 @@ export class Toolbar {
     })
 
     return this.toolbarItemsDiv
-  }
+  } */
 }

@@ -1,6 +1,5 @@
 //@ts-nocheck
 import { type ButtonEventProps } from '@editor/ui'
-import formula from '@icons/formula.svg'
 import { Node } from '@tiptap/core'
 // eslint-disable-next-line import-helpers/order-imports
 import { Fragment } from '@tiptap/pm/model'
@@ -84,7 +83,7 @@ export const Katex = Node.create({
 
   draggable: true,
 
-  addStorage() {
+  /* addStorage() {
     return {
       toolbarButtonConfig: {
         icon: formula,
@@ -93,7 +92,7 @@ export const Katex = Node.create({
         tooltip: 'Fórmula matemática - Latex'
       }
     }
-  },
+  }, */
   parseHTML() {
     return [
       {

@@ -1,7 +1,6 @@
 import './public/style.css'
 
 import { BulletList } from '@tiptap/extension-bullet-list'
-import { Document } from '@tiptap/extension-document'
 import { Dropcursor } from '@tiptap/extension-dropcursor'
 import { Gapcursor } from '@tiptap/extension-gapcursor'
 import { HardBreak } from '@tiptap/extension-hard-break'
@@ -13,26 +12,27 @@ import { Paragraph } from '@tiptap/extension-paragraph'
 
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
-import { Text } from '@tiptap/extension-text'
 
 import ExitusEditor from './ExitusEditor'
 import { Blockquote } from './extensions/blockquote/blockquote'
-import { Bold } from './extensions/bold'
+import { BoldPlugin } from './extensions/bold/BoldPlugin'
 import { History } from './extensions/history/history'
-import { Image } from './extensions/image/image'
+import { convertImageToBase64Service, Image } from './extensions/image/image'
 import { Indent } from './extensions/indent/indent'
-import { Italic } from './extensions/italic/Italic'
-import { Katex } from './extensions/katex/katex'
+import { ItalicPlugin } from './extensions/italic/ItalicPlugin'
+import { KatexPlugin } from './extensions/katex/KatexPlugin'
 import { ListItem } from './extensions/listitem/listItem'
 import { MathType } from './extensions/mathtype/mathtype'
-import { Strike } from './extensions/strike/strike'
-import { Subscript } from './extensions/subscript/subscript'
+import { StrikePlugin } from './extensions/strike/StrikePlugin'
+import { SubscriptPlugin } from './extensions/subscript/SubscriptPlugin'
 import { Superscript } from './extensions/superscript/superscript'
+import { SuperscriptPlugin } from './extensions/superscript/SuperscriptPlugin'
 import { Tab } from './extensions/tab/tab'
 import TableCell from './extensions/table-cell/src'
 import { TableCustom } from './extensions/table/table'
+import { TablePlugin } from './extensions/table/TablePlugin'
 import { TextAlign } from './extensions/textAlign'
-import { Underline } from './extensions/underline/underline'
+import { UnderlinePlugin } from './extensions/underline/UnderlinePlugin'
 
 ExitusEditor.extensions = [
   Blockquote,
@@ -40,23 +40,18 @@ ExitusEditor.extensions = [
   Tab,
   Gapcursor,
   HorizontalRule,
-  Italic,
-  Document,
   HardBreak,
   Dropcursor,
   Heading,
   History,
   BulletList,
-  Strike,
   Paragraph,
   OrderedList,
-  Text,
-  Subscript,
   Superscript,
-  Bold,
   Image.configure({
     inline: true,
-    allowBase64: true
+    allowBase64: true,
+    conversionService: convertImageToBase64Service
   }),
   TableCustom.configure({
     resizable: true,
@@ -69,11 +64,11 @@ ExitusEditor.extensions = [
   TextAlign.configure({
     types: ['heading', 'paragraph']
   }),
-  Underline,
-  Katex,
   Indent,
   MathType
 ]
+
+ExitusEditor.plugins = [BoldPlugin, ItalicPlugin, UnderlinePlugin, KatexPlugin, StrikePlugin, SubscriptPlugin, SuperscriptPlugin, TablePlugin]
 
 ExitusEditor.toolbarOrder = [
   'bold',

@@ -12,7 +12,6 @@ import { type Node } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
 
-import { convertToBase64 } from './image'
 import ResizableImage from './ResizableImage'
 
 function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
@@ -32,7 +31,7 @@ function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
       if (!target.matches('.ex-image-wrapper')) {
         balloon.hide()
         imageWrapper.classList.remove('ex-selected')
-        resizers.classList.add('ex-hidden')
+        //resizers.classList.add('ex-hidden')
         window.removeEventListener('click', clickOutside)
       }
     }
@@ -44,14 +43,14 @@ function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
 function alinhaDireita(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
-    if (!imageWrapper.classList.contains('ex-direita')) {
+    if (!imageWrapper.classList.contains('ex-image-block-align-right')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
-      imageWrapper.classList.add('ex-direita')
-      imageWrapper.classList.remove('ex-meio', 'ex-esquerda')
+      imageWrapper.classList.add('ex-image-block-align-right')
+      imageWrapper.classList.remove('ex-image-block-align-center', 'ex-image-block-align-left')
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-direita')
+      imageWrapper.classList.remove('ex-image-block-align-right')
     }
     imageView.updateAttributes({
       classes: imageWrapper.className
@@ -62,14 +61,14 @@ function alinhaDireita(imageView: ImageView) {
 function alinhaEsquerda(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
-    if (!imageWrapper.classList.contains('ex-esquerda')) {
+    if (!imageWrapper.classList.contains('ex-image-block-align-left')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
-      imageWrapper.classList.add('ex-esquerda')
-      imageWrapper.classList.remove('ex-meio', 'ex-direita')
+      imageWrapper.classList.add('ex-image-block-align-left')
+      imageWrapper.classList.remove('ex-image-block-align-center', 'ex-image-block-align-right')
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-esquerda')
+      imageWrapper.classList.remove('ex-image-block-align-left')
     }
     imageView.updateAttributes({
       classes: imageWrapper.className
@@ -80,14 +79,14 @@ function alinhaEsquerda(imageView: ImageView) {
 function alinhaMeio(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
-    if (!imageWrapper.classList.contains('ex-meio')) {
+    if (!imageWrapper.classList.contains('ex-image-block-align-center')) {
       button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
-      imageWrapper.classList.add('ex-meio')
-      imageWrapper.classList.remove('ex-esquerda', 'ex-direita')
+      imageWrapper.classList.add('ex-image-block-align-center')
+      imageWrapper.classList.remove('ex-image-block-align-left', 'ex-image-block-align-right')
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-meio')
+      imageWrapper.classList.remove('ex-image-block-align-center')
     }
     imageView.updateAttributes({
       classes: imageWrapper.className
@@ -164,7 +163,12 @@ export class ImageView implements NodeView {
   resizer: ResizableImage
   originalSize: number
 
-  constructor(node: Node, editor: Editor, getPos: boolean | (() => number)) {
+  constructor(
+    node: Node,
+    editor: Editor,
+    getPos: boolean | (() => number),
+    public conversionServiceUrl: ((url: string) => Promise<string>) | null
+  ) {
     this.node = node
     this.editor = editor
     this.getPos = getPos
@@ -179,8 +183,10 @@ export class ImageView implements NodeView {
 
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
 
-    if (imageUrlRegex.test(node.attrs.src)) {
-      this.urlToBase64()
+    if (this.conversionServiceUrl !== null && imageUrlRegex.test(node.attrs.src)) {
+      console.log(node.attrs.src, imageUrlRegex.test(node.attrs.src))
+
+      this.urlToBase64(node.attrs.src)
     }
 
     // Adiciona redimensionamento de imagens
@@ -225,6 +231,7 @@ export class ImageView implements NodeView {
     this.balloon = new Balloon(editor, {
       position: 'top'
     })
+
     this.balloon.ballonPanel.appendChild(toolbar.createToolbar())
 
     this.imageWrapper.appendChild(this.balloon.getBalloon())
@@ -243,12 +250,12 @@ export class ImageView implements NodeView {
     return true
   }
 
-  urlToBase64() {
-    const self = this
-    this.image.setAttribute('crossorigin', 'anonymous')
-    this.image.onload = convertToBase64(this.image, (base64Url: string) => {
-      self.updateAttributes({ src: base64Url })
-    })
+  urlToBase64(url: string) {
+    this.image.onload = async () => {
+      const base64Url = await this.conversionServiceUrl!(url)
+      this.updateAttributes({ src: base64Url })
+      this.image.onload = null
+    }
   }
 
   selectNode() {
