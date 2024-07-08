@@ -25,17 +25,24 @@ export type ColumnResizingOptions = {
   handleWidth?: number;
   cellMinWidth?: number;
   lastColumnResizable?: boolean;
-  View?: new (
-    node: ProsemirrorNode,
-    cellMinWidth: number,
-    view: EditorView,
-  ) => NodeView;
+  /**
+   * A custom node view for the rendering table nodes. By default, the plugin
+   * uses the {@link TableView} class. You can explicitly set this to `null` to
+   * not use a custom node view.
+   */
+  View?:
+    | (new (
+        node: ProsemirrorNode,
+        cellMinWidth: number,
+        view: EditorView,
+      ) => NodeView)
+    | null;
 };
 
 /**
  * @public
  */
-export type Dragging = { startX: number; startWidth: number, maxWidth: number };
+export type Dragging = { startX: number; startWidth: number; maxWidth: number };
 
 /**
  * @public
@@ -50,9 +57,13 @@ export function columnResizing({
     key: columnResizingPluginKey,
     state: {
       init(_, state) {
-        plugin.spec!.props!.nodeViews![
-          tableNodeTypes(state.schema).table.name
-        ] = (node, view) => new View(node, cellMinWidth, view);
+        const nodeViews = plugin.spec?.props?.nodeViews;
+        const tableName = tableNodeTypes(state.schema).table.name;
+        if (View && nodeViews) {
+          nodeViews[tableName] = (node, view) => {
+            return new View(node, cellMinWidth, view);
+          };
+        }
         return new ResizeState(-1, false);
       },
       apply(tr, prev) {
@@ -102,7 +113,10 @@ export function columnResizing({
  * @public
  */
 export class ResizeState {
-  constructor(public activeHandle: number, public dragging: Dragging | false) {}
+  constructor(
+    public activeHandle: number,
+    public dragging: Dragging | false,
+  ) {}
 
   apply(tr: Transaction): ResizeState {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -181,7 +195,10 @@ function handleMouseDown(
   const pluginState = columnResizingPluginKey.getState(view.state);
   if (!pluginState || pluginState.activeHandle == -1 || pluginState.dragging)
     return false;
-  const table = getTable(view, pluginState.activeHandle).getBoundingClientRect()
+  const table = getTable(
+    view,
+    pluginState.activeHandle,
+  ).getBoundingClientRect();
   //console.log(table);
 
   const cell = view.state.doc.nodeAt(pluginState.activeHandle)!;
@@ -190,7 +207,11 @@ function handleMouseDown(
 
   view.dispatch(
     view.state.tr.setMeta(columnResizingPluginKey, {
-      setDragging: { startX: event.clientX, startWidth: width, maxWidth: 860 - (table.width - width)},
+      setDragging: {
+        startX: event.clientX,
+        startWidth: width,
+        maxWidth: 860 - (table.width - width),
+      },
     }),
   );
 
@@ -200,17 +221,17 @@ function handleMouseDown(
     const pluginState = columnResizingPluginKey.getState(view.state);
 
     if (pluginState?.dragging) {
-      const dragged = draggedWidth(pluginState.dragging, event, cellMinWidth)
-      const { maxWidth } = pluginState.dragging
+      const dragged = draggedWidth(pluginState.dragging, event, cellMinWidth);
+      const { maxWidth } = pluginState.dragging;
       //if (dragged <= pluginState.dragging.maxWidth) {
-        updateColumnWidth(
-          view,
-          pluginState.activeHandle,
-          Math.min(maxWidth - 1, dragged)
-        );
-        view.dispatch(
-          view.state.tr.setMeta(columnResizingPluginKey, { setDragging: null }),
-        );
+      updateColumnWidth(
+        view,
+        pluginState.activeHandle,
+        Math.min(maxWidth - 1, dragged),
+      );
+      view.dispatch(
+        view.state.tr.setMeta(columnResizingPluginKey, { setDragging: null }),
+      );
       //}
     }
   }
@@ -220,10 +241,14 @@ function handleMouseDown(
     const pluginState = columnResizingPluginKey.getState(view.state);
     if (!pluginState) return;
     if (pluginState.dragging) {
-
       const dragged = draggedWidth(pluginState.dragging, event, cellMinWidth);
       if (dragged <= pluginState.dragging.maxWidth) {
-        displayColumnWidth(view, pluginState.activeHandle, dragged, cellMinWidth);
+        displayColumnWidth(
+          view,
+          pluginState.activeHandle,
+          dragged,
+          cellMinWidth,
+        );
       }
     }
   }
@@ -366,7 +391,7 @@ function getTable(view: EditorView, cell: number) {
   while (dom && dom.nodeName != 'TABLE') {
     dom = dom.parentNode;
   }
-  return dom as HTMLTableElement
+  return dom as HTMLTableElement;
 }
 
 function zeroes(n: number): 0[] {
@@ -385,14 +410,15 @@ export function handleDecorations(
   }
   const map = TableMap.get(table);
   const start = $cell.start(-1);
-  const col = map.colCount($cell.pos - start) + $cell.nodeAfter!.attrs.colspan;
+  const col =
+    map.colCount($cell.pos - start) + $cell.nodeAfter!.attrs.colspan - 1;
   for (let row = 0; row < map.height; row++) {
-    const index = col + row * map.width - 1;
+    const index = col + row * map.width;
     // For positions that have either a different cell or the end
     // of the table to their right, and either the top of the table or
     // a different cell above them, add a decoration
     if (
-      (col == map.width || map.map[index] != map.map[index + 1]) &&
+      (col == map.width - 1 || map.map[index] != map.map[index + 1]) &&
       (row == 0 || map.map[index] != map.map[index - map.width])
     ) {
       const cellPos = map.map[index];

@@ -1,7 +1,6 @@
 import { Toolbar } from '@editor/toolbar'
-import { Button, type ButtonEventProps, Dropdown, type DropDownEventProps } from '@editor/ui'
+import { Button, type ButtonEventProps, type Dropdown, type DropDownEventProps } from '@editor/ui'
 import { Balloon } from '@editor/ui/Balloon'
-import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
@@ -12,13 +11,11 @@ import { type Node } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
 
-import { convertToBase64 } from './image'
 import ResizableImage from './ResizableImage'
 
 function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
   imageWrapper.addEventListener('click', event => {
     event.stopPropagation()
-    //imageWrapper.classList.add('ex-selected')
     const resizers = resizer.resizers
 
     if (!balloon.isOpen()) {
@@ -32,7 +29,6 @@ function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
       if (!target.matches('.ex-image-wrapper')) {
         balloon.hide()
         imageWrapper.classList.remove('ex-selected')
-        resizers.classList.add('ex-hidden')
         window.removeEventListener('click', clickOutside)
       }
     }
@@ -44,14 +40,13 @@ function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
 function alinhaDireita(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
-    if (!imageWrapper.classList.contains('ex-direita')) {
-      button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+    if (!imageWrapper.classList.contains('ex-image-block-align-right')) {
       button.on()
-      imageWrapper.classList.add('ex-direita')
-      imageWrapper.classList.remove('ex-meio', 'ex-esquerda')
+      imageWrapper.classList.add('ex-image-block-align-right')
+      imageWrapper.classList.remove('ex-image-block-align-center', 'ex-image-block-align-left')
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-direita')
+      imageWrapper.classList.remove('ex-image-block-align-right')
     }
     imageView.updateAttributes({
       classes: imageWrapper.className
@@ -62,14 +57,13 @@ function alinhaDireita(imageView: ImageView) {
 function alinhaEsquerda(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
-    if (!imageWrapper.classList.contains('ex-esquerda')) {
-      button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+    if (!imageWrapper.classList.contains('ex-image-block-align-left')) {
       button.on()
-      imageWrapper.classList.add('ex-esquerda')
-      imageWrapper.classList.remove('ex-meio', 'ex-direita')
+      imageWrapper.classList.add('ex-image-block-align-left')
+      imageWrapper.classList.remove('ex-image-block-align-center', 'ex-image-block-align-right')
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-esquerda')
+      imageWrapper.classList.remove('ex-image-block-align-left')
     }
     imageView.updateAttributes({
       classes: imageWrapper.className
@@ -80,14 +74,13 @@ function alinhaEsquerda(imageView: ImageView) {
 function alinhaMeio(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
-    if (!imageWrapper.classList.contains('ex-meio')) {
-      button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
+    if (!imageWrapper.classList.contains('ex-image-block-align-center')) {
       button.on()
-      imageWrapper.classList.add('ex-meio')
-      imageWrapper.classList.remove('ex-esquerda', 'ex-direita')
+      imageWrapper.classList.add('ex-image-block-align-center')
+      imageWrapper.classList.remove('ex-image-block-align-left', 'ex-image-block-align-right')
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-meio')
+      imageWrapper.classList.remove('ex-image-block-align-center')
     }
     imageView.updateAttributes({
       classes: imageWrapper.className
@@ -131,28 +124,6 @@ function showDropdown({ event, dropdown }: DropDownEventProps) {
   }
 }
 
-function balloonDropDown(originalSize: number) {
-  return ({ editor }: any) => {
-    const dropdown = new Dropdown(editor, {
-      events: {
-        open: showDropdown
-      },
-      classes: ['ex-dropdown-listItem']
-    })
-
-    dropdown.setDropDownContent(criarDropDown(dropdown, originalSize))
-
-    window.addEventListener('click', function (event: Event) {
-      const target = event.target as HTMLElement
-      if (!target.matches('.dropdown')) {
-        dropdown.off()
-      }
-    })
-
-    return dropdown
-  }
-}
-
 export class ImageView implements NodeView {
   node: Node
   dom: Element
@@ -164,7 +135,12 @@ export class ImageView implements NodeView {
   resizer: ResizableImage
   originalSize: number
 
-  constructor(node: Node, editor: Editor, getPos: boolean | (() => number)) {
+  constructor(
+    node: Node,
+    editor: Editor,
+    getPos: boolean | (() => number),
+    public conversionServiceUrl: ((url: string) => Promise<string>) | null
+  ) {
     this.node = node
     this.editor = editor
     this.getPos = getPos
@@ -179,53 +155,48 @@ export class ImageView implements NodeView {
 
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
 
-    if (imageUrlRegex.test(node.attrs.src)) {
-      this.urlToBase64()
+    if (this.conversionServiceUrl !== null && imageUrlRegex.test(node.attrs.src)) {
+      console.log(node.attrs.src, imageUrlRegex.test(node.attrs.src))
+
+      this.urlToBase64(node.attrs.src)
     }
 
     // Adiciona redimensionamento de imagens
     this.resizer = new ResizableImage(this)
 
-    const configStorage = {
-      alinhaDireita: {
-        toolbarButtonConfig: {
-          icon: textDr,
-          click: alinhaDireita(this),
-          tooltip: 'Imagem alinhada a direita'
-        }
-      },
-      alinhaMeio: {
-        toolbarButtonConfig: {
-          icon: textDm,
-          click: alinhaMeio(this),
-          tooltip: 'Imagem centralizada'
-        }
-      },
-      alinhaEsquerda: {
-        toolbarButtonConfig: {
-          icon: textDl,
-          click: alinhaEsquerda(this),
-          tooltip: 'Imagem alinhada a asquerda'
-        }
-      },
-      tamanhoImg: {
-        toolbarButtonConfig: {
-          icon: imgSize + arrowDropDown,
-          dropdown: balloonDropDown(this.originalSize),
-          tooltip: 'Redimensionar imagem'
-        }
-      }
-    }
-
-    const toolbar = new Toolbar(editor as ExitusEditor, {
-      toolbarOrder: ['alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'],
-      configStorage
+    const toolbar = new Toolbar(editor as ExitusEditor, ['alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'])
+    toolbar.setButton('alinhaDireita', {
+      icon: textDr,
+      click: alinhaDireita(this),
+      tooltip: 'Imagem alinhada a direita'
     })
-
+    toolbar.setButton('alinhaMeio', {
+      icon: textDm,
+      click: alinhaMeio(this),
+      tooltip: 'Imagem centralizada'
+    })
+    toolbar.setButton('alinhaEsquerda', {
+      icon: textDl,
+      click: alinhaEsquerda(this),
+      tooltip: 'Imagem alinhada a asquerda'
+    })
+    toolbar.setDropDown(
+      'tamanhoImg',
+      {
+        icon: imgSize,
+        click: showDropdown,
+        tooltip: 'Redimensionar imagem',
+        classes: []
+      },
+      dropdown => {
+        return criarDropDown(dropdown, this.originalSize)
+      }
+    )
     this.balloon = new Balloon(editor, {
       position: 'top'
     })
-    this.balloon.ballonPanel.appendChild(toolbar.createToolbar())
+
+    this.balloon.ballonPanel.appendChild(toolbar.render())
 
     this.imageWrapper.appendChild(this.balloon.getBalloon())
 
@@ -243,12 +214,12 @@ export class ImageView implements NodeView {
     return true
   }
 
-  urlToBase64() {
-    const self = this
-    this.image.setAttribute('crossorigin', 'anonymous')
-    this.image.onload = convertToBase64(this.image, (base64Url: string) => {
-      self.updateAttributes({ src: base64Url })
-    })
+  urlToBase64(url: string) {
+    this.image.onload = async () => {
+      const base64Url = await this.conversionServiceUrl!(url)
+      this.updateAttributes({ src: base64Url })
+      this.image.onload = null
+    }
   }
 
   selectNode() {

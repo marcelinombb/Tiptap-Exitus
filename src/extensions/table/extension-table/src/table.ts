@@ -22,7 +22,6 @@ import { type DOMOutputSpec } from '@tiptap/pm/model'
 import { TextSelection } from '@tiptap/pm/state'
 import { type NodeView } from '@tiptap/pm/view'
 
-import { TableView } from './TableView'
 import { createColGroup } from './utilities/createColGroup'
 import { createTable } from './utilities/createTable'
 import { deleteTableWhenAllCellsSelected } from './utilities/deleteTableWhenAllCellsSelected'
@@ -246,7 +245,7 @@ export const Table = Node.create<TableOptions>({
       handleWidth: 5,
       cellMinWidth: 25,
       // TODO: fix
-      View: TableView,
+      View: null,
       lastColumnResizable: true,
       allowTableNodeSelection: false
     }
@@ -434,7 +433,7 @@ export const Table = Node.create<TableOptions>({
               handleWidth: this.options.handleWidth,
               cellMinWidth: this.options.cellMinWidth,
               // @ts-ignore (incorrect type)
-              View: this.options.View,
+              View: null,
               // TODO: PR for @types/prosemirror-tables
               // @ts-ignore (incorrect type)
               lastColumnResizable: this.options.lastColumnResizable

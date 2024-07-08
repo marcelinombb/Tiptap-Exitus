@@ -1,6 +1,4 @@
-/* eslint-disable no-console */
-//@ts-nocheck
-import { Button, Dropdown } from '@editor/ui'
+import { Button } from '@editor/ui'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
@@ -41,34 +39,6 @@ const createPickrInstance = (selector: string, onCancel: () => void): Pickr => {
   pickr.on('cancel', onCancel)
 
   return pickr
-}
-
-function fecharDropdownsAbertos() {
-  Dropdown.instances.forEach(dropdown => dropdown.off())
-}
-
-function showDropdown({ dropdown }: any) {
-  if (dropdown.isOpen) {
-    dropdown.off()
-  } else {
-    dropdown.on()
-  }
-}
-
-export function criaTabelaModal(style: any) {
-  return ({ editor }) => {
-    const dropdown = new Dropdown(editor, {
-      events: {
-        open: showDropdown
-      },
-      classes: ['ex-dropdown-balloonModal'],
-      closeDropDown: (elem: HTMLElement) => {
-        return !elem.closest('.pcr-app')
-      }
-    })
-    dropdown.setDropDownContent(new ItensModalTable(editor, style).render())
-    return dropdown
-  }
 }
 
 export class ItensModalTable {
@@ -280,7 +250,7 @@ export class ItensModalTable {
       this.aplicarEstiloBorda(borderColor)
       this.aplicarEstiloCelulas(backgroundColor)
       this.aplicarDimensoesTabela()
-      fecharDropdownsAbertos()
+      //fecharDropdownsAbertos()
     })
     botaoConfirma.className = 'ex-botaoSalvar'
     botaoConfirma.appendChild(iconConfirma)
@@ -293,7 +263,7 @@ export class ItensModalTable {
         background: '',
         border: ''
       })
-      fecharDropdownsAbertos()
+      //fecharDropdownsAbertos()
     })
     botaoCancela.className = 'ex-botaoCancela'
     botaoCancela.appendChild(iconCancela)
@@ -321,7 +291,7 @@ export class ItensModalTable {
     const isBorderNone = this.selectInput.value === 'none'
     this.larguraBloco1.disabled = isBorderNone
     this.larguraBloco1.style.cursor = isBorderNone ? 'not-allowed' : 'default'
-    this.cellBorderColorPickr.setColor(isBorderNone ? 'rgba(0, 0, 0, 0)' : this.cellBorderColorPickr.getColor().toRGBA().toString())
+    this.cellBorderColorPickr?.setColor(isBorderNone ? 'rgba(0, 0, 0, 0)' : this.cellBorderColorPickr.getColor().toRGBA().toString())
     this.cellBorderColorPickr?.enable()
   }
 

@@ -1,78 +1,42 @@
 import './public/style.css'
 
-import { BulletList } from '@tiptap/extension-bullet-list'
-import { Document } from '@tiptap/extension-document'
-import { Dropcursor } from '@tiptap/extension-dropcursor'
-import { Gapcursor } from '@tiptap/extension-gapcursor'
-import { HardBreak } from '@tiptap/extension-hard-break'
-import { Heading } from '@tiptap/extension-heading'
-import { HorizontalRule } from '@tiptap/extension-horizontal-rule'
-import { OrderedList } from '@tiptap/extension-ordered-list'
-// eslint-disable-next-line import-helpers/order-imports
-import { Paragraph } from '@tiptap/extension-paragraph'
-
-import TableHeader from '@tiptap/extension-table-header'
-import TableRow from '@tiptap/extension-table-row'
-import { Text } from '@tiptap/extension-text'
-
 import ExitusEditor from './ExitusEditor'
-import { Blockquote } from './extensions/blockquote/blockquote'
-import { Bold } from './extensions/bold'
-import { History } from './extensions/history/history'
-import { Image } from './extensions/image/image'
-import { Indent } from './extensions/indent/indent'
-import { Italic } from './extensions/italic/Italic'
-import { Katex } from './extensions/katex/katex'
-import { ListItem } from './extensions/listitem/listItem'
-import { MathType } from './extensions/mathtype/mathtype'
-import { Strike } from './extensions/strike/strike'
-import { Subscript } from './extensions/subscript/subscript'
-import { Superscript } from './extensions/superscript/superscript'
-import { Tab } from './extensions/tab/tab'
-import TableCell from './extensions/table-cell/src'
-import { TableCustom } from './extensions/table/table'
-import { TextAlign } from './extensions/textAlign'
-import { Underline } from './extensions/underline/underline'
+import { BlockquotePlugin } from './extensions/blockquote/BlockquotePlugin'
+import { BoldPlugin } from './extensions/bold/BoldPlugin'
+import { DefaultPlugin } from './extensions/defaultPlugin/DefaultPlugin'
+import { HistoryPlugin } from './extensions/history/HistoryPlugin'
+import { ImagePlugin } from './extensions/image/ImagePlugin'
+import { IndentPlugin } from './extensions/indent/IndentPlugin'
+import { ItalicPlugin } from './extensions/italic/ItalicPlugin'
+import { KatexPlugin } from './extensions/katex/KatexPlugin'
+import { ListItemPlugin } from './extensions/listitem/ListItemPlugin'
+import { MathTypePlugin } from './extensions/mathtype/MathTypePlugin'
+import { StrikePlugin } from './extensions/strike/StrikePlugin'
+import { SubscriptPlugin } from './extensions/subscript/SubscriptPlugin'
+import { SuperscriptPlugin } from './extensions/superscript/SuperscriptPlugin'
+import { TabPlugin } from './extensions/tab/TabPlugin'
+import { TablePlugin } from './extensions/table/TablePlugin'
+import { TextAlignPlugin } from './extensions/textAlign/TextAlingPlugin'
+import { UnderlinePlugin } from './extensions/underline/UnderlinePlugin'
 
-ExitusEditor.extensions = [
-  Blockquote,
-  ListItem,
-  Tab,
-  Gapcursor,
-  HorizontalRule,
-  Italic,
-  Document,
-  HardBreak,
-  Dropcursor,
-  Heading,
-  History,
-  BulletList,
-  Strike,
-  Paragraph,
-  OrderedList,
-  Text,
-  Subscript,
-  Superscript,
-  Bold,
-  Image.configure({
-    inline: true,
-    allowBase64: true
-  }),
-  TableCustom.configure({
-    resizable: true,
-    allowTableNodeSelection: true,
-    cellMinWidth: 100
-  }),
-  TableRow,
-  TableHeader,
-  TableCell,
-  TextAlign.configure({
-    types: ['heading', 'paragraph']
-  }),
-  Underline,
-  Katex,
-  Indent,
-  MathType
+ExitusEditor.plugins = [
+  DefaultPlugin,
+  BoldPlugin,
+  ItalicPlugin,
+  UnderlinePlugin,
+  KatexPlugin,
+  StrikePlugin,
+  SubscriptPlugin,
+  SuperscriptPlugin,
+  TablePlugin,
+  TextAlignPlugin,
+  MathTypePlugin,
+  ImagePlugin,
+  BlockquotePlugin,
+  HistoryPlugin,
+  ListItemPlugin,
+  TabPlugin,
+  IndentPlugin
 ]
 
 ExitusEditor.toolbarOrder = [
@@ -87,12 +51,15 @@ ExitusEditor.toolbarOrder = [
   'textAlign',
   'image',
   'blockquote',
-  'history',
+  'goback',
+  'goforward',
   'listItem',
-  'indent',
+  'rmRecuo',
+  'addRecuo',
   '|',
   'katex',
-  'mathtype'
+  'mathtype',
+  'chemtype'
 ]
 
 export default ExitusEditor

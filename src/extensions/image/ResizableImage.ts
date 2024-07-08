@@ -25,7 +25,7 @@ export default class ResizableImage {
 
   private initResize() {
     const element = document.createElement('div')
-    element.className = 'ex-hidden'
+    //element.className = 'ex-hidden'
 
     // Quadrado no canto superior esquerdo
     this.quadradoTopEsquerda = element.appendChild(document.createElement('div'))

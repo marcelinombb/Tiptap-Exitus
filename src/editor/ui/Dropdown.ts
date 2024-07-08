@@ -1,16 +1,18 @@
 import { type Tool, type Toolbar } from '@editor/toolbar'
+import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import type ExitusEditor from '@src/ExitusEditor'
 
-import { type Button, type ButtonEventProps } from '.'
+import { Button, type ButtonEventProps } from '.'
 
 export interface DropDownEventProps extends ButtonEventProps {
   dropdown: Dropdown
 }
 
 export interface DropdownConfig {
-  events: {
-    [key: string]: (obj: DropDownEventProps) => void
-  }
+  icon: string
+  label?: string
+  tooltip: string
+  click: (obj: DropDownEventProps) => void
   classes: string[]
   closeDropDown?: (elem: HTMLElement) => boolean
 }
@@ -22,17 +24,22 @@ export class Dropdown implements Tool {
   dropdownContent!: HTMLElement
   config: DropdownConfig = {
     classes: [],
-    events: {},
-    closeDropDown: () => true
+    click: (_obj: DropDownEventProps) => true,
+    closeDropDown: () => true,
+    icon: '',
+    label: '',
+    tooltip: ''
   }
 
   button!: Button
   editor: ExitusEditor
   parentToolbar!: Toolbar
 
-  static instances: Dropdown[] = []
-
-  constructor(editor: ExitusEditor, config: DropdownConfig) {
+  constructor(
+    editor: ExitusEditor,
+    config: DropdownConfig,
+    public name: string = ''
+  ) {
     this.config = { ...this.config, ...config }
     this.editor = editor
     this.dropdownContainer = document.createElement('div')
@@ -44,9 +51,12 @@ export class Dropdown implements Tool {
 
     this.dropdownContent = document.createElement('div')
     this.dropdownContent.classList.add('ex-dropdown-content')
+  }
 
-    // Registrar instância
-    Dropdown.instances.push(this)
+  update(toolbar: Toolbar): void {
+    if (toolbar.currentActive === this.name) return
+    this.button.off()
+    this.off()
   }
 
   setButton(button: Button) {
@@ -62,7 +72,7 @@ export class Dropdown implements Tool {
   }
 
   on() {
-    this.parentToolbar.closeAllTools()
+    //this.parentToolbar.closeAllTools()
     this.dropdownContentContainer.style.display = 'block'
     this.isOpen = true
   }
@@ -73,8 +83,12 @@ export class Dropdown implements Tool {
   }
 
   render() {
-    this.button.bind('click', ({ editor, event, button }) => {
-      this.config.events['open']({ editor, event, button, dropdown: this })
+    this.button = new Button(this.editor, {
+      icon: this.config.icon + arrowDropDown,
+      tooltip: this.config.tooltip
+    })
+    this.button.bind('click', ({ event }) => {
+      this.config.click({ editor: this.editor, event, button: this.button, dropdown: this })
       const close = (event: Event) => {
         const target = event.target as HTMLElement
         if (!target.closest('.ex-dropdown') && this.config!.closeDropDown!(target)) {

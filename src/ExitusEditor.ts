@@ -1,7 +1,7 @@
+import { type Plugin } from '@editor/Plugin'
 import { Toolbar } from '@editor/toolbar'
 import { createHTMLElement } from '@editor/utils'
 import { type AnyExtension, Editor, type EditorOptions } from '@tiptap/core'
-
 interface Config {
   [key: string]: any
 }
@@ -11,6 +11,8 @@ export interface ExitusEditorOptions extends EditorOptions {
   toolbarOrder: string[]
   config: Config
 }
+
+export type PluginClassConstructor = typeof Plugin
 
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -25,39 +27,39 @@ class ExitusEditor extends Editor {
   toolbar: Toolbar
   toolbarItemsDiv!: HTMLDivElement
   editorMainDiv!: HTMLDivElement
-
+  private pluginsInstances = new Map<string, Plugin>()
   static extensions: AnyExtension[]
+  static plugins: PluginClassConstructor[]
   static toolbarOrder: string[]
 
   constructor(options: Partial<ExitusEditorOptions> = {}) {
-    let ext = ExitusEditor.extensions
-    if (options.config !== undefined) {
-      ext = ExitusEditor.extensions.map(ext => {
-        const conf = options!.config![ext.name]
-        if (conf) {
-          return ext.configure(conf)
-        }
-
-        return ext
-      })
-    }
+    const ext = ExitusEditor.plugins.reduce<AnyExtension[]>((acc, plugin) => {
+      return [...acc, ...plugin.requires]
+    }, [])
 
     super({ ...options, extensions: ext })
     this.editorInstance = generateUUID()
 
     const toolbarOrder: string[] = [...ExitusEditor.toolbarOrder, ...(options.toolbarOrder ?? [])]
 
-    this.toolbar = new Toolbar(this, {
-      toolbarOrder: toolbarOrder,
-      configStorage: this.extensionStorage
+    this.toolbar = new Toolbar(this, toolbarOrder)
+
+    ExitusEditor.plugins.forEach(plugin => {
+      const pluginInstance = new plugin(this)
+      pluginInstance.init()
+      this.pluginsInstances.set(plugin.pluginName, pluginInstance)
     })
 
     this._createUI(options.container as Element)
   }
 
+  getPluginInstance(name: string) {
+    return this.pluginsInstances.get(name)
+  }
+
   private _generateEditorUI() {
-    const toolbarItems = this.toolbar.createToolbar()
-    const toolbarEditor = createHTMLElement('div', { class: 'ex-toolbar-editor' }, [toolbarItems])
+    const toolbarItemsDiv = this.toolbar.render()
+    const toolbarEditor = createHTMLElement('div', { class: 'ex-toolbar-editor' }, [toolbarItemsDiv])
 
     const editorMain = this.options.element
     editorMain.className = 'editor-main'
@@ -69,7 +71,7 @@ class ExitusEditor extends Editor {
 
     const editorShell = createHTMLElement('div', { class: 'editor-shell' }, [toolbarEditor, editorScroller])
 
-    this.toolbarItemsDiv = toolbarItems
+    this.toolbarItemsDiv = toolbarItemsDiv
 
     return editorShell
   }
@@ -77,6 +79,12 @@ class ExitusEditor extends Editor {
   private _createUI(container: Element) {
     const editorUI = this._generateEditorUI()
     container.appendChild(editorUI)
+  }
+
+  destroy(): void {
+    this.pluginsInstances.forEach(plugin => plugin.destroy())
+    this.pluginsInstances.clear()
+    super.destroy()
   }
 }
 

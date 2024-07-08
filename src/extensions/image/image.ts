@@ -1,13 +1,19 @@
-import { type ButtonEventProps } from '@editor/ui'
-import imageAdd from '@icons/image-add-fill.svg'
-import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor, Node, nodeInputRule } from '@tiptap/core'
 import { Plugin, PluginKey } from 'prosemirror-state'
 import { findSelectedNodeOfType } from 'prosemirror-utils'
 
 import { ImageView } from './imageView'
 
-const inputID = 'editorImagePicker'
+export async function convertImageToBase64Service(url: string): Promise<string> {
+  try {
+    const response = await fetch(`http://localhost:8080/base64?url=${url}`)
+    const data = await response.json()
+    return data.url
+  } catch (error) {
+    console.error('Error ao tentar converter imagem: ', error)
+    return url
+  }
+}
 
 export function convertToBase64(img: HTMLImageElement, callback: (base64Url: string) => void) {
   return function () {
@@ -34,7 +40,7 @@ export function convertToBase64(img: HTMLImageElement, callback: (base64Url: str
   }
 }
 
-function parseImagesToBase64(img: File, editor: Editor) {
+export function parseImagesToBase64(img: File, editor: Editor) {
   if (img) {
     const reader = new FileReader()
 
@@ -55,28 +61,11 @@ function parseImagesToBase64(img: File, editor: Editor) {
   }
 }
 
-function createFileInput(editor: ExitusEditor) {
-  const inputElement = document.createElement('input')
-  inputElement.setAttribute('type', 'file')
-  inputElement.className = 'ex-hidden'
-  inputElement.setAttribute('id', inputID + editor.editorInstance)
-  inputElement.setAttribute('accept', 'image/jpeg,image/png,image/gif,image/bmp,image/webp,image/tiff')
-  inputElement.addEventListener('change', function () {
-    parseImagesToBase64(this.files![0], editor)
-  })
-
-  return inputElement
-}
-
-function addImage({ editor }: ButtonEventProps) {
-  const inputElement = createFileInput(editor as ExitusEditor) as HTMLInputElement
-  inputElement.click()
-}
-
 export interface ImageOptions {
   inline: boolean
   allowBase64: boolean
   HTMLAttributes: Record<string, any>
+  conversionService: ((url: string) => Promise<string>) | null
 }
 
 declare module '@tiptap/core' {
@@ -100,18 +89,8 @@ export const Image = Node.create<ImageOptions>({
     return {
       inline: false,
       allowBase64: false,
-      HTMLAttributes: {}
-    }
-  },
-
-  addStorage() {
-    return {
-      toolbarButtonConfig: {
-        icon: imageAdd,
-        click: addImage,
-        checkActive: this.name,
-        tooltip: 'Carregar imagem'
-      }
+      HTMLAttributes: {},
+      conversionService: null
     }
   },
 
@@ -236,7 +215,7 @@ export const Image = Node.create<ImageOptions>({
   },
   addNodeView() {
     return ({ node, editor, getPos }) => {
-      return new ImageView(node, editor, getPos)
+      return new ImageView(node, editor, getPos, this.options.conversionService)
     }
   },
   addProseMirrorPlugins() {

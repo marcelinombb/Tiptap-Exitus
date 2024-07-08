@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Toolbar } from '@editor/toolbar'
+import { Button, type DropDownEventProps } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
-import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import tableCell from '@icons/merge-tableCells.svg'
 import starredCell from '@icons/starred-cell.svg'
 import starredTable from '@icons/starred-table.svg'
@@ -12,12 +12,12 @@ import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
 
-import { criaTabelaModal } from './itensModalTable'
+import { ItensModalTable } from './itensModalTable'
 import { updateColumnsOnResize } from './prosemirror-tables/src'
 import { objParaCss } from './table'
 import { TableCellBalloon } from './TableCellBalloon'
 import TableFocus, { UpDownTable } from './tableFocus'
-import { criaDropCell, criaDropColuna, criaDropLinhas } from './tableToolbarItens'
+import { dropDownCell, dropDownColunas, dropDownLinhas } from './tableToolbarItens'
 
 function clickHandler(tableView: TableView) {
   tableView.table.addEventListener('click', () => {
@@ -62,13 +62,27 @@ function clickCellHandler(tableView: TableView) {
 }
 
 function showCellBalloon(tableView: TableView) {
-  return () => {
-    tableView.tableCellBalloon.updatePosition()
-    tableView.balloon.hide()
-    clickCellHandler(tableView)
-  }
+  const button = new Button(tableView.editor as ExitusEditor, {
+    icon: starredCell,
+    click: () => {
+      tableView.tableCellBalloon.updatePosition()
+      tableView.balloon.hide()
+      clickCellHandler(tableView)
+    },
+    tooltip: 'Propriedades da célula'
+  })
+
+  return button
 }
 
+function showDropdown({ event, dropdown }: DropDownEventProps) {
+  event.stopPropagation()
+  if (dropdown.isOpen) {
+    dropdown.off()
+  } else {
+    dropdown.on()
+  }
+}
 export class TableView implements NodeView {
   node: ProseMirrorNode
   dom: Element
@@ -88,7 +102,7 @@ export class TableView implements NodeView {
     this.node = node
     this.editor = editor
     this.getPos = getPos
-    this.cellMinWidth = 50
+    this.cellMinWidth = 100
     this.dom = document.createElement('div')
     this.tableWrapper = document.createElement('div')
     this.dom = this.tableWrapper
@@ -108,58 +122,76 @@ export class TableView implements NodeView {
     new UpDownTable(this, this.editor)
     this.tableCellBalloon = new TableCellBalloon(editor)
 
-    const configStorage = {
-      celumnsTable: {
-        toolbarButtonConfig: {
-          icon: tableColumns + arrowDropDown,
-          dropdown: criaDropColuna(),
-          tooltip: 'Coluna'
-        }
-      },
-      RowTable: {
-        toolbarButtonConfig: {
-          icon: tableRow + arrowDropDown,
-          dropdown: criaDropLinhas(),
-          tooltip: 'Linha'
-        }
-      },
-      cellTable: {
-        toolbarButtonConfig: {
-          icon: tableCell + arrowDropDown,
-          dropdown: criaDropCell(),
-          tooltip: 'Mesclar células'
-        }
-      },
-      tableStarred: {
-        toolbarButtonConfig: {
-          icon: starredTable + arrowDropDown,
-          dropdown: criaTabelaModal(node.attrs.style),
-          tooltip: 'Propriedades da tabela'
-        }
-      },
-      cellStarred: {
-        toolbarButtonConfig: {
-          icon: starredCell,
-          click: showCellBalloon(this),
-          tooltip: 'Propriedades da célula'
-        }
-      }
-    }
+    const toolbar = new Toolbar(editor as ExitusEditor, ['colTable', 'rowTable', 'cellTable', 'tableProperties', 'cellProperties'])
 
-    const toolbar = new Toolbar(editor as ExitusEditor, {
-      toolbarOrder: ['celumnsTable', 'RowTable', 'cellTable', 'tableStarred', 'cellStarred'],
-      configStorage
+    toolbar.setDropDown(
+      'colTable',
+      {
+        icon: tableColumns,
+        tooltip: 'Coluna',
+        click: showDropdown,
+        classes: ['ex-dropdown-balloonTable']
+      },
+      dropdown => {
+        return dropDownColunas(this.editor as ExitusEditor, dropdown)
+      }
+    )
+    toolbar.setDropDown(
+      'rowTable',
+      {
+        icon: tableRow,
+        tooltip: 'Linha',
+        click: showDropdown,
+        classes: ['ex-dropdown-balloonTable']
+      },
+      dropdown => {
+        return dropDownLinhas(this.editor as ExitusEditor, dropdown)
+      }
+    )
+    toolbar.setDropDown(
+      'cellTable',
+      {
+        icon: tableCell,
+        tooltip: 'Mesclar células',
+        click: showDropdown,
+        classes: ['ex-dropdown-balloonTable']
+      },
+      dropdown => {
+        return dropDownCell(this.editor as ExitusEditor, dropdown)
+      }
+    )
+    toolbar.setDropDown(
+      'tableProperties',
+      {
+        icon: starredTable,
+        click: showDropdown,
+        tooltip: 'Propriedades da tabela',
+        classes: ['ex-dropdown-balloonModal'],
+        closeDropDown: (elem: HTMLElement) => {
+          return !elem.closest('.pcr-app')
+        }
+      },
+      _dropdown => {
+        return new ItensModalTable(this.editor as ExitusEditor, node.attrs.style).render()
+      }
+    )
+    toolbar.setButton('cellProperties', {
+      icon: starredCell,
+      click: () => {
+        this.tableCellBalloon.updatePosition()
+        this.balloon.hide()
+        clickCellHandler(this)
+      },
+      tooltip: 'Propriedades da célula'
     })
 
     this.balloon = new Balloon(editor, {
       position: BalloonPosition.TOP
     })
 
-    this.balloon.ballonPanel.appendChild(toolbar.createToolbar())
+    this.balloon.ballonPanel.appendChild(toolbar.render())
 
     this.tableWrapper.appendChild(this.balloon.getBalloon())
-
-    //this.dom.appendChild(this.tableWrapper)
 
     clickHandler(this)
   }
@@ -230,7 +262,7 @@ export class TableView implements NodeView {
   }
 }
 function updateTableStyle(tableView: TableView) {
-  const { table, tableWrapperStyle, tableWrapper, tableStyle } = tableView
+  const { tableWrapperStyle, tableWrapper } = tableView
   //table.setAttribute('style', objParaCss({ ...tableStyle, width: '100%' }))
   tableWrapper.setAttribute('style', objParaCss(tableWrapperStyle))
 }
