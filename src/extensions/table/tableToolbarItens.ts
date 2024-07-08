@@ -1,10 +1,10 @@
 //@ts-nocheck
-import { Button, Dropdown } from '@editor/ui'
-import type ExitusEditor from 'src/ExitusEditor'
-import tableRow from '@icons/table-lines.svg'
+import { Button, Dropdown, type DropDownEventProps } from '@editor/ui'
+import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import tableCell from '@icons/merge-tableCells.svg'
 import tableColumns from '@icons/table-columns.svg'
-import arrowDropDown from '@icons/arrow-drop-down-line.svg'
+import tableRow from '@icons/table-lines.svg'
+import type ExitusEditor from 'src/ExitusEditor'
 
 let botaoAtivo: Button | null = null
 
@@ -16,7 +16,7 @@ function ativaBotao(button: Button) {
   botaoAtivo = button
 }
 
-function showDropdown({ event, dropdown }: any) {
+function showDropdown({ event, dropdown }: DropDownEventProps) {
   event.stopPropagation()
   if (dropdown.isOpen) {
     dropdown.off()
@@ -83,7 +83,7 @@ function colunaDelete(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
   return button.render()
 }
 
-function dropDownColunas(editor: ExitusEditor, dropdown: Dropdown) {
+export function dropDownColunas(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdownList-content'
 
@@ -97,26 +97,24 @@ function dropDownColunas(editor: ExitusEditor, dropdown: Dropdown) {
   return dropdownContent
 }
 
-export function criaDropColuna() {
-  return ({ editor }: any) => {
-    const dropdown = new Dropdown(editor, {
-      icon: tableColumns + arrowDropDown,
-      tooltip: 'Coluna',
-      click: showDropdown,
-      classes: ['ex-dropdown-balloonTable']
-    })
+export function criaDropColuna(editor: ExitusEditor) {
+  const dropdown = new Dropdown(editor, {
+    icon: tableColumns + arrowDropDown,
+    tooltip: 'Coluna',
+    click: showDropdown,
+    classes: ['ex-dropdown-balloonTable']
+  })
 
-    dropdown.setDropDownContent(dropDownColunas(editor, dropdown))
+  dropdown.setDropDownContent(dropDownColunas(editor, dropdown))
 
-    window.addEventListener('click', function (event: Event) {
-      const target = event.target as HTMLElement
-      if (!target.matches('.dropdown')) {
-        dropdown.off()
-      }
-    })
+  window.addEventListener('click', function (event: Event) {
+    const target = event.target as HTMLElement
+    if (!target.matches('.dropdown')) {
+      dropdown.off()
+    }
+  })
 
-    return dropdown
-  }
+  return dropdown
 }
 
 function linhaEsquerda(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
@@ -182,7 +180,7 @@ function linhaHeader(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
   return button.render()
 }
 
-function dropDownLinhas(editor: ExitusEditor, dropdown: Dropdown) {
+export function dropDownLinhas(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdownList-content'
 
@@ -196,26 +194,24 @@ function dropDownLinhas(editor: ExitusEditor, dropdown: Dropdown) {
   return dropdownContent
 }
 
-export function criaDropLinhas() {
-  return ({ editor }: any) => {
-    const dropdown = new Dropdown(editor, {
-      icon: tableRow + arrowDropDown,
-      tooltip: 'Linha',
-      click: showDropdown,
-      classes: ['ex-dropdown-balloonTable']
-    })
+export function criaDropLinhas(editor: ExitusEditor) {
+  const dropdown = new Dropdown(editor, {
+    icon: tableRow + arrowDropDown,
+    tooltip: 'Linha',
+    click: showDropdown,
+    classes: ['ex-dropdown-balloonTable']
+  })
 
-    dropdown.setDropDownContent(dropDownLinhas(editor, dropdown))
+  dropdown.setDropDownContent(dropDownLinhas(editor, dropdown))
 
-    window.addEventListener('click', function (event: Event) {
-      const target = event.target as HTMLElement
-      if (!target.matches('.dropdown')) {
-        dropdown.off()
-      }
-    })
+  window.addEventListener('click', function (event: Event) {
+    const target = event.target as HTMLElement
+    if (!target.matches('.dropdown')) {
+      dropdown.off()
+    }
+  })
 
-    return dropdown
-  }
+  return dropdown
 }
 
 function cellHeader(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
@@ -266,7 +262,7 @@ function splitCell(editor: ExitusEditor, dropdown: Dropdown, icon: string) {
   return button.render()
 }
 
-function dropDownCell(editor: ExitusEditor, dropdown: Dropdown) {
+export function dropDownCell(editor: ExitusEditor, dropdown: Dropdown) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdownList-content'
 
@@ -279,24 +275,22 @@ function dropDownCell(editor: ExitusEditor, dropdown: Dropdown) {
   return dropdownContent
 }
 
-export function criaDropCell() {
-  return ({ editor }: any) => {
-    const dropdown = new Dropdown(editor, {
-      icon: tableCell + arrowDropDown,
-      tooltip: 'Mesclar células',
-      click: showDropdown,
-      classes: ['ex-dropdown-balloonTable']
-    })
+export function criaDropCell(editor: ExitusEditor) {
+  const dropdown = new Dropdown(editor, {
+    icon: tableCell + arrowDropDown,
+    tooltip: 'Mesclar células',
+    click: showDropdown,
+    classes: ['ex-dropdown-balloonTable']
+  })
 
-    dropdown.setDropDownContent(dropDownCell(editor, dropdown))
+  dropdown.setDropDownContent(dropDownCell(editor, dropdown))
 
-    window.addEventListener('click', function (event: Event) {
-      const target = event.target as HTMLElement
-      if (!target.matches('.dropdown')) {
-        dropdown.off()
-      }
-    })
+  window.addEventListener('click', function (event: Event) {
+    const target = event.target as HTMLElement
+    if (!target.matches('.dropdown')) {
+      dropdown.off()
+    }
+  })
 
-    return dropdown
-  }
+  return dropdown
 }

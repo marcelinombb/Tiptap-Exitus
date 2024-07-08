@@ -1,23 +1,13 @@
 // Sources:
 //https://github.com/ueberdosis/tiptap/issues/1036#issuecomment-981094752
 //https://github.com/django-tiptap/django_tiptap/blob/main/django_tiptap/templates/forms/tiptap_textarea.html#L453-L602
-// @ts-nocheck
-import tiraEspaço from '@icons/indent-decrease.svg'
-import botaEspaco from '@icons/indent-increase.svg'
+
 import { Extension } from '@tiptap/core'
+import { type Node } from '@tiptap/pm/model'
+import { type Transaction } from '@tiptap/pm/state'
 import { AllSelection, TextSelection } from 'prosemirror-state'
 
-function setTab({ editor, button }) {
-  editor.commands.indent()
-  button.toggleActive(editor.isActive('indent'))
-}
-
-function delTab({ editor, button }) {
-  editor.commands.outdent()
-  button.toggleActive(editor.isActive('indent'))
-}
-
-export const clamp = (val, min, max) => {
+export const clamp = (val: number, min: number, max: number) => {
   if (val < min) {
     return min
   }
@@ -35,23 +25,23 @@ const IndentProps = {
   less: -30
 }
 
-export function isBulletListNode(node) {
+export function isBulletListNode(node: Node) {
   return node.type.name === 'bullet_list'
 }
 
-export function isOrderedListNode(node) {
+export function isOrderedListNode(node: Node) {
   return node.type.name === 'order_list'
 }
 
-export function isTodoListNode(node) {
+export function isTodoListNode(node: Node) {
   return node.type.name === 'todo_list'
 }
 
-export function isListNode(node) {
+export function isListNode(node: Node) {
   return isBulletListNode(node) || isOrderedListNode(node) || isTodoListNode(node)
 }
 
-function setNodeIndentMarkup(tr, pos, delta) {
+function setNodeIndentMarkup(tr: Transaction, pos: number, delta: number) {
   if (!tr.doc) return tr
 
   const node = tr.doc.nodeAt(pos)
@@ -72,7 +62,7 @@ function setNodeIndentMarkup(tr, pos, delta) {
   return tr.setNodeMarkup(pos, node.type, nodeAttrs, node.marks)
 }
 
-const updateIndentLevel = (tr, delta) => {
+const updateIndentLevel = (tr: Transaction, delta: number) => {
   const { doc, selection } = tr
 
   if (!doc || !selection) return tr
@@ -99,32 +89,29 @@ const updateIndentLevel = (tr, delta) => {
   return tr
 }
 
-export const Indent = Extension.create({
-  name: 'indent',
-
-  addStorage() {
-    return {
-      toolbarButtonConfig: [
-        {
-          icon: tiraEspaço,
-          click: delTab,
-          checkActive: this.name,
-          tooltip: 'Diminuir recuo'
-        },
-        {
-          icon: botaEspaco,
-          click: setTab,
-          checkActive: this.name,
-          tooltip: 'Aumentar recuo'
-        }
-      ]
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    indent: {
+      indent: () => ReturnType
+      outdent: () => ReturnType
     }
-  },
+  }
+}
 
-  addOptions: {
-    types: ['heading', 'paragraph'],
-    indentLevels: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270],
-    defaultIndentLevel: 0
+export interface IndentOptions {
+  types: string[]
+  indentLevels: number[]
+  defaultIndentLevel: number
+}
+
+export const Indent = Extension.create<IndentOptions>({
+  name: 'indent',
+  addOptions() {
+    return {
+      types: ['heading', 'paragraph'],
+      indentLevels: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270],
+      defaultIndentLevel: 0
+    }
   },
 
   addGlobalAttributes() {

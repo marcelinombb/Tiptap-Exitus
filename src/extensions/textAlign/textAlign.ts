@@ -1,5 +1,4 @@
 import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
-
 import type ExitusEditor from '@src/ExitusEditor'
 import { TextAlign as TextAlignBase } from '@tiptap/extension-text-align'
 

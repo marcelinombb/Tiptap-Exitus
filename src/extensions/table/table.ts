@@ -74,17 +74,6 @@ export function objParaCss(styles: { [key: string]: string }): string {
 }
 
 export const TableCustom = Table.extend({
-  addStorage() {
-    return {
-      toolbarButtonConfig: [
-        {
-          icon: table + arrowDropDown,
-          dropdown: tableDropDown,
-          tooltip: 'Inserir tabela'
-        }
-      ]
-    }
-  },
   addAttributes() {
     return {
       ...this.parent?.(),

@@ -1,6 +1,6 @@
 import { Plugin } from '@editor/Plugin'
 import { Button, type ButtonEventProps } from '@editor/ui/Button'
-import subscript from '@icons/subscript.svg'
+import superscript from '@icons/superscript.svg'
 import Superscript from '@tiptap/extension-superscript'
 
 export class SuperscriptPlugin extends Plugin {
@@ -14,7 +14,7 @@ export class SuperscriptPlugin extends Plugin {
 
   init(): void {
     const config = {
-      icon: subscript,
+      icon: superscript,
       click: this.toggleSuperscript,
       checkActive: SuperscriptPlugin.pluginName,
       tooltip: 'Subscrito (Ctrl + ,)'

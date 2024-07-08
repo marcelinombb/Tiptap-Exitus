@@ -1,4 +1,5 @@
 import { type Tool, type Toolbar } from '@editor/toolbar'
+import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import type ExitusEditor from '@src/ExitusEditor'
 
 import { Button, type ButtonEventProps } from '.'
@@ -34,9 +35,11 @@ export class Dropdown implements Tool {
   editor: ExitusEditor
   parentToolbar!: Toolbar
 
-  static instances: Dropdown[] = []
-
-  constructor(editor: ExitusEditor, config: DropdownConfig) {
+  constructor(
+    editor: ExitusEditor,
+    config: DropdownConfig,
+    public name: string = ''
+  ) {
     this.config = { ...this.config, ...config }
     this.editor = editor
     this.dropdownContainer = document.createElement('div')
@@ -48,9 +51,12 @@ export class Dropdown implements Tool {
 
     this.dropdownContent = document.createElement('div')
     this.dropdownContent.classList.add('ex-dropdown-content')
+  }
 
-    // Registrar instância
-    Dropdown.instances.push(this)
+  update(toolbar: Toolbar): void {
+    if (toolbar.currentActive === this.name) return
+    this.button.off()
+    this.off()
   }
 
   setButton(button: Button) {
@@ -66,7 +72,7 @@ export class Dropdown implements Tool {
   }
 
   on() {
-    this.parentToolbar.closeAllTools()
+    //this.parentToolbar.closeAllTools()
     this.dropdownContentContainer.style.display = 'block'
     this.isOpen = true
   }
@@ -78,7 +84,8 @@ export class Dropdown implements Tool {
 
   render() {
     this.button = new Button(this.editor, {
-      icon: this.config.icon
+      icon: this.config.icon + arrowDropDown,
+      tooltip: this.config.tooltip
     })
     this.button.bind('click', ({ event }) => {
       this.config.click({ editor: this.editor, event, button: this.button, dropdown: this })

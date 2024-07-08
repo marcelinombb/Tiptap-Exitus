@@ -1,5 +1,5 @@
 import { Plugin } from '@editor/Plugin'
-import { Button, type ButtonEventProps } from '@editor/ui'
+import { type ButtonEventProps } from '@editor/ui'
 import formula from '@icons/formula.svg'
 
 import { Katex, KatexBalloon } from '.'
@@ -14,16 +14,13 @@ export class KatexPlugin extends Plugin {
   }
 
   init() {
-    const config = {
+    this.editor.toolbar.setButton(KatexPlugin.pluginName, {
       icon: formula,
       click: this.click,
       checkActive: KatexPlugin.pluginName,
-      tooltip: 'Fórmula matemática - Latex'
-    }
-    const button = new Button(this.editor, config)
-    button.setParentToolbar(this.editor.toolbar)
-    button.bind('click', config.click)
-    this.editor.toolbar.setTool(KatexPlugin.pluginName, button)
+      tooltip: 'Fórmula matemática - Latex',
+      classList: []
+    })
   }
 
   click({ editor, button }: ButtonEventProps) {

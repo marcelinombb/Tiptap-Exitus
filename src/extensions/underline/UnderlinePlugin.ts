@@ -1,5 +1,5 @@
 import { Plugin } from '@editor/Plugin'
-import { Button, type ButtonEventProps } from '@editor/ui'
+import { type ButtonEventProps } from '@editor/ui'
 import underline from '@icons/underline.svg'
 import { Underline } from '@tiptap/extension-underline'
 
@@ -13,16 +13,12 @@ export class UnderlinePlugin extends Plugin {
   }
 
   init(): void {
-    const config = {
+    this.editor.toolbar.setButton(UnderlinePlugin.pluginName, {
       icon: underline,
       click: this.toggleUnderline,
       checkActive: UnderlinePlugin.pluginName,
       tooltip: 'Sublinhado (Ctrl + U)'
-    }
-    const button = new Button(this.editor, config)
-    button.setParentToolbar(this.editor.toolbar)
-    button.bind('click', config.click)
-    this.editor.toolbar.setTool(UnderlinePlugin.pluginName, button)
+    })
   }
 
   toggleUnderline({ editor, button }: ButtonEventProps) {

@@ -1,7 +1,6 @@
 import { Toolbar } from '@editor/toolbar'
-import { Button, type ButtonEventProps, Dropdown, type DropDownEventProps } from '@editor/ui'
+import { Button, type ButtonEventProps, type Dropdown, type DropDownEventProps } from '@editor/ui'
 import { Balloon } from '@editor/ui/Balloon'
-import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
@@ -17,7 +16,6 @@ import ResizableImage from './ResizableImage'
 function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
   imageWrapper.addEventListener('click', event => {
     event.stopPropagation()
-    //imageWrapper.classList.add('ex-selected')
     const resizers = resizer.resizers
 
     if (!balloon.isOpen()) {
@@ -31,7 +29,6 @@ function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
       if (!target.matches('.ex-image-wrapper')) {
         balloon.hide()
         imageWrapper.classList.remove('ex-selected')
-        //resizers.classList.add('ex-hidden')
         window.removeEventListener('click', clickOutside)
       }
     }
@@ -44,7 +41,6 @@ function alinhaDireita(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
     if (!imageWrapper.classList.contains('ex-image-block-align-right')) {
-      button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
       imageWrapper.classList.add('ex-image-block-align-right')
       imageWrapper.classList.remove('ex-image-block-align-center', 'ex-image-block-align-left')
@@ -62,7 +58,6 @@ function alinhaEsquerda(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
     if (!imageWrapper.classList.contains('ex-image-block-align-left')) {
-      button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
       imageWrapper.classList.add('ex-image-block-align-left')
       imageWrapper.classList.remove('ex-image-block-align-center', 'ex-image-block-align-right')
@@ -80,7 +75,6 @@ function alinhaMeio(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
     if (!imageWrapper.classList.contains('ex-image-block-align-center')) {
-      button.parentToolbar.tools.forEach(tool => tool instanceof Button && tool.off())
       button.on()
       imageWrapper.classList.add('ex-image-block-align-center')
       imageWrapper.classList.remove('ex-image-block-align-left', 'ex-image-block-align-right')
@@ -130,28 +124,6 @@ function showDropdown({ event, dropdown }: DropDownEventProps) {
   }
 }
 
-function balloonDropDown(originalSize: number) {
-  return ({ editor }: any) => {
-    const dropdown = new Dropdown(editor, {
-      events: {
-        open: showDropdown
-      },
-      classes: ['ex-dropdown-listItem']
-    })
-
-    dropdown.setDropDownContent(criarDropDown(dropdown, originalSize))
-
-    window.addEventListener('click', function (event: Event) {
-      const target = event.target as HTMLElement
-      if (!target.matches('.dropdown')) {
-        dropdown.off()
-      }
-    })
-
-    return dropdown
-  }
-}
-
 export class ImageView implements NodeView {
   node: Node
   dom: Element
@@ -192,44 +164,39 @@ export class ImageView implements NodeView {
     // Adiciona redimensionamento de imagens
     this.resizer = new ResizableImage(this)
 
-    const configStorage = {
-      alinhaDireita: {
-        toolbarButtonConfig: {
-          icon: textDr,
-          click: alinhaDireita(this),
-          tooltip: 'Imagem alinhada a direita'
-        }
-      },
-      alinhaMeio: {
-        toolbarButtonConfig: {
-          icon: textDm,
-          click: alinhaMeio(this),
-          tooltip: 'Imagem centralizada'
-        }
-      },
-      alinhaEsquerda: {
-        toolbarButtonConfig: {
-          icon: textDl,
-          click: alinhaEsquerda(this),
-          tooltip: 'Imagem alinhada a asquerda'
-        }
-      },
-      tamanhoImg: {
-        toolbarButtonConfig: {
-          icon: imgSize + arrowDropDown,
-          dropdown: balloonDropDown(this.originalSize),
-          tooltip: 'Redimensionar imagem'
-        }
-      }
-    }
-
     const toolbar = new Toolbar(editor as ExitusEditor, ['alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'])
-
+    toolbar.setButton('alinhaDireita', {
+      icon: textDr,
+      click: alinhaDireita(this),
+      tooltip: 'Imagem alinhada a direita'
+    })
+    toolbar.setButton('alinhaMeio', {
+      icon: textDm,
+      click: alinhaMeio(this),
+      tooltip: 'Imagem centralizada'
+    })
+    toolbar.setButton('alinhaEsquerda', {
+      icon: textDl,
+      click: alinhaEsquerda(this),
+      tooltip: 'Imagem alinhada a asquerda'
+    })
+    toolbar.setDropDown(
+      'tamanhoImg',
+      {
+        icon: imgSize,
+        click: showDropdown,
+        tooltip: 'Redimensionar imagem',
+        classes: []
+      },
+      dropdown => {
+        return criarDropDown(dropdown, this.originalSize)
+      }
+    )
     this.balloon = new Balloon(editor, {
       position: 'top'
     })
-    toolbar.render()
-    this.balloon.ballonPanel.appendChild(toolbar.toolbarItemsDiv)
+
+    this.balloon.ballonPanel.appendChild(toolbar.render())
 
     this.imageWrapper.appendChild(this.balloon.getBalloon())
 

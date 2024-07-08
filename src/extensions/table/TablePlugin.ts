@@ -1,7 +1,6 @@
 import { Plugin } from '@editor/Plugin'
-import { Button, ButtonEventProps, Dropdown, DropDownEventProps } from '@editor/ui'
+import { Button, type ButtonEventProps, Dropdown, type DropDownEventProps } from '@editor/ui'
 import TableCell from '@extensions/table-cell/src'
-import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 import table from '@icons/table-2.svg'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
@@ -27,21 +26,30 @@ export class TablePlugin extends Plugin {
   }
 
   init(): void {
-    const dropdown = this.tableDropDown()
-    dropdown.setParentToolbar(this.editor.toolbar)
-    this.editor.toolbar.setTool(TablePlugin.pluginName, dropdown)
+    this.editor.toolbar.setDropDown(
+      TablePlugin.pluginName,
+      {
+        icon: table,
+        click: showTableGridDropdown,
+        tooltip: 'Inserir tabela',
+        classes: []
+      },
+      dropdown => {
+        return this.createDropDownContent(dropdown)
+      }
+    )
   }
 
   tableDropDown() {
     const dropdown = new Dropdown(this.editor, {
-      icon: table + arrowDropDown,
+      icon: table,
       click: showTableGridDropdown,
       tooltip: 'Inserir tabela',
       classes: []
     })
-  
+
     dropdown.setDropDownContent(this.createDropDownContent(dropdown))
-  
+
     window.addEventListener('click', function (event: Event) {
       event.stopPropagation()
       if (dropdown.isOpen) {
@@ -55,14 +63,14 @@ export class TablePlugin extends Plugin {
     const dropdownContent = document.createElement('div')
     dropdownContent.className = 'ex-dropdown-content'
     dropdownContent.setAttribute('id', 'ex-dropdown-content')
-  
+
     const indicator = document.createElement('div')
     indicator.className = 'ex-indicator'
     dropdownContent.appendChild(indicator)
-  
+
     const div = document.createElement('div')
     div.className = 'ex-dropdown-table-cells'
-  
+
     for (let row = 1; row <= 10; row++) {
       for (let column = 1; column <= 10; column++) {
         const button = new Button(this.editor, {
@@ -72,7 +80,7 @@ export class TablePlugin extends Plugin {
             'data-column': `${column}`
           }
         })
-  
+
         button.bind('pointerover', ({ event }) => {
           onSelectTableRowColumn(event, indicator)
         })
@@ -85,7 +93,7 @@ export class TablePlugin extends Plugin {
       }
     }
     dropdownContent.append(div, indicator)
-  
+
     return dropdownContent
   }
 }
@@ -107,9 +115,9 @@ function onSelectTableRowColumn(event: Event, indicator: Element) {
     indicator.textContent = `${onRow} × ${onColumn}`
   }
 
-  const buttons = element.parentNode?.querySelectorAll('button')!
+  const buttons = element.parentNode?.querySelectorAll('button')
 
-  for (const button of buttons) {
+  for (const button of buttons ?? []) {
     const column = parseInt(button.getAttribute('data-column') as string)
     const row = parseInt(button.getAttribute('data-row') as string)
     if (row <= onRow && column <= onColumn) {

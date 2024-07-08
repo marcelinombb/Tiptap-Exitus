@@ -38,10 +38,19 @@ export class Button implements Tool {
   editor: ExitusEditor
   dropdown!: Dropdown
   parentToolbar!: Toolbar
-  constructor(editor: ExitusEditor, config: Partial<ButtonConfig>) {
+  constructor(
+    editor: ExitusEditor,
+    config: Partial<ButtonConfig>,
+    public name: string = ''
+  ) {
     this.config = { ...defaultConfig, ...config }
     this.editor = editor
     this.button = this.createButton()
+  }
+
+  update(toolbar: Toolbar): void {
+    if (toolbar.currentActive === this.name) return
+    this.off()
   }
 
   setEditor(editor: ExitusEditor) {
