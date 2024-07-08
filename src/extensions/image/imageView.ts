@@ -223,16 +223,13 @@ export class ImageView implements NodeView {
       }
     }
 
-    const toolbar = new Toolbar(editor as ExitusEditor, {
-      toolbarOrder: ['alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'],
-      configStorage
-    })
+    const toolbar = new Toolbar(editor as ExitusEditor, ['alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'])
 
     this.balloon = new Balloon(editor, {
       position: 'top'
     })
-
-    this.balloon.ballonPanel.appendChild(toolbar.createToolbar())
+    toolbar.render()
+    this.balloon.ballonPanel.appendChild(toolbar.toolbarItemsDiv)
 
     this.imageWrapper.appendChild(this.balloon.getBalloon())
 

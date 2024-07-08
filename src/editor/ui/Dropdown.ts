@@ -1,16 +1,17 @@
 import { type Tool, type Toolbar } from '@editor/toolbar'
 import type ExitusEditor from '@src/ExitusEditor'
 
-import { type Button, type ButtonEventProps } from '.'
+import { Button, type ButtonEventProps } from '.'
 
 export interface DropDownEventProps extends ButtonEventProps {
   dropdown: Dropdown
 }
 
 export interface DropdownConfig {
-  events: {
-    [key: string]: (obj: DropDownEventProps) => void
-  }
+  icon: string
+  label?: string
+  tooltip: string
+  click: (obj: DropDownEventProps) => void
   classes: string[]
   closeDropDown?: (elem: HTMLElement) => boolean
 }
@@ -22,8 +23,11 @@ export class Dropdown implements Tool {
   dropdownContent!: HTMLElement
   config: DropdownConfig = {
     classes: [],
-    events: {},
-    closeDropDown: () => true
+    click: (_obj: DropDownEventProps) => true,
+    closeDropDown: () => true,
+    icon: '',
+    label: '',
+    tooltip: ''
   }
 
   button!: Button
@@ -73,8 +77,11 @@ export class Dropdown implements Tool {
   }
 
   render() {
-    this.button.bind('click', ({ editor, event, button }) => {
-      this.config.events['open']({ editor, event, button, dropdown: this })
+    this.button = new Button(this.editor, {
+      icon: this.config.icon
+    })
+    this.button.bind('click', ({ event }) => {
+      this.config.click({ editor: this.editor, event, button: this.button, dropdown: this })
       const close = (event: Event) => {
         const target = event.target as HTMLElement
         if (!target.closest('.ex-dropdown') && this.config!.closeDropDown!(target)) {

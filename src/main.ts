@@ -33,6 +33,7 @@ import { TableCustom } from './extensions/table/table'
 import { TablePlugin } from './extensions/table/TablePlugin'
 import { TextAlign } from './extensions/textAlign'
 import { UnderlinePlugin } from './extensions/underline/UnderlinePlugin'
+import { TextAlignPlugin } from './extensions/textAlign/TextAlingPlugin'
 
 ExitusEditor.extensions = [
   Blockquote,
@@ -68,7 +69,17 @@ ExitusEditor.extensions = [
   MathType
 ]
 
-ExitusEditor.plugins = [BoldPlugin, ItalicPlugin, UnderlinePlugin, KatexPlugin, StrikePlugin, SubscriptPlugin, SuperscriptPlugin, TablePlugin]
+ExitusEditor.plugins = [
+  BoldPlugin, 
+  ItalicPlugin, 
+  UnderlinePlugin, 
+  KatexPlugin, 
+  StrikePlugin, 
+  SubscriptPlugin, 
+  SuperscriptPlugin, 
+  TablePlugin, 
+  TextAlignPlugin
+]
 
 ExitusEditor.toolbarOrder = [
   'bold',

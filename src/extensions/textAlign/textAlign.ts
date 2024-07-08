@@ -1,9 +1,5 @@
 import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
-import centertIcon from '@icons/align-center.svg'
-import justifyIcon from '@icons/align-justify.svg'
-import alignLeftIcon from '@icons/align-left.svg'
-import alignRightIcon from '@icons/align-right.svg'
-import arrowDropDown from '@icons/arrow-drop-down-line.svg'
+
 import type ExitusEditor from '@src/ExitusEditor'
 import { TextAlign as TextAlignBase } from '@tiptap/extension-text-align'
 
@@ -47,9 +43,9 @@ function showDropdown({ event, dropdown }: any) {
 
 function textAlignDropDown({ editor }: ButtonEventProps) {
   const dropdown = new Dropdown(editor, {
-    events: {
-      open: showDropdown
-    },
+    icon: alignLeftIcon + arrowDropDown,
+    tooltip: 'Alinhamento de texto',
+    click: showDropdown,
     classes: ['ex-dropdown-alignments']
   })
 

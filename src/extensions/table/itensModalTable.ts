@@ -1,9 +1,9 @@
-/* eslint-disable no-console */
-//@ts-nocheck
 import { Button, Dropdown } from '@editor/ui'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
+import arrowDropDown from '@icons/arrow-drop-down-line.svg'
+import starredTable from '@icons/starred-table.svg'
 import Pickr from '@simonwep/pickr'
 import type ExitusEditor from 'src/ExitusEditor'
 import '@simonwep/pickr/dist/themes/nano.min.css'
@@ -56,11 +56,11 @@ function showDropdown({ dropdown }: any) {
 }
 
 export function criaTabelaModal(style: any) {
-  return ({ editor }) => {
+  return ({ editor }: {editor: ExitusEditor}) => {
     const dropdown = new Dropdown(editor, {
-      events: {
-        open: showDropdown
-      },
+      icon: starredTable + arrowDropDown,
+      click: showDropdown,
+      tooltip: 'Propriedades da tabela',
       classes: ['ex-dropdown-balloonModal'],
       closeDropDown: (elem: HTMLElement) => {
         return !elem.closest('.pcr-app')

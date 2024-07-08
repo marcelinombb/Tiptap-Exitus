@@ -2,11 +2,12 @@
 import { Toolbar } from '@editor/toolbar'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
-import tableCell from '@icons/merge-tableCells.svg'
+
 import starredCell from '@icons/starred-cell.svg'
 import starredTable from '@icons/starred-table.svg'
-import tableColumns from '@icons/table-columns.svg'
 import tableRow from '@icons/table-lines.svg'
+import tableCell from '@icons/merge-tableCells.svg'
+import tableColumns from '@icons/table-columns.svg'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
@@ -146,16 +147,15 @@ export class TableView implements NodeView {
       }
     }
 
-    const toolbar = new Toolbar(editor as ExitusEditor, {
-      toolbarOrder: ['celumnsTable', 'RowTable', 'cellTable', 'tableStarred', 'cellStarred'],
-      configStorage
-    })
+    const toolbar = new Toolbar(editor as ExitusEditor,
+      ['celumnsTable', 'RowTable', 'cellTable', 'tableStarred', 'cellStarred'])
 
     this.balloon = new Balloon(editor, {
       position: BalloonPosition.TOP
     })
-
-    this.balloon.ballonPanel.appendChild(toolbar.createToolbar())
+    
+    toolbar.render()
+    this.balloon.ballonPanel.appendChild(toolbar.toolbarItemsDiv)
 
     this.tableWrapper.appendChild(this.balloon.getBalloon())
 

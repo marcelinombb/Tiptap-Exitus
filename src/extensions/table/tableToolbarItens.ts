@@ -1,6 +1,10 @@
 //@ts-nocheck
 import { Button, Dropdown } from '@editor/ui'
 import type ExitusEditor from 'src/ExitusEditor'
+import tableRow from '@icons/table-lines.svg'
+import tableCell from '@icons/merge-tableCells.svg'
+import tableColumns from '@icons/table-columns.svg'
+import arrowDropDown from '@icons/arrow-drop-down-line.svg'
 
 let botaoAtivo: Button | null = null
 
@@ -96,9 +100,9 @@ function dropDownColunas(editor: ExitusEditor, dropdown: Dropdown) {
 export function criaDropColuna() {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
-      events: {
-        open: showDropdown
-      },
+      icon: tableColumns + arrowDropDown,
+      tooltip: 'Coluna',
+      click: showDropdown,
       classes: ['ex-dropdown-balloonTable']
     })
 
@@ -195,9 +199,9 @@ function dropDownLinhas(editor: ExitusEditor, dropdown: Dropdown) {
 export function criaDropLinhas() {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
-      events: {
-        open: showDropdown
-      },
+      icon: tableRow + arrowDropDown,
+      tooltip: 'Linha',
+      click: showDropdown,
       classes: ['ex-dropdown-balloonTable']
     })
 
@@ -278,9 +282,9 @@ function dropDownCell(editor: ExitusEditor, dropdown: Dropdown) {
 export function criaDropCell() {
   return ({ editor }: any) => {
     const dropdown = new Dropdown(editor, {
-      events: {
-        open: showDropdown
-      },
+      icon: tableCell + arrowDropDown,
+      tooltip: 'Mesclar células',
+      click: showDropdown,
       classes: ['ex-dropdown-balloonTable']
     })
 

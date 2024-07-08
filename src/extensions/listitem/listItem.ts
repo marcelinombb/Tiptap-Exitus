@@ -57,10 +57,10 @@ function showDropdown({ event, dropdown }: DropDownEventProps) {
 
 function listItemDropDown({ editor }: any) {
   const dropdown = new Dropdown(editor, {
-    events: {
-      open: showDropdown
-    },
-    classes: ['ex-dropdown-listItem']
+    icon: listIcon + arrowDropDown,
+    click: showDropdown,
+    classes: ['ex-dropdown-listItem'],
+    tooltip: 'Listas'
   })
 
   dropdown.setDropDownContent(createDropDownContent(editor, dropdown))
@@ -72,7 +72,7 @@ export const ListItem = ListitemBase.extend({
   addStorage() {
     return {
       toolbarButtonConfig: {
-        icon: listIcon + arrowDropDown,
+        
         dropdown: listItemDropDown,
         tooltip: 'Listas'
       }
