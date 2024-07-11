@@ -29,5 +29,5 @@
     }
   },
   "include": ["src/**/*", "declaration.d.ts"],
-  "exclude": ["src/devmain.ts", "node_modules", "dist"]
+  "exclude": ["src/devmain.ts", "node_modules", "dist", "src/assets/**/*"]
 }

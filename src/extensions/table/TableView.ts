@@ -29,7 +29,6 @@ function clickHandler(tableView: TableView) {
       const target = event.target as HTMLElement
 
       if (target.closest('.pcr-app') !== null) {
-        console.log(target.closest('.pcr-app'))
         return
       }
 

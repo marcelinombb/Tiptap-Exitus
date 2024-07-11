@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')

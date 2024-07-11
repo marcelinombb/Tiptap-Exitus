@@ -156,8 +156,6 @@ export class ImageView implements NodeView {
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
 
     if (this.conversionServiceUrl !== null && imageUrlRegex.test(node.attrs.src)) {
-      console.log(node.attrs.src, imageUrlRegex.test(node.attrs.src))
-
       this.urlToBase64(node.attrs.src)
     }
 

@@ -1,44 +1,14 @@
 //@ts-nocheck
-import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
 import { mergeAttributes } from '@tiptap/core'
 import { findParentNodeOfType } from 'prosemirror-utils'
 
-import type ExitusEditor from '../../ExitusEditor'
-
 import { createColGroup, Table } from './extension-table/src'
 import { TableView } from './TableView'
-
-function showTableGridDropdown({ dropdown }) {
-  if (dropdown.isOpen) {
-    removeSelectionFromGridButtons(dropdown)
-    dropdown.off()
-  } else {
-    dropdown.on()
-  }
-}
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     setTableBorder: () => ReturnType
   }
-}
-
-function tableDropDown({ editor }: ButtonEventProps) {
-  const dropdown = new Dropdown(editor, {
-    events: {
-      open: showTableGridDropdown
-    }
-  })
-
-  dropdown.setDropDownContent(createDropDownContent(editor, dropdown))
-
-  window.addEventListener('click', function (event: Event) {
-    event.stopPropagation()
-    if (dropdown.isOpen) {
-      dropdown.off()
-    }
-  })
-  return dropdown
 }
 
 export function cssParaObj(cssString: string): { [key: string]: string } {

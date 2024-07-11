@@ -1,5 +1,5 @@
 import { Plugin } from '@editor/Plugin'
-import { Button, type ButtonEventProps } from '@editor/ui'
+import { type ButtonEventProps } from '@editor/ui'
 import bold from '@icons/bold.svg'
 import { type AnyExtension } from '@tiptap/core'
 import Bold from '@tiptap/extension-bold'
@@ -14,16 +14,12 @@ export class BoldPlugin extends Plugin {
   }
 
   init() {
-    const config = {
+    this.editor.toolbar.setButton('bold', {
       icon: bold,
       click: this.toggleBold,
       checkActive: BoldPlugin.pluginName,
       tooltip: 'Negrito (Ctrl + B)'
-    }
-    const button = new Button(this.editor, config)
-    button.setParentToolbar(this.editor.toolbar)
-    button.bind('click', config.click)
-    this.editor.toolbar.setTool('bold', button)
+    })
   }
 
   toggleBold({ editor, button }: ButtonEventProps) {

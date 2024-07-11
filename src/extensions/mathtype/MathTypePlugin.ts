@@ -50,7 +50,6 @@ export class MathTypePlugin extends Plugin {
   }
 
   openEditor(editorType: string | null) {
-    //return ({ editor }) => {
     try {
       const integration = this.integration
       if (editorType == null) {
@@ -70,7 +69,6 @@ export class MathTypePlugin extends Plugin {
     } catch (e) {
       console.error(e)
     }
-    //}
   }
 
   createMathTypeIntegration() {
@@ -91,7 +89,6 @@ export class MathTypePlugin extends Plugin {
           language: 'pt_br'
         }
       })
-      //getExtensionStorage(editor).currentInstances.set(editor.editorInstance, integration)
 
       window.WirisPlugin = {
         Core,
