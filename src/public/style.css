@@ -274,7 +274,7 @@ p {
 }
 
 .editor-scroller {
-  height: calc(201px + (2 * calc(2 * calc(0.6em * 1.5))));
+  height: calc(200px + (2 * calc(2 * calc(0.6em * 1.5))));
   border: 0;
   position: relative;
   outline: 0;
@@ -323,12 +323,11 @@ p {
 
 .editor-main {
   position: relative;
-  height: 100%;
+  min-height: 200px;
   width: 24.8cm;
   background: #fff;
   border-color: var(--border-gray);
   box-shadow: 0 0 5px hsla(0, 0%, 0%, 0.1);
-  min-height: 200px;
   display: flex;
   flex-direction: column;
   margin: 0 auto;

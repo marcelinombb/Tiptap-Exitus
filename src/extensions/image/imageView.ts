@@ -133,7 +133,7 @@ export class ImageView implements NodeView {
   editor: Editor
   getPos: boolean | (() => number)
   resizer: ResizableImage
-  originalSize: number
+  originalSize: number = 300
 
   constructor(
     node: Node,
@@ -151,12 +151,15 @@ export class ImageView implements NodeView {
     this.image = this.imageWrapper.appendChild(document.createElement('img'))
 
     this.setImageAttributes(this.image, node)
-    this.originalSize = this.image.width
 
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
 
     if (this.conversionServiceUrl !== null && imageUrlRegex.test(node.attrs.src)) {
       this.urlToBase64(node.attrs.src)
+    } else {
+      this.image.onload = () => {
+        this.originalSize = this.image.width
+      }
     }
 
     // Adiciona redimensionamento de imagens
@@ -217,6 +220,7 @@ export class ImageView implements NodeView {
       const base64Url = await this.conversionServiceUrl!(url)
       this.updateAttributes({ src: base64Url })
       this.image.onload = null
+      this.originalSize = this.image.width
     }
   }
 

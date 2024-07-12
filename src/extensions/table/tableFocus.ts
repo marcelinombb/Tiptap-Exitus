@@ -3,6 +3,7 @@ import { insertParagraph } from '@editor/utils'
 import setaCima from '@icons/corner-down-left-line.svg'
 import setaBaixo from '@icons/corner-down-right-line.svg'
 import selecionaIcon from '@icons/select-all.svg'
+import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
 import { NodeSelection } from '@tiptap/pm/state'
 
@@ -14,20 +15,20 @@ export class UpDownTable {
   FocarBaixo!: HTMLElement
   editor: Editor
 
-  constructor(tableView: TableView, editor: Editor) {
+  constructor(tableView: TableView, editor: ExitusEditor) {
     this.tableView = tableView
     this.editor = editor
     this.focaTabela(editor)
   }
 
-  private focaTabela(editor: Editor) {
+  private focaTabela(editor: ExitusEditor) {
     const element = this.tableView.tableWrapper
     element.style.position = 'relative'
 
     const botaoCima = this.createButton(editor, setaCima, () => {
       if (typeof this.tableView.getPos == 'function') {
         const pos = this.tableView.getPos()
-        insertParagraph(this.editor, pos, true)
+        insertParagraph(this.editor, pos)
       }
     })
     this.FocarCima = element.appendChild(botaoCima)
@@ -43,7 +44,7 @@ export class UpDownTable {
     this.FocarBaixo.classList.add('ex-bolinha', 'ex-bolinha-baixo')
   }
 
-  private createButton(editor: Editor, icone: string, onClick: () => void): HTMLElement {
+  private createButton(editor: ExitusEditor, icone: string, onClick: () => void): HTMLElement {
     const button = new Button(editor, {
       icon: icone,
       classList: ['ex-bolinha']
@@ -57,7 +58,7 @@ export default class TableFocus {
   tableView: TableView
   selectTable!: HTMLElement
 
-  constructor(tableView: TableView, editor: Editor) {
+  constructor(tableView: TableView, editor: ExitusEditor) {
     this.tableView = tableView
     this.getTable(editor)
   }
@@ -71,7 +72,7 @@ export default class TableFocus {
     }
   }
 
-  private getTable(editor: Editor) {
+  private getTable(editor: ExitusEditor) {
     const element = this.tableView.tableWrapper
     element.style.position = 'relative'
 
@@ -82,7 +83,7 @@ export default class TableFocus {
     this.selectTable.classList.add('ex-pegaTabela')
   }
 
-  private createButton(editor: Editor, icone: string, onClick: () => void): HTMLElement {
+  private createButton(editor: ExitusEditor, icone: string, onClick: () => void): HTMLElement {
     const button = new Button(editor, {
       icon: icone,
       classList: ['ex-getTable']

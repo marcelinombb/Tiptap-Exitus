@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Toolbar } from '@editor/toolbar'
-import { Button, type DropDownEventProps } from '@editor/ui'
+import { type DropDownEventProps } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
 import tableCell from '@icons/merge-tableCells.svg'
 import starredCell from '@icons/starred-cell.svg'
@@ -60,20 +60,6 @@ function clickCellHandler(tableView: TableView) {
   window.addEventListener('click', clickOutside)
 }
 
-function showCellBalloon(tableView: TableView) {
-  const button = new Button(tableView.editor as ExitusEditor, {
-    icon: starredCell,
-    click: () => {
-      tableView.tableCellBalloon.updatePosition()
-      tableView.balloon.hide()
-      clickCellHandler(tableView)
-    },
-    tooltip: 'Propriedades da célula'
-  })
-
-  return button
-}
-
 function showDropdown({ event, dropdown }: DropDownEventProps) {
   event.stopPropagation()
   if (dropdown.isOpen) {
@@ -111,14 +97,13 @@ export class TableView implements NodeView {
 
     this.tableStyle = node.attrs.style
     this.tableWrapperStyle = node.attrs.styleTableWrapper
-
     updateTableStyle(this)
 
     updateColumnsOnResize(node, this.colgroup, this.table, this.cellMinWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
 
-    new TableFocus(this, this.editor)
-    new UpDownTable(this, this.editor)
+    new TableFocus(this, this.editor as ExitusEditor)
+    new UpDownTable(this, this.editor as ExitusEditor)
     this.tableCellBalloon = new TableCellBalloon(editor)
 
     const toolbar = new Toolbar(editor as ExitusEditor, ['colTable', 'rowTable', 'cellTable', 'tableProperties', 'cellProperties'])

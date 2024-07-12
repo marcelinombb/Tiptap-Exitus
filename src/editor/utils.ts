@@ -24,22 +24,17 @@ export function createHTMLElement<T = Element>(tagName: string, attributes: { [x
   return element as T
 }
 
-export function insertParagraph(editor: Editor, position: number, before = false) {
+export function insertParagraph(editor: Editor, position: number) {
   const { view } = editor
   const { tr, schema } = view.state
 
   const paragraph = schema.nodes.paragraph.create()
 
-  const insertPos = before ? position : position + 1
-
-  tr.insert(insertPos, Fragment.from(paragraph))
-
-  const newPos = before ? insertPos : insertPos + 1
-
-  // Set selection to new paragraph
-  const transaction = tr.setSelection(TextSelection.create(tr.doc, newPos))
+  const transaction = tr.insert(position, Fragment.from(paragraph))
 
   view.dispatch(transaction)
+  // Set selection to new paragraph
+  editor.commands.setTextSelection(position + 1)
 }
 
 export function findNodePosition(editor: Editor, targetNode: Node) {
