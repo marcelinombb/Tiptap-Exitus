@@ -246,7 +246,7 @@ export class TableView implements NodeView {
   }
 }
 function updateTableStyle(tableView: TableView) {
-  const { tableWrapperStyle, tableWrapper } = tableView
-  //table.setAttribute('style', objParaCss({ ...tableStyle, width: '100%' }))
+  const { tableWrapperStyle, tableWrapper, table, tableStyle } = tableView
+  table.setAttribute('style', objParaCss({ ...tableStyle, width: '100%' }))
   tableWrapper.setAttribute('style', objParaCss(tableWrapperStyle))
 }

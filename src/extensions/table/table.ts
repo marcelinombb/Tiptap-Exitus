@@ -1,5 +1,5 @@
-//@ts-nocheck
 import { mergeAttributes } from '@tiptap/core'
+import { type DOMOutputSpec } from '@tiptap/pm/model'
 import { findParentNodeOfType } from 'prosemirror-utils'
 
 import { createColGroup, Table } from './extension-table/src'
@@ -7,7 +7,11 @@ import { TableView } from './TableView'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
-    setTableBorder: () => ReturnType
+    tableCustom: {
+      setTableBorder: (styles: { [key: string]: any }) => ReturnType
+      setWrapperStyle: (styles: { [key: string]: any }) => ReturnType
+      setTableStyle: (styles: { [key: string]: any }) => ReturnType
+    }
   }
 }
 
@@ -61,7 +65,7 @@ export const TableCustom = Table.extend({
       styleTableWrapper: {
         default: {},
         parseHTML: element => {
-          const styleTableWrapper = element.parentElement.getAttribute('style')
+          const styleTableWrapper = element?.parentElement?.getAttribute('style')
 
           return styleTableWrapper && cssParaObj(styleTableWrapper)
         }
@@ -103,9 +107,9 @@ export const TableCustom = Table.extend({
 
           // Create a new attributes object with the updated style
           const attrs = {
-            ...tableNode.node.attrs,
+            ...tableNode!.node.attrs,
             style: {
-              ...tableNode.node.attrs.style,
+              ...tableNode!.node.attrs.style,
               ...style
             }
           }

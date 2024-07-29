@@ -71,8 +71,6 @@ export function setSelectionAfter(editor: Editor, targetNode: Node) {
     const transaction = tr.setSelection(selection)
     view.dispatch(transaction)
     view.focus()
-  } else {
-    console.error('Node not found in the document')
   }
 }
 

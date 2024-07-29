@@ -1,5 +1,5 @@
 import { objParaCss } from '@extensions/table'
-import { mergeAttributes, Node, NodePos } from '@tiptap/core'
+import { mergeAttributes, Node } from '@tiptap/core'
 import { type DOMOutputSpec, type ResolvedPos } from '@tiptap/pm/model'
 
 export interface TableCellOptions {
@@ -103,7 +103,7 @@ export const TableCell = Node.create<TableCellOptions>({
     return {
       setCellAttributes:
         (resPos: ResolvedPos, attributes: { [key: string]: any }) =>
-        ({ editor, dispatch, tr, state }) => {
+        ({ dispatch, tr }) => {
           const { nodeAfter, pos } = resPos
 
           const attrs = {
