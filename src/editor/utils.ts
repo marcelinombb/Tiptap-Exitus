@@ -104,3 +104,35 @@ export function getNodeBoundingClientRect(editor: Editor, nodePos: number) {
   }
   return null
 }
+
+export function cssParaObj(cssString: string): { [key: string]: string } {
+  const styles: { [key: string]: string } = {}
+
+  // Remover espaços em branco desnecessários
+  cssString = cssString.replace(/\s*:\s*/g, ':').replace(/\s*;\s*/g, ';')
+
+  // Dividir a string por ponto e vírgula para obter as declarações individuais
+  const declarations = cssString.split(';')
+
+  // Iterar sobre as declarações e adicionar ao objeto
+  declarations.forEach(declaration => {
+    const [property, value] = declaration.split(':')
+    if (property && value) {
+      styles[property.trim()] = value.trim()
+    }
+  })
+
+  return styles
+}
+
+export function objParaCss(styles: { [key: string]: string }): string {
+  let cssString = ''
+
+  for (const property in styles) {
+    if (styles.hasOwnProperty(property)) {
+      cssString += `${property}: ${styles[property]}; `
+    }
+  }
+
+  return cssString.trim()
+}
