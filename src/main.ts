@@ -3,6 +3,7 @@ import './public/style.css'
 import ExitusEditor from './ExitusEditor'
 import { BlockquotePlugin } from './extensions/blockquote/BlockquotePlugin'
 import { BoldPlugin } from './extensions/bold/BoldPlugin'
+import { ColarQuestaoPlugin } from './extensions/colar-questao/ColarQuestaoPlugin'
 import { DefaultPlugin } from './extensions/defaultPlugin/DefaultPlugin'
 import { HistoryPlugin } from './extensions/history/HistoryPlugin'
 import { ImagePlugin } from './extensions/image/ImagePlugin'
@@ -36,7 +37,8 @@ ExitusEditor.plugins = [
   HistoryPlugin,
   ListItemPlugin,
   TabPlugin,
-  IndentPlugin
+  IndentPlugin,
+  ColarQuestaoPlugin
 ]
 
 ExitusEditor.toolbarOrder = [
