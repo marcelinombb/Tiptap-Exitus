@@ -1,0 +1,48 @@
+.colar-questao {
+  border: 2px solid #009688;
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+  position: relative;
+}
+.colar-questao label {
+  background-color: #009688;
+  border-radius: 0 0 0.5rem 0;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  position: absolute;
+  top: 0;
+}
+
+.colar-questao .close-colar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #009688;
+  border-radius: 50%;
+  border: none;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  position: absolute;
+  margin: 0.25rem;
+  top: 0;
+  right: 0;
+}
+
+.colar-questao > .content {
+  margin-top: 1.5rem;
+  padding: 1rem;
+}
+
+.colar-questao > .content.is-editable {
+    background-color: rgba(0, 0, 0, .1);
+    border: 2px dashed  rgba(61, 37, 20, .12);
+    border-radius: 0.5rem;
+    margin: 2.5rem 1rem 1rem;
+    padding: 0.5rem;
+  }

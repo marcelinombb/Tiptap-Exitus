@@ -71,13 +71,18 @@
                 language: "pt_br"
               }
             },
+          },
+          image: {
+            proxyUrl: "http://localhost:3000/proxy",
+            inline: true,
+            allowBase64: true,
           }
         }
       })
 
       const exitusEditor2 = new ExitusEditor({
         container: document.querySelector('.element2'),
-        //content: `<p><span class="math-tex">\\(\\sqrt{123123 \\pi}\\)</span></p>`
+        content: '<colar-questao title="comando">teste</colar-questao>'
       })
 
       exitusEditor.on('create', ({ editor }) => {

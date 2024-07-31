@@ -33,11 +33,11 @@ class ExitusEditor extends Editor {
   static toolbarOrder: string[]
 
   constructor(options: Partial<ExitusEditorOptions> = {}) {
-    const ext = ExitusEditor.plugins.reduce<AnyExtension[]>((acc, plugin) => {
+    const extensions = ExitusEditor.plugins.reduce<AnyExtension[]>((acc, plugin) => {
       return [...acc, ...plugin.requires]
     }, [])
 
-    super({ ...options, extensions: ext })
+    super({ ...options, extensions })
     this.editorInstance = generateUUID()
 
     const toolbarOrder: string[] = [...ExitusEditor.toolbarOrder, ...(options.toolbarOrder ?? [])]
@@ -45,7 +45,8 @@ class ExitusEditor extends Editor {
     this.toolbar = new Toolbar(this, toolbarOrder)
 
     ExitusEditor.plugins.forEach(plugin => {
-      const pluginInstance = new plugin(this)
+      const config = options.config?.[plugin.pluginName]
+      const pluginInstance = new plugin(this, config)
       pluginInstance.init()
       this.pluginsInstances.set(plugin.pluginName, pluginInstance)
     })
