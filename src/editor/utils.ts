@@ -24,22 +24,17 @@ export function createHTMLElement<T = Element>(tagName: string, attributes: { [x
   return element as T
 }
 
-export function insertParagraph(editor: Editor, position: number, before = false) {
+export function insertParagraph(editor: Editor, position: number) {
   const { view } = editor
   const { tr, schema } = view.state
 
   const paragraph = schema.nodes.paragraph.create()
 
-  const insertPos = before ? position : position + 1
-
-  tr.insert(insertPos, Fragment.from(paragraph))
-
-  const newPos = before ? insertPos : insertPos + 1
-
-  // Set selection to new paragraph
-  const transaction = tr.setSelection(TextSelection.create(tr.doc, newPos))
+  const transaction = tr.insert(position, Fragment.from(paragraph))
 
   view.dispatch(transaction)
+  // Set selection to new paragraph
+  editor.commands.setTextSelection(position + 1)
 }
 
 export function findNodePosition(editor: Editor, targetNode: Node) {
@@ -76,8 +71,6 @@ export function setSelectionAfter(editor: Editor, targetNode: Node) {
     const transaction = tr.setSelection(selection)
     view.dispatch(transaction)
     view.focus()
-  } else {
-    console.error('Node not found in the document')
   }
 }
 
@@ -110,4 +103,36 @@ export function getNodeBoundingClientRect(editor: Editor, nodePos: number) {
     return dom.getBoundingClientRect()
   }
   return null
+}
+
+export function cssParaObj(cssString: string): { [key: string]: string } {
+  const styles: { [key: string]: string } = {}
+
+  // Remover espaços em branco desnecessários
+  cssString = cssString.replace(/\s*:\s*/g, ':').replace(/\s*;\s*/g, ';')
+
+  // Dividir a string por ponto e vírgula para obter as declarações individuais
+  const declarations = cssString.split(';')
+
+  // Iterar sobre as declarações e adicionar ao objeto
+  declarations.forEach(declaration => {
+    const [property, value] = declaration.split(':')
+    if (property && value) {
+      styles[property.trim()] = value.trim()
+    }
+  })
+
+  return styles
+}
+
+export function objParaCss(styles: { [key: string]: string }): string {
+  let cssString = ''
+
+  for (const property in styles) {
+    if (styles.hasOwnProperty(property)) {
+      cssString += `${property}: ${styles[property]}; `
+    }
+  }
+
+  return cssString.trim()
 }

@@ -1,6 +1,7 @@
 import { Plugin } from '@editor/Plugin'
 import { type ButtonEventProps } from '@editor/ui'
 import formula from '@icons/formula.svg'
+import './style.css'
 
 import { Katex, KatexBalloon } from '.'
 

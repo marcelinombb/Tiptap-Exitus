@@ -1,6 +1,5 @@
 //@ts-nocheck
 import { Plugin } from '@editor/Plugin'
-import type ExitusEditor from '@src/ExitusEditor'
 import Configuration from '@wiris/mathtype-html-integration-devkit/src/configuration'
 import Core from '@wiris/mathtype-html-integration-devkit/src/core.src'
 import Image from '@wiris/mathtype-html-integration-devkit/src/image'
@@ -27,12 +26,9 @@ export class MathTypePlugin extends Plugin {
     return [MathType]
   }
 
-  constructor(editor: ExitusEditor) {
-    super(editor)
-    this.createMathTypeIntegration()
-  }
-
   init(): void {
+    this.createMathTypeIntegration()
+
     this.editor.toolbar.setButton('mathtype', {
       icon: mathIcon,
       click: () => {
@@ -50,7 +46,6 @@ export class MathTypePlugin extends Plugin {
   }
 
   openEditor(editorType: string | null) {
-    //return ({ editor }) => {
     try {
       const integration = this.integration
       if (editorType == null) {
@@ -70,14 +65,13 @@ export class MathTypePlugin extends Plugin {
     } catch (e) {
       console.error(e)
     }
-    //}
   }
 
   createMathTypeIntegration() {
     try {
       if (this.integration !== undefined) return
 
-      this.integration = this.addIntegration({
+      const defaultConfig = {
         editorParameters: {
           fontFamily: 'Arial',
           fontStyle: 'normal',
@@ -90,8 +84,9 @@ export class MathTypePlugin extends Plugin {
           ],
           language: 'pt_br'
         }
-      })
-      //getExtensionStorage(editor).currentInstances.set(editor.editorInstance, integration)
+      }
+
+      this.integration = this.addIntegration(this.config?.mathTypeParameters ?? defaultConfig)
 
       window.WirisPlugin = {
         Core,

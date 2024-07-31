@@ -274,7 +274,7 @@ p {
 }
 
 .editor-scroller {
-  height: calc(201px + (2 * calc(2 * calc(0.6em * 1.5))));
+  height: calc(200px + (2 * calc(2 * calc(0.6em * 1.5))));
   border: 0;
   position: relative;
   outline: 0;
@@ -323,12 +323,11 @@ p {
 
 .editor-main {
   position: relative;
-  height: 100%;
+  min-height: 200px;
   width: 24.8cm;
   background: #fff;
   border-color: var(--border-gray);
   box-shadow: 0 0 5px hsla(0, 0%, 0%, 0.1);
-  min-height: 200px;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
@@ -813,87 +812,6 @@ p {
   transform: translate(0, calc(50% - 1.5px));
   left: 90%;
   margin: 0 0;
-}
-
-.tiptap .latex-editor {
-  border-radius: 0.25rem;
-  background: #202020;
-  color: #fff;
-  caret-color: white;
-  font-family: monospace;
-  padding: 0.2rem 0.5rem;
-  min-width: 30px;
-}
-
-.tiptap .latex-editor:hover {
-  cursor: text;
-}
-
-.math-tex-error {
-  color: red;
-}
-
-.math-tex {
-  display: inline-block;
-}
-
-/*  .math-tex > .katex { white-space: normal }
-.katex-html > .base { margin: 0.25em 0 }
-.math-tex { margin: 0.5em 0; } */
-
-.math-tex .katex {
-  white-space: nowrap;
-}
-
-.latex .katex {
-  white-space: nowrap;
-}
-
-.latex-editting-container {
-  display: flex;
-  margin: 5px;
-  flex-direction: column;
-}
-
-.latex-editting-input {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-}
-
-.latex-editting-input > input {
-  margin: 0 var(--spacing-sm);
-  outline: none;
-  border: 1px solid var(--active-blue);
-}
-
-.latex-input-text {
-  min-width: 250px;
-  padding: var(--spacing-lg);
-  line-height: 20px;
-}
-
-.latex-editting-preview {
-  display: flex;
-  min-height: 30px;
-  padding: var(--spacing-md);
-  margin: var(--spacing-md);
-  border: 1px solid;
-  background-color: rgb(244, 244, 244);
-}
-
-.latex-editting-footer {
-  display: flex;
-  flex-direction: row;
-  min-height: 30px;
-  justify-content: space-around;
-}
-
-.latex-editting-displayCheckbox {
-  display: flex;
-  justify-items: start;
-  margin-left: var(--spacing-sm);
-  margin-top: var(--spacing-sm);
 }
 
 .pickr {

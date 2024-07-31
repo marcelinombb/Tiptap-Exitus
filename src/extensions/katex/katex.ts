@@ -1,66 +1,10 @@
 //@ts-nocheck
-import { type ButtonEventProps } from '@editor/ui'
 import { Node } from '@tiptap/core'
 // eslint-disable-next-line import-helpers/order-imports
 import { Fragment } from '@tiptap/pm/model'
+import '../../../node_modules/katex/dist/katex.min.css'
 
-import '../../../node_modules/katex/dist/katex.css'
-
-import { KatexBalloon, KatexView } from './index'
-
-function click({ editor, button }: ButtonEventProps) {
-  const { pos } = editor.state.selection.$anchor
-
-  const main = editor.view.dom.getBoundingClientRect()
-  const { bottom, left } = editor.view.coordsAtPos(pos)
-
-  if (button.active()) {
-    return
-  }
-
-  button.on()
-
-  const confirmButtonCallback = (katexBalloon: KatexBalloon) => {
-    const { input, checkboxDisplay } = katexBalloon
-    if (input.value === '') return
-    editor.commands.insertContentAt(pos, `<span class="math-tex ${checkboxDisplay.checked ? 'katex-display' : ''}">${input.value}</span>`, {
-      updateSelection: true,
-      parseOptions: {
-        preserveWhitespace: true
-      }
-    })
-    cancelButtonCallback(katexBalloon)
-  }
-
-  const cancelButtonCallback = (katexBalloon: KatexBalloon) => {
-    button.off()
-    editor.editorMainDiv.removeChild(katexBalloon.getBalloon())
-  }
-
-  const balloon = new KatexBalloon(
-    editor,
-    {
-      latexFormula: '',
-      display: false
-    },
-    confirmButtonCallback,
-    cancelButtonCallback,
-    'float'
-  )
-
-  const focus = () => {
-    button.off()
-    editor.off('focus', focus)
-    try {
-      editor.editorMainDiv.removeChild(balloon.getBalloon())
-    } catch (e) {}
-  }
-
-  editor.on('focus', focus)
-
-  editor.editorMainDiv.appendChild(balloon.getBalloon())
-  balloon.balloon.setPosition(left - main.left, bottom - main.y)
-}
+import { KatexView } from './index'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -83,16 +27,6 @@ export const Katex = Node.create({
 
   draggable: true,
 
-  /* addStorage() {
-    return {
-      toolbarButtonConfig: {
-        icon: formula,
-        click: click,
-        checkActive: this.name,
-        tooltip: 'Fórmula matemática - Latex'
-      }
-    }
-  }, */
   parseHTML() {
     return [
       {

@@ -199,11 +199,9 @@ function handleMouseDown(
     view,
     pluginState.activeHandle,
   ).getBoundingClientRect();
-  //console.log(table);
 
   const cell = view.state.doc.nodeAt(pluginState.activeHandle)!;
   const width = currentColWidth(view, pluginState.activeHandle, cell.attrs);
-  //console.log(table.width, width, 860 - (table.width - width));
 
   view.dispatch(
     view.state.tr.setMeta(columnResizingPluginKey, {

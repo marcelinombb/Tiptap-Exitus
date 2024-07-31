@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 //@ts-nocheck
 import { deleteSelectedNode } from '@editor/utils'
 import { type Editor } from '@tiptap/core'
@@ -8,17 +9,6 @@ import Parser from '@wiris/mathtype-html-integration-devkit/src/parser'
 import Telemeter from '@wiris/mathtype-html-integration-devkit/src/telemeter'
 import Util from '@wiris/mathtype-html-integration-devkit/src/util'
 
-function getExtensionOptions(editor: Editor, extensionName: string) {
-  // Find the extension in the editor schema
-  const extension = editor.extensionManager.extensions.find(ext => ext.name === extensionName)
-
-  if (!extension) {
-    return null
-  }
-
-  // Return the extension's options
-  return extension.options
-}
 export class ExitusEditorIntegration extends IntegrationModel {
   integrationFolderName: string
   editor: Editor
@@ -202,8 +192,6 @@ export class ExitusEditorIntegration extends IntegrationModel {
       toolbar: this.core.modalDialog.contentManager.toolbar,
       size: mathml?.length
     }
-    //console.log(payload)
-
     // Remove desired null keys.
     Object.keys(payload).forEach(key => {
       if (key === 'mathml_origin' || key === 'editor_origin') !payload[key] ? delete payload[key] : {}

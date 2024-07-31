@@ -60,8 +60,6 @@ export class ListItemPlugin extends Plugin {
   }
 
   createDropDownContent(dropdown: Dropdown) {
-    console.log(dropdown)
-
     const dropdownContent = document.createElement('div')
     dropdownContent.className = 'ex-dropdownList-content'
 

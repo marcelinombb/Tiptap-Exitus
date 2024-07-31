@@ -10,4 +10,4 @@ icones : <https://remixicon.com/>
 
 - instanlando dependências `npm install`
 - executando em dev mode `npm run dev` o projeto estara disponivel em `localhost:9000`
-- gerando uma build `npm run build` os arquivos da build serão gerados no diretorio `dist`
+- gerando uma build `npm run build-dev` os arquivos da build serão gerados no diretorio `dist`

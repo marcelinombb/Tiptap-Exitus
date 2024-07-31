@@ -6,7 +6,9 @@ import { ImageView } from './imageView'
 
 export async function convertImageToBase64Service(url: string): Promise<string> {
   try {
-    const response = await fetch(`http://localhost:8080/base64?url=${url}`)
+    const response = await fetch(
+      `https://us-central1-desenvolvimento-271520.cloudfunctions.net/img-conversao-base64/base64/${encodeURIComponent(url)}`
+    )
     const data = await response.json()
     return data.url
   } catch (error) {

@@ -1,5 +1,5 @@
-import { objParaCss } from '@extensions/table'
-import { mergeAttributes, Node, NodePos } from '@tiptap/core'
+import { cssParaObj, objParaCss } from '@editor/utils'
+import { mergeAttributes, Node } from '@tiptap/core'
 import { type DOMOutputSpec, type ResolvedPos } from '@tiptap/pm/model'
 
 export interface TableCellOptions {
@@ -15,26 +15,6 @@ export interface TableCellOptions {
  * This extension allows you to create table cells.
  * @see https://www.tiptap.dev/api/nodes/table-cell
  */
-
-export function cssParaObj(cssString: string): { [key: string]: string } {
-  const styles: { [key: string]: string } = {}
-
-  // Remover espaços em branco desnecessários
-  cssString = cssString.replace(/\s*:\s*/g, ':').replace(/\s*;\s*/g, ';')
-
-  // Dividir a string por ponto e vírgula para obter as declarações individuais
-  const declarations = cssString.split(';')
-
-  // Iterar sobre as declarações e adicionar ao objeto
-  declarations.forEach(declaration => {
-    const [property, value] = declaration.split(':')
-    if (property && value) {
-      styles[property.trim()] = value.trim()
-    }
-  })
-
-  return styles
-}
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -103,7 +83,7 @@ export const TableCell = Node.create<TableCellOptions>({
     return {
       setCellAttributes:
         (resPos: ResolvedPos, attributes: { [key: string]: any }) =>
-        ({ editor, dispatch, tr, state }) => {
+        ({ dispatch, tr }) => {
           const { nodeAfter, pos } = resPos
 
           const attrs = {

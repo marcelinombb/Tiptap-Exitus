@@ -1,76 +1,19 @@
-//@ts-nocheck
-import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
+import { cssParaObj, objParaCss } from '@editor/utils'
 import { mergeAttributes } from '@tiptap/core'
+import { type DOMOutputSpec } from '@tiptap/pm/model'
 import { findParentNodeOfType } from 'prosemirror-utils'
-
-import type ExitusEditor from '../../ExitusEditor'
 
 import { createColGroup, Table } from './extension-table/src'
 import { TableView } from './TableView'
 
-function showTableGridDropdown({ dropdown }) {
-  if (dropdown.isOpen) {
-    removeSelectionFromGridButtons(dropdown)
-    dropdown.off()
-  } else {
-    dropdown.on()
-  }
-}
-
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
-    setTableBorder: () => ReturnType
-  }
-}
-
-function tableDropDown({ editor }: ButtonEventProps) {
-  const dropdown = new Dropdown(editor, {
-    events: {
-      open: showTableGridDropdown
-    }
-  })
-
-  dropdown.setDropDownContent(createDropDownContent(editor, dropdown))
-
-  window.addEventListener('click', function (event: Event) {
-    event.stopPropagation()
-    if (dropdown.isOpen) {
-      dropdown.off()
-    }
-  })
-  return dropdown
-}
-
-export function cssParaObj(cssString: string): { [key: string]: string } {
-  const styles: { [key: string]: string } = {}
-
-  // Remover espaços em branco desnecessários
-  cssString = cssString.replace(/\s*:\s*/g, ':').replace(/\s*;\s*/g, ';')
-
-  // Dividir a string por ponto e vírgula para obter as declarações individuais
-  const declarations = cssString.split(';')
-
-  // Iterar sobre as declarações e adicionar ao objeto
-  declarations.forEach(declaration => {
-    const [property, value] = declaration.split(':')
-    if (property && value) {
-      styles[property.trim()] = value.trim()
-    }
-  })
-
-  return styles
-}
-
-export function objParaCss(styles: { [key: string]: string }): string {
-  let cssString = ''
-
-  for (const property in styles) {
-    if (styles.hasOwnProperty(property)) {
-      cssString += `${property}: ${styles[property]}; `
+    tableCustom: {
+      setTableBorder: (styles: { [key: string]: any }) => ReturnType
+      setWrapperStyle: (styles: { [key: string]: any }) => ReturnType
+      setTableStyle: (styles: { [key: string]: any }) => ReturnType
     }
   }
-
-  return cssString.trim()
 }
 
 export const TableCustom = Table.extend({
@@ -91,7 +34,7 @@ export const TableCustom = Table.extend({
       styleTableWrapper: {
         default: {},
         parseHTML: element => {
-          const styleTableWrapper = element.parentElement.getAttribute('style')
+          const styleTableWrapper = element?.parentElement?.getAttribute('style')
 
           return styleTableWrapper && cssParaObj(styleTableWrapper)
         }
@@ -133,9 +76,9 @@ export const TableCustom = Table.extend({
 
           // Create a new attributes object with the updated style
           const attrs = {
-            ...tableNode.node.attrs,
+            ...tableNode!.node.attrs,
             style: {
-              ...tableNode.node.attrs.style,
+              ...tableNode!.node.attrs.style,
               ...style
             }
           }

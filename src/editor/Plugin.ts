@@ -6,8 +6,18 @@ export interface PluginInterface {
   destroy(): void
 }
 
+export interface Config {
+  [key: string]: any
+}
+
 export class Plugin implements PluginInterface {
-  constructor(readonly editor: ExitusEditor) {}
+  config: Config
+  constructor(
+    readonly editor: ExitusEditor,
+    config: Config
+  ) {
+    this.config = config
+  }
   init(): void {
     throw new Error('init must be implemented in the derived class')
   }
