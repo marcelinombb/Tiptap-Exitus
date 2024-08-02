@@ -41,6 +41,9 @@
     </style>
     <div class="container">
       <div class="column">
+        <button onclick="addColarQuestao('instrucao')">instrucao</button>
+        <button onclick="addColarQuestao('comando')">comando</button>
+        <button onclick="getColar()">Get colar</button>
         <div class="element"></div>
         <div class="element2" style="margin-top: 10px;"></div>
       </div>
@@ -73,7 +76,7 @@
             },
           },
           image: {
-            proxyUrl: "http://localhost:3000/proxy",
+            proxyUrl: "https://us-central1-desenvolvimento-271520.cloudfunctions.net/imagem-conversao-base64/proxy",
             inline: true,
             allowBase64: true,
           }
@@ -100,6 +103,14 @@
 
       window.editor = exitusEditor
       window.editor2 = exitusEditor2
+
+      function addColarQuestao(title) {
+        window.editor.commands.addColarQuestao(title)
+      }
+
+      function getColar() {
+        console.log(window.editor.pluginsInstances.get('colarQuestao').getColarQuestao());
+      }
     </script>
 </body>
 

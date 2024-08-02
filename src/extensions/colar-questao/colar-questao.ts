@@ -1,11 +1,13 @@
+import closeIcon from '@icons/close-line.svg'
 import { type Editor, mergeAttributes, Node } from '@tiptap/core'
-import { type Node as PmNode } from '@tiptap/pm/model'
+import { Fragment, type Node as PmNode, type Schema, Slice } from '@tiptap/pm/model'
+import { TextSelection } from '@tiptap/pm/state'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     colarQuestao: {
       addColarQuestao: (title: string) => ReturnType
-      removeColarQuestao: () => ReturnType
+      removeColarQuestao: (pos: number) => ReturnType
     }
   }
 }
@@ -15,13 +17,15 @@ export const ColarQuestao = Node.create({
 
   group: 'block',
 
-  content: 'block+',
+  content: 'block*',
+
+  selectable: false,
+
+  isolating: true,
+
+  defining: true,
 
   draggable: true,
-
-  selectable: true,
-
-  allowGapCursor: true,
 
   parseHTML() {
     return [
@@ -46,24 +50,22 @@ export const ColarQuestao = Node.create({
   addCommands() {
     return {
       addColarQuestao: (title: string) => {
-        return ({ editor, commands, tr, dispatch, state }) => {
-          //const selectedNode = isSelectionWithinNode(editor, this.name)
-          const { from, to } = state.selection
-          const slice = state.doc.slice(from, to)
-          //console.log(slice)
+        return ({ editor, tr, dispatch, state, view }) => {
+          let existsOnDoc = false
 
-          const colarNode = state.schema.nodes.colarQuestao.create({ title }, slice.content)
-
-          const transaction = tr.replaceRangeWith(from, to, colarNode)
-
-          if (dispatch) {
-            dispatch(transaction)
+          state.doc.descendants(node => {
+            if (node.type.name === this.name && node.attrs.title === title) {
+              existsOnDoc = true
+              return false // Stop the iteration
+            }
             return true
-          }
+          })
 
-          return false
+          if (existsOnDoc) return false
 
-          /* if (selectedNode) {
+          const selectedNode = isSelectionWithinNode(editor, this.name)
+
+          if (selectedNode) {
             const [node, pos] = selectedNode
 
             if (node.attrs.title === title) return false
@@ -74,21 +76,34 @@ export const ColarQuestao = Node.create({
             }
             return true
           } else {
-            return commands.wrapIn(this.name, { title })
-          } */
+            const { from, to } = state.selection
+            const slice = state.doc.slice(from, to)
+
+            const newSlice = ensureBlockContent(slice, state.schema)
+
+            const colarNode = state.schema.nodes.colarQuestao.createChecked({ title }, newSlice.content)
+
+            let transaction = tr.replaceRangeWith(from, to, colarNode)
+
+            const newSelection = TextSelection.create(transaction.doc, from + 1)
+            transaction = transaction.setSelection(newSelection)
+
+            if (dispatch) {
+              dispatch(transaction)
+              view.focus()
+              return true
+            }
+
+            return false
+          }
         }
       },
-      removeColarQuestao: () => {
-        return ({ editor, dispatch, tr }) => {
-          const selectedNode = isSelectionWithinNode(editor, this.name)
-
-          if (selectedNode) {
-            const [node, pos] = selectedNode
-            const content = node.content
-            tr.replaceWith(pos, pos + node.nodeSize, content)
-          }
-
+      removeColarQuestao: (pos: number) => {
+        return ({ dispatch, tr, state }) => {
           if (dispatch) {
+            const node = state.doc.nodeAt(pos)
+            const content = node!.content
+            tr.replaceWith(pos, pos + node!.nodeSize, content)
             dispatch(tr)
             return true
           }
@@ -100,34 +115,47 @@ export const ColarQuestao = Node.create({
   },
 
   addNodeView() {
-    return ({ editor, node }) => {
+    return ({ editor, node, getPos }) => {
       const dom = document.createElement('div')
-
+      dom.draggable = true
       dom.classList.add('colar-questao')
 
+      // Prevent any drop actions within this node view
+      dom.addEventListener('drop', event => {
+        const draggedNodeType = event.dataTransfer?.getData('text/html') ?? ''
+        if (/colar-questao/i.test(draggedNodeType)) {
+          event.preventDefault()
+        }
+      })
+
       const label = document.createElement('label')
+      label.contentEditable = 'false'
 
       const close = document.createElement('button')
-      close.innerHTML = '&times;'
+      close.contentEditable = 'false'
+      close.innerHTML = closeIcon
       close.className = 'close-colar'
 
       close.addEventListener('click', () => {
-        editor.commands.removeColarQuestao()
+        if (typeof getPos === 'function') {
+          editor.commands.removeColarQuestao(getPos())
+        }
       })
 
       label.innerHTML = node.attrs.title
-      label.contentEditable = 'false'
 
       const content = document.createElement('div')
-
-      content.classList.add('content')
+      content.classList.add('colar-content')
       content.classList.add('is-editable')
 
       dom.append(label, close, content)
 
       return {
         dom,
-        contentDOM: content
+        contentDOM: content,
+        selectNode() {
+          console.log('selected')
+        }
       }
     }
   }
@@ -150,4 +178,35 @@ function isSelectionWithinNode(editor: Editor, nodeType: string): false | [PmNod
   })
 
   return isWithinNode
+}
+
+function ensureBlockContent(slice: Slice, schema: Schema) {
+  const blockNodes: PmNode[] = []
+  let inlineNodes: PmNode[] = []
+
+  slice.content.forEach(node => {
+    if (node.isBlock) {
+      if (inlineNodes.length) {
+        const paragraph = schema.nodes.paragraph.create(null, inlineNodes)
+        inlineNodes = []
+        blockNodes.push(paragraph)
+      }
+      blockNodes.push(node)
+    } else if (node.isInline) {
+      inlineNodes.push(node)
+    }
+  })
+
+  if (inlineNodes.length) {
+    const paragraph = schema.nodes.paragraph.create(null, inlineNodes)
+    inlineNodes = []
+    blockNodes.push(paragraph)
+  } else {
+    const paragraph = schema.nodes.paragraph.create(null, null)
+    blockNodes.push(paragraph)
+  }
+
+  const fragment = Fragment.fromArray(blockNodes)
+
+  return new Slice(fragment, slice.openStart, slice.openEnd)
 }

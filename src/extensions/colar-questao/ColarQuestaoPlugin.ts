@@ -16,12 +16,12 @@ export class ColarQuestaoPlugin extends Plugin {
   init() {}
 
   getColarQuestao() {
-    const nodes: any[] = []
+    const nodes: { [key: string]: string } = {}
     const nodeType = 'colarQuestao'
 
     const traverse = (node: Node) => {
       if (node.type.name === nodeType) {
-        nodes.push(this.getNodeHTML(node))
+        nodes[node.attrs.title] = this.getNodeHTML(node)
       }
 
       node.forEach(child => {

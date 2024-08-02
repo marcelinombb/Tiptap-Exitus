@@ -3,6 +3,7 @@
   border-radius: 0.5rem;
   margin: 2rem 0;
   position: relative;
+  cursor: pointer;
 }
 .colar-questao label {
   background-color: #009688;
@@ -12,11 +13,12 @@
   font-weight: bold;
   padding: 0.25rem 0.5rem;
   position: absolute;
+  cursor: pointer;
   top: 0;
 }
 
 .colar-questao .close-colar {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   background-color: #009688;
@@ -34,15 +36,15 @@
   right: 0;
 }
 
-.colar-questao > .content {
+.colar-questao > .colar-content {
   margin-top: 1.5rem;
   padding: 1rem;
 }
 
-.colar-questao > .content.is-editable {
-    background-color: rgba(0, 0, 0, .1);
-    border: 2px dashed  rgba(61, 37, 20, .12);
-    border-radius: 0.5rem;
-    margin: 2.5rem 1rem 1rem;
-    padding: 0.5rem;
-  }
+.colar-questao > .colar-content.is-editable {
+  border: 2px dashed #909294;
+  border-radius: 0.5rem;
+  margin: 2.5rem 1rem 1rem;
+  padding: 0.5rem;
+  cursor: auto;
+}
