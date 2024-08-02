@@ -17,7 +17,7 @@ export async function convertImageToBase64Service(url: string): Promise<string> 
   }
 }
 
-export function convertToBase64(img: HTMLImageElement, callback: (base64Url: string) => void) {
+export function convertToBase64(img: HTMLImageElement, callback: (base64Url: string, width: number) => void) {
   return function () {
     const maxHeight = img.height > 700 ? 700 : img.height
     const maxWidth = img.width > 700 ? 700 : img.width
@@ -38,7 +38,7 @@ export function convertToBase64(img: HTMLImageElement, callback: (base64Url: str
     ctx?.drawImage(img, 0, 0, canvas.width, canvas.height)
 
     const dataUrl = canvas.toDataURL('image/jpeg', 0.7)
-    callback(dataUrl)
+    callback(dataUrl, canvas.width)
   }
 }
 
@@ -67,7 +67,7 @@ export interface ImageOptions {
   inline: boolean
   allowBase64: boolean
   HTMLAttributes: Record<string, any>
-  conversionService: ((url: string) => Promise<string>) | null
+  proxyUrl: string | undefined
 }
 
 declare module '@tiptap/core' {
@@ -92,7 +92,7 @@ export const Image = Node.create<ImageOptions>({
       inline: false,
       allowBase64: false,
       HTMLAttributes: {},
-      conversionService: null
+      proxyUrl: undefined
     }
   },
 
@@ -217,7 +217,7 @@ export const Image = Node.create<ImageOptions>({
   },
   addNodeView() {
     return ({ node, editor, getPos }) => {
-      return new ImageView(node, editor, getPos, this.options.conversionService)
+      return new ImageView(node, editor, getPos, this.options.proxyUrl)
     }
   },
   addProseMirrorPlugins() {

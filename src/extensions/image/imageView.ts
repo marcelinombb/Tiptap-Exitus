@@ -11,6 +11,7 @@ import { type Node } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
 import type ExitusEditor from 'src/ExitusEditor'
 
+import { convertToBase64 } from './image'
 import ResizableImage from './ResizableImage'
 
 function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
@@ -88,24 +89,29 @@ function alinhaMeio(imageView: ImageView) {
   }
 }
 
-function sizeButton(dropdown: Dropdown, label: string, size: number) {
+function sizeButton(dropdown: Dropdown, label: string, size: number | (() => number)) {
   const button = new Button(dropdown.editor, {
     label,
     classList: ['ex-mr-0']
   })
 
   button.bind('click', () => {
-    dropdown.editor.commands.setImageWidth(`${size}px`)
+    const sizeValue = typeof size == 'number' ? size : size()
+    dropdown.editor.commands.setImageWidth(`${sizeValue}px`)
   })
 
   return button.render()
 }
 
-function criarDropDown(dropdown: Dropdown, originalSize: number) {
+function criarDropDown(dropdown: Dropdown, imageView: ImageView) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdownList-content'
 
-  const original = sizeButton(dropdown, `original`, originalSize)
+  const original = sizeButton(dropdown, `original`, () => {
+    console.log(imageView.originalSize)
+
+    return imageView.originalSize
+  })
   const pequeno = sizeButton(dropdown, '300px', 300)
   const medio = sizeButton(dropdown, '400px', 400)
   const grande = sizeButton(dropdown, '700px', 700)
@@ -139,7 +145,7 @@ export class ImageView implements NodeView {
     node: Node,
     editor: Editor,
     getPos: boolean | (() => number),
-    public conversionServiceUrl: ((url: string) => Promise<string>) | null
+    public proxyUrl: string | undefined
   ) {
     this.node = node
     this.editor = editor
@@ -154,11 +160,12 @@ export class ImageView implements NodeView {
 
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
 
-    if (this.conversionServiceUrl !== null && imageUrlRegex.test(node.attrs.src)) {
+    if (imageUrlRegex.test(node.attrs.src)) {
       this.urlToBase64(node.attrs.src)
     } else {
       this.image.onload = () => {
         this.originalSize = this.image.width
+        this.image.onload = null
       }
     }
 
@@ -190,7 +197,7 @@ export class ImageView implements NodeView {
         classes: []
       },
       dropdown => {
-        return criarDropDown(dropdown, this.originalSize)
+        return criarDropDown(dropdown, this)
       }
     )
     this.balloon = new Balloon(editor, {
@@ -216,12 +223,14 @@ export class ImageView implements NodeView {
   }
 
   urlToBase64(url: string) {
-    this.image.onload = async () => {
-      const base64Url = await this.conversionServiceUrl!(url)
+    const image = new Image()
+    image.src = `https://us-central1-desenvolvimento-271520.cloudfunctions.net/imagem-conversao-base64/proxy/${encodeURIComponent(url)}`
+    image.setAttribute('crossorigin', 'anonymous')
+    image.onload = convertToBase64(image, (base64Url, width) => {
       this.updateAttributes({ src: base64Url })
-      this.image.onload = null
-      this.originalSize = this.image.width
-    }
+      image.onload = null
+      this.originalSize = width
+    })
   }
 
   selectNode() {
