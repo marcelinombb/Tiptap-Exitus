@@ -17,6 +17,7 @@ declare module '@tiptap/core' {
 }
 
 export const TableCustom = Table.extend({
+  draggable: true,
   addAttributes() {
     return {
       ...this.parent?.(),

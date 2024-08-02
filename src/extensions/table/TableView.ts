@@ -180,8 +180,8 @@ export class TableView implements NodeView {
     clickHandler(this)
   }
 
-  selectNode() {
-    this.tableWrapper.classList.add('ex-selected')
+  deselectNode() {
+    this.tableWrapper.classList.remove('ex-selected')
   }
 
   updateAttributes(attributes: Record<string, any>) {

@@ -68,6 +68,7 @@ export default class TableFocus {
 
     if (typeof this.tableView.getPos === 'function') {
       const transaction = view.state.tr.setSelection(NodeSelection.create(view.state.doc, this.tableView.getPos()))
+      this.tableView.tableWrapper.classList.add('ex-selected')
       view.dispatch(transaction)
     }
   }
