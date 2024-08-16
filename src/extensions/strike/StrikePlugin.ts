@@ -18,7 +18,7 @@ export class StrikePlugin extends Plugin {
       icon: strike,
       click: this.toggleStrike,
       checkActive: StrikePlugin.pluginName,
-      tooltip: 'Itálico (Ctrl + I)'
+      tooltip: 'Tachado (Ctrl + Shift + S)'
     }
     const button = new Button(this.editor, config)
     button.setParentToolbar(this.editor.toolbar)
