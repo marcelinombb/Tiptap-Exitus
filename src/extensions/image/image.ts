@@ -4,19 +4,6 @@ import { findSelectedNodeOfType } from 'prosemirror-utils'
 
 import { ImageView } from './imageView'
 
-export async function convertImageToBase64Service(url: string): Promise<string> {
-  try {
-    const response = await fetch(
-      `https://us-central1-desenvolvimento-271520.cloudfunctions.net/img-conversao-base64/base64/${encodeURIComponent(url)}`
-    )
-    const data = await response.json()
-    return data.url
-  } catch (error) {
-    console.error('Error ao tentar converter imagem: ', error)
-    return url
-  }
-}
-
 export function convertToBase64(img: HTMLImageElement, callback: (base64Url: string, width: number) => void) {
   return function () {
     const maxHeight = img.height > 700 ? 700 : img.height

@@ -2,7 +2,7 @@ import { Plugin } from '@editor/Plugin'
 import imageAdd from '@icons/image-add-fill.svg'
 import type ExitusEditor from '@src/ExitusEditor'
 
-import { convertImageToBase64Service, Image, parseImagesToBase64 } from './image'
+import { Image, parseImagesToBase64 } from './image'
 
 export class ImagePlugin extends Plugin {
   static get pluginName(): string {
@@ -13,8 +13,7 @@ export class ImagePlugin extends Plugin {
     return [
       Image.configure({
         inline: true,
-        allowBase64: true,
-        conversionService: convertImageToBase64Service
+        allowBase64: true
       })
     ]
   }
