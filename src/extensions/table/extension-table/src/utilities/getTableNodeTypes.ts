@@ -1,11 +1,11 @@
 import { type NodeType, type Schema } from '@tiptap/pm/model'
 
-export function getTableNodeTypes(schema: Schema): { [key: string]: NodeType } {
+export function getTableNodeTypes(schema: Schema): Record<string, NodeType> {
   if (schema.cached.tableNodeTypes) {
     return schema.cached.tableNodeTypes
   }
 
-  const roles: { [key: string]: NodeType } = {}
+  const roles: Record<string, NodeType> = {}
 
   Object.keys(schema.nodes).forEach(type => {
     const nodeType = schema.nodes[type]

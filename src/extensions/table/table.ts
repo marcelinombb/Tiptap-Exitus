@@ -9,9 +9,9 @@ import { TableView } from './TableView'
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     tableCustom: {
-      setTableBorder: (styles: { [key: string]: any }) => ReturnType
-      setWrapperStyle: (styles: { [key: string]: any }) => ReturnType
-      setTableStyle: (styles: { [key: string]: any }) => ReturnType
+      setTableBorder: (styles: Record<string, any>) => ReturnType
+      setWrapperStyle: (styles: Record<string, any>) => ReturnType
+      setTableStyle: (styles: Record<string, any>) => ReturnType
     }
   }
 }

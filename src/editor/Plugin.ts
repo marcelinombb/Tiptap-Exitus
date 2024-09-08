@@ -6,15 +6,11 @@ export interface PluginInterface {
   destroy(): void
 }
 
-export interface Config {
-  [key: string]: any
-}
-
 export class Plugin implements PluginInterface {
-  config: Config
+  config: Record<string, string>
   constructor(
     readonly editor: ExitusEditor,
-    config: Config
+    config: Record<string, string>
   ) {
     this.config = config
   }

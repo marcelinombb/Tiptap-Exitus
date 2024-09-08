@@ -16,7 +16,7 @@ export class ColarQuestaoPlugin extends Plugin {
   init() {}
 
   getColarQuestao() {
-    const nodes: { [key: string]: string } = {}
+    const nodes: Record<string, string> = {}
     const nodeType = 'colarQuestao'
 
     const traverse = (node: Node) => {

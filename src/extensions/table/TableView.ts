@@ -80,8 +80,8 @@ export class TableView implements NodeView {
   tableWrapper: HTMLElement
   contentDOM: HTMLElement
   getPos: boolean | (() => number)
-  tableStyle: { [key: string]: string }
-  tableWrapperStyle: { [key: string]: string }
+  tableStyle: Record<string, string>
+  tableWrapperStyle: Record<string, string>
 
   constructor(node: ProseMirrorNode, editor: Editor, getPos: boolean | (() => number)) {
     this.node = node

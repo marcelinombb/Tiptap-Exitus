@@ -3,7 +3,7 @@ import { type Node } from '@tiptap/pm/model'
 import { TextSelection } from '@tiptap/pm/state'
 import { Fragment } from 'prosemirror-model'
 
-export function createHTMLElement<T = Element>(tagName: string, attributes: { [x: string]: string }, childrens?: Element[]): T {
+export function createHTMLElement<T = Element>(tagName: string, attributes: Record<string, string>, childrens?: Element[]): T {
   // Create the element
   const element = document.createElement(tagName)
 
@@ -105,8 +105,8 @@ export function getNodeBoundingClientRect(editor: Editor, nodePos: number) {
   return null
 }
 
-export function cssParaObj(cssString: string): { [key: string]: string } {
-  const styles: { [key: string]: string } = {}
+export function cssParaObj(cssString: string): Record<string, string> {
+  const styles: Record<string, string> = {}
 
   // Remover espaços em branco desnecessários
   cssString = cssString.replace(/\s*:\s*/g, ':').replace(/\s*;\s*/g, ';')
@@ -125,7 +125,7 @@ export function cssParaObj(cssString: string): { [key: string]: string } {
   return styles
 }
 
-export function objParaCss(styles: { [key: string]: string }): string {
+export function objParaCss(styles: Record<string, string>): string {
   let cssString = ''
 
   for (const property in styles) {
