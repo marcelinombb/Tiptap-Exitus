@@ -141,7 +141,7 @@ function handleMouseMove(
   view: EditorView,
   event: MouseEvent,
   handleWidth: number,
-  cellMinWidth: number,
+  _cellMinWidth: number,
   lastColumnResizable: boolean,
 ): void {
   const pluginState = columnResizingPluginKey.getState(view.state);

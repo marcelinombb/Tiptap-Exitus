@@ -4,7 +4,8 @@ const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = (env, argv) => {
-  const PUBLIC_PATH = 'resources/exitus/libs/exitus-editor/dist/'
+  const PUBLIC_PATH = 'assets/libs/exitus-editor/dist/'
+  //const PUBLIC_PATH = 'resources/exitus/libs/exitus-editor/dist/'
   const isProduction = argv.mode === 'production'
   return {
     entry: path.resolve(__dirname, 'src/main.ts'),
@@ -41,9 +42,7 @@ module.exports = (env, argv) => {
         {
           test: /\.(ts|tsx)?$/,
           loader: 'ts-loader',
-          options: {
-            transpileOnly: true
-          },
+
           exclude: /node_modules/
         },
         {

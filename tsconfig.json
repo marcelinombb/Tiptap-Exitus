@@ -9,7 +9,7 @@
     /* Bundler mode */
     "allowJs": true,
     "checkJs": false,
-    "moduleResolution": "Node",
+    "moduleResolution": "Node10",
     "allowImportingTsExtensions": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -20,14 +20,15 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "dist",
     "paths": {
-      "@icons/*": ["src/assets/icons/Editor/*"],
-      "@editor/*": ["src/editor/*"],
-      "@src/*": ["src/*"],
-      "@extensions/*": ["src/extensions/*"],
+      "@icons/*": ["./src/assets/icons/Editor/*"],
+      "@editor/*": ["./src/editor/*"],
+      "@src/*": ["./src/*"],
+      "@extensions/*": ["./src/extensions/*"],
     }
   },
-  "include": ["src/**/*", "declaration.d.ts"],
-  "exclude": ["src/devmain.ts", "node_modules", "dist", "src/assets/**/*"]
+  "include": ["src/**/*", "src/**/*.d.ts", "declaration.d.ts"],
+  "exclude": ["node_modules", "dist", "src/assets/**/*"]
 }

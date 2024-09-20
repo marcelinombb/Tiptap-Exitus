@@ -3,7 +3,7 @@ import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
 import Pickr from '@simonwep/pickr'
-import type ExitusEditor from 'src/ExitusEditor'
+import type ExitusEditor from '@src/ExitusEditor'
 import '@simonwep/pickr/dist/themes/nano.min.css'
 
 const createPickrInstance = (selector: string, onCancel: () => void): Pickr => {

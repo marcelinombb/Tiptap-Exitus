@@ -8,10 +8,10 @@ import starredCell from '@icons/starred-cell.svg'
 import starredTable from '@icons/starred-table.svg'
 import tableColumns from '@icons/table-columns.svg'
 import tableRow from '@icons/table-lines.svg'
+import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
-import type ExitusEditor from 'src/ExitusEditor'
 
 import { ItensModalTable } from './itensModalTable'
 import { updateColumnsOnResize } from './prosemirror-tables/src'
@@ -104,7 +104,7 @@ export class TableView implements NodeView {
 
     new TableFocus(this, this.editor as ExitusEditor)
     new UpDownTable(this, this.editor as ExitusEditor)
-    this.tableCellBalloon = new TableCellBalloon(editor)
+    this.tableCellBalloon = new TableCellBalloon(editor as ExitusEditor)
 
     const toolbar = new Toolbar(editor as ExitusEditor, ['colTable', 'rowTable', 'cellTable', 'tableProperties', 'cellProperties'])
 

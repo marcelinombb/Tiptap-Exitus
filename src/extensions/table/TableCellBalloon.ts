@@ -6,7 +6,7 @@ import textDl from '@icons/align-top.svg'
 import textDm from '@icons/align-vertically.svg'
 import Pickr from '@simonwep/pickr'
 import '@simonwep/pickr/dist/themes/nano.min.css'
-import { type Editor } from '@tiptap/core'
+import type ExitusEditor from '@src/ExitusEditor'
 import { type Attrs, type ResolvedPos } from '@tiptap/pm/model'
 
 const createPickrInstance = (selector: string, onCancel: () => void): Pickr => {
@@ -46,10 +46,10 @@ const createPickrInstance = (selector: string, onCancel: () => void): Pickr => {
 
 export class TableCellBalloon {
   balloon: Balloon
-  editor: Editor
+  editor: ExitusEditor
   itenModal!: ItensModalCell
 
-  constructor(editor: Editor) {
+  constructor(editor: ExitusEditor) {
     this.editor = editor
     this.balloon = new Balloon(editor, {
       position: 'float'
@@ -87,7 +87,7 @@ export class TableCellBalloon {
 }
 
 export class ItensModalCell {
-  private editor: Editor
+  private editor: ExitusEditor
   private cellBorderStyles: HTMLSelectElement
   private cellBorderColorPickr: Pickr | null
   private cellBorderWidth: HTMLInputElement
@@ -97,7 +97,7 @@ export class ItensModalCell {
   selectedCell!: ResolvedPos
   balloon: TableCellBalloon
 
-  constructor(editor: Editor, balloon: TableCellBalloon) {
+  constructor(editor: ExitusEditor, balloon: TableCellBalloon) {
     this.editor = editor
     this.balloon = balloon
 
@@ -422,7 +422,7 @@ function createInput(type: string, placeholder: string) {
   return input
 }
 
-function createButton(editor: Editor, icone: string, onClick: () => void) {
+function createButton(editor: ExitusEditor, icone: string, onClick: () => void) {
   const button = new Button(editor, {
     icon: icone
   })
