@@ -18,6 +18,8 @@ import { ExitusEditorIntegration } from './mathtype-integration'
 export class MathTypePlugin extends Plugin {
   private integration: ExitusEditorIntegration | undefined
 
+  private dbClick = null
+
   static get pluginName() {
     return 'mathtype'
   }
@@ -137,17 +139,16 @@ export class MathTypePlugin extends Plugin {
 
       integration.checkElement()
 
-      this.editor.view.dom.addEventListener('click', evt => {
-        if (evt.detail === 2) {
-          integration.doubleClickHandler(evt.target, evt)
-        }
-      })
+      this.dbClick = integration.doubleClickHandler.bind(integration)
+
+      this.editor.view.dom.addEventListener('click', this.dbClick)
     }
 
     return integration
   }
 
   destroy(): void {
+    this.dbClick && this.editor.view.dom.removeEventListener('click', this.dbClick)
     this.integration.destroy()
     this.integration = null
   }

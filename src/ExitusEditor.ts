@@ -22,6 +22,12 @@ function generateUUID() {
   })
 }
 
+function loadPluginsRequirements() {
+  return ExitusEditor.plugins.reduce<AnyExtension[]>((acc, plugin) => {
+    return [...acc, ...plugin.requires]
+  }, [])
+}
+
 class ExitusEditor extends Editor {
   editorInstance: string
   toolbar: Toolbar
@@ -31,11 +37,14 @@ class ExitusEditor extends Editor {
   static extensions: AnyExtension[]
   static plugins: PluginClassConstructor[]
   static toolbarOrder: string[]
+  private container: Element
 
-  constructor(options: Partial<ExitusEditorOptions> = {}) {
-    const extensions = ExitusEditor.plugins.reduce<AnyExtension[]>((acc, plugin) => {
-      return [...acc, ...plugin.requires]
-    }, [])
+  constructor(options: Partial<ExitusEditorOptions>) {
+    if (!options.container) {
+      throw new Error('Invalid Container Element !!')
+    }
+
+    const extensions = loadPluginsRequirements()
 
     super({ ...options, extensions })
     this.editorInstance = generateUUID()
@@ -44,14 +53,20 @@ class ExitusEditor extends Editor {
 
     this.toolbar = new Toolbar(this, toolbarOrder)
 
+    this.initializePlugins(options)
+
+    this.container = options.container as Element
+
+    this._createUI()
+  }
+
+  private initializePlugins(options: Partial<ExitusEditorOptions>) {
     ExitusEditor.plugins.forEach(plugin => {
       const config = options.config?.[plugin.pluginName]
       const pluginInstance = new plugin(this, config)
       pluginInstance.init()
       this.pluginsInstances.set(plugin.pluginName, pluginInstance)
     })
-
-    this._createUI(options.container as Element)
   }
 
   getPluginInstance(name: string) {
@@ -77,15 +92,16 @@ class ExitusEditor extends Editor {
     return editorShell
   }
 
-  private _createUI(container: Element) {
+  private _createUI() {
     const editorUI = this._generateEditorUI()
-    container.appendChild(editorUI)
+    this.container.appendChild(editorUI)
   }
 
   destroy(): void {
     this.pluginsInstances.forEach(plugin => plugin.destroy())
     this.pluginsInstances.clear()
     super.destroy()
+    this.container.innerHTML = ''
   }
 }
 

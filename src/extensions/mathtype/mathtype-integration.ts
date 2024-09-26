@@ -61,7 +61,11 @@ export class ExitusEditorIntegration extends IntegrationModel {
   }
 
   //@ts-ignore
-  doubleClickHandler(element: HTMLElement, event: MouseEvent) {
+  doubleClickHandler(event: MouseEvent) {
+    if (event.detail != 2) return
+
+    const element = event.target
+
     this.core.editionProperties.dbclick = true
 
     if ((this.editorObject as Editor).isEditable) {
