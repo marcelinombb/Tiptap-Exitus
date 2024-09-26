@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
 
@@ -65,7 +66,15 @@ module.exports = (env, argv) => {
               loader: 'css-loader'
             }
           ]
-        }
+        },
+        ...(isProduction
+          ? [
+              {
+                test: /\.css$/i, // Match any CSS file
+                use: [MiniCssExtractPlugin.loader, 'css-loader'] // Extract and load CSS
+              }
+            ]
+          : [])
       ]
     },
     plugins: [
@@ -81,7 +90,8 @@ module.exports = (env, argv) => {
             to: path.resolve(__dirname, 'dist')
           }
         ]
-      })
+      }),
+      ...(isProduction ? [new MiniCssExtractPlugin({ filename: 'exituseditor.css' })] : [])
     ],
     experiments: {
       topLevelAwait: true,
@@ -91,7 +101,6 @@ module.exports = (env, argv) => {
       minimize: true,
       minimizer: [
         new TerserPlugin({
-          // These options prevent Terser from generating a LICENSE.txt file
           terserOptions: {
             format: {
               comments: false
