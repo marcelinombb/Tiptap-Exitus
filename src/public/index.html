@@ -85,7 +85,8 @@
 
       const exitusEditor2 = new ExitusEditor({
         container: document.querySelector('.element2'),
-        content: '<colar-questao title="comando">teste</colar-questao>'
+        editable: false,
+        content: '<colar-questao title="comando">teste</colar-questao>',
       })
 
       exitusEditor.on('create', ({ editor }) => {

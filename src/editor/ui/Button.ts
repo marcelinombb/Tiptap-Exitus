@@ -64,6 +64,11 @@ export class Button implements Tool {
       ...this.config.attributes
     })
 
+    if (!this.editor.isEditable) {
+      button.setAttribute('disabled', '')
+      button.classList.add('ex-button-disabled')
+    }
+
     return button
   }
 

@@ -227,8 +227,12 @@ p {
   display: none !important;
 }
 
-.ex-toolbar-button:not(.ex-bolinha):not(.ex-pegaTabela):hover {
+.ex-toolbar-button:not(.ex-bolinha):not(.ex-pegaTabela):not(.ex-button-disabled):hover {
   background: #f0f0f0;
+}
+.ex-button-disabled {
+  opacity: .5;
+  z-index: 3;
 }
 
 .ex-toolbar-separator {
@@ -274,7 +278,7 @@ p {
 }
 
 .editor-scroller {
-  height: calc(200px + (2 * calc(2 * calc(0.6em * 1.5))));
+  height: calc(201px + (2 * calc(2 * calc(0.6em * 1.5))));
   border: 0;
   position: relative;
   outline: 0;
