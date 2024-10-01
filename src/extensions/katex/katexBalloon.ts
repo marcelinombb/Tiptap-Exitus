@@ -63,7 +63,10 @@ export class KatexBalloon {
 
     cancelButton.bind('click', () => cancelCallback(this))
 
-    const inputDisplay = createHTMLElement('div', { class: 'latex-editting-input' }, [this.input, confirmButton.render(), cancelButton.render()])
+    const inputDisplay = createHTMLElement('div', { class: 'latex-editting-input' }, [
+      this.input,
+      createHTMLElement('div', { class: 'latex-confirmation-btn' }, [confirmButton.render(), cancelButton.render()])
+    ])
 
     const label = createHTMLElement('label', { for: 'emBloco', class: 'checkbox-label' })
     label.textContent = 'Em Bloco'
