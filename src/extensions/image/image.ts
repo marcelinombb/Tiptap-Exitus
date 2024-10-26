@@ -6,8 +6,8 @@ import { ImageView } from './imageView'
 
 export function convertToBase64(img: HTMLImageElement, callback: (base64Url: string, width: number) => void) {
   return function () {
-    const maxHeight = img.height > 700 ? 700 : img.height
-    const maxWidth = img.width > 700 ? 700 : img.width
+    const maxHeight = Math.min(img.height, 700)
+    const maxWidth = Math.min(img.width, 700)
     //let newHeight, newWidth;
     const newDimension =
       img.width > img.height
@@ -108,7 +108,7 @@ export const Image = Node.create<ImageOptions>({
         default: 'ex-image-wrapper ex-image-block-middle tiptap-widget'
       },
       style: {
-        default: '',
+        default: 'display: table-cell',
         parseHTML: element => {
           const parent = element!.parentNode as HTMLElement
           if (
@@ -146,7 +146,7 @@ export const Image = Node.create<ImageOptions>({
   renderHTML({ HTMLAttributes }) {
     const { style, classes, src } = HTMLAttributes
 
-    return ['div', { style, class: classes }, ['img', { src }]]
+    return ['div', { style, class: classes }, ['img', { src, style: 'display: table-cell' }]]
   },
 
   addCommands() {

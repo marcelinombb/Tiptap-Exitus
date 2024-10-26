@@ -19,6 +19,9 @@
   --ex-font-size-large: 1.8em;
   --ex-focus-ring: 1px solid var(--active-blue);
   --ex-inner-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1) inset;
+  --widget-outline-width: 3px;
+  --widget-risize-box-translate-left: calc(-50% - var(--widget-outline-width)/2);
+  --widget-risize-box-translate-right: calc(50% + var(--widget-outline-width)/2);
 }
 
 .ProseMirror {
@@ -187,7 +190,7 @@ p {
   position: relative;
   outline-color: transparent;
   outline-style: solid;
-  outline-width: 3px;
+  outline-width: var(--widget-outline-width);
   user-select: auto;
   transition: outline-color 200ms ease;
 }
@@ -594,39 +597,39 @@ p {
   display: block;
 }
 
-.quadrado {
+
+.resizer {
   width: 10px;
   height: 10px;
-  background-color: #3779eb;
+  background-color: var(--active-blue);
   position: absolute;
-  display: none;
 }
 
-.canto-superior-esquerdo {
+.resizers-container > .top-left {
   top: 0;
   left: 0;
-  transform: translate(-50%, -50%);
+  transform: translate(var(--widget-risize-box-translate-left), var(--widget-risize-box-translate-left));
   cursor: nwse-resize;
 }
 
-.canto-superior-direito {
+.resizers-container > .top-right {
   top: 0;
   right: 0;
-  transform: translate(50%, -50%);
+  transform: translate(var(--widget-risize-box-translate-right), var(--widget-risize-box-translate-left));
   cursor: nesw-resize;
 }
 
-.canto-inferior-esquerdo {
+.resizers-container > .bottom-left {
   bottom: 0;
   left: 0;
-  transform: translate(-50%, 50%);
+  transform: translate(var(--widget-risize-box-translate-left), var(--widget-risize-box-translate-right));
   cursor: nesw-resize;
 }
 
-.canto-inferior-direito {
+.resizers-container > .bottom-right {
   bottom: 0;
   right: 0;
-  transform: translate(50%, 50%);
+  transform: translate(var(--widget-risize-box-translate-right), var(--widget-risize-box-translate-right));
   cursor: nwse-resize;
 }
 

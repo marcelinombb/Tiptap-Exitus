@@ -17,11 +17,11 @@ import ResizableImage from './ResizableImage'
 function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
   imageWrapper.addEventListener('click', event => {
     event.stopPropagation()
-    const resizers = resizer.resizers
+    imageWrapper.classList.add('ex-selected')
 
     if (!balloon.isOpen()) {
       balloon.show()
-      resizers.classList.remove('ex-hidden')
+      resizer.show()
     }
 
     function clickOutside(event: Event) {
@@ -29,6 +29,7 @@ function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
 
       if (!target.matches('.ex-image-wrapper')) {
         balloon.hide()
+        resizer.hide()
         imageWrapper.classList.remove('ex-selected')
         window.removeEventListener('click', clickOutside)
       }
@@ -155,8 +156,8 @@ export class ImageView implements NodeView {
     this.imageWrapper.className = node.attrs.classes
 
     this.image = this.imageWrapper.appendChild(document.createElement('img'))
-
     this.setImageAttributes(this.image, node)
+    this.image.setAttribute('style', 'display: table-cell')
 
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
 
@@ -233,10 +234,6 @@ export class ImageView implements NodeView {
     })
   }
 
-  selectNode() {
-    this.imageWrapper.classList.add('ex-selected')
-  }
-
   deselectNode() {
     this.imageWrapper.classList.remove('ex-selected')
   }
@@ -254,7 +251,7 @@ export class ImageView implements NodeView {
   }
 
   setImageAttributes(image: Element, node: Node) {
-    ;(this.imageWrapper as HTMLElement).setAttribute('style', node.attrs.style)
+    ;(this.imageWrapper as HTMLElement).setAttribute('style', `${node.attrs.style}`)
     image.setAttribute('src', node.attrs.src)
   }
 }
