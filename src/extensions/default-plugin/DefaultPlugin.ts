@@ -9,7 +9,7 @@ import { Text } from '@tiptap/extension-text'
 
 export class DefaultPlugin extends Plugin {
   static get pluginName() {
-    return 'defaultplugin'
+    return 'default-plugin'
   }
   static get requires() {
     return [Document, Text, Paragraph, Gapcursor, HorizontalRule, HardBreak, Dropcursor]
