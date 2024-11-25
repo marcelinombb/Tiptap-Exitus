@@ -4,6 +4,7 @@ import { createHTMLElement } from '@editor/utils'
 import { type AnyExtension, Editor, type EditorOptions } from '@tiptap/core'
 interface Config {
   [key: string]: any
+  initialHeight?: number
 }
 
 export interface ExitusEditorOptions extends EditorOptions {
@@ -38,6 +39,7 @@ class ExitusEditor extends Editor {
   static plugins: PluginClassConstructor[]
   static toolbarOrder: string[]
   private container: Element
+  private config?: Config
 
   constructor(options: Partial<ExitusEditorOptions>) {
     if (!options.container) {
@@ -47,6 +49,8 @@ class ExitusEditor extends Editor {
     const extensions = loadPluginsRequirements()
 
     super({ ...options, extensions })
+
+    this.config = options.config
     this.editorInstance = generateUUID()
 
     const toolbarOrder: string[] = [...ExitusEditor.toolbarOrder, ...(options.toolbarOrder ?? [])]
@@ -83,7 +87,11 @@ class ExitusEditor extends Editor {
     editorMain.setAttribute('id', generateUUID())
     this.editorMainDiv = editorMain as HTMLDivElement
 
-    const editorScroller = createHTMLElement('div', { class: 'editor-scroller' }, [editorMain])
+    const initialHeight = this.config && this.config?.initialHeight
+
+    const editorScroller = createHTMLElement('div', { class: 'editor-scroller', style: initialHeight ? `height: ${initialHeight}px` : '' }, [
+      editorMain
+    ])
 
     const editorShell = createHTMLElement('div', { class: 'editor-shell' }, [toolbarEditor, editorScroller])
 

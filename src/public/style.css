@@ -330,7 +330,7 @@ p {
 
 .editor-main {
   position: relative;
-  min-height: 200px;
+  min-height: 100%;
   width: 24.8cm;
   background: #fff;
   border-color: var(--border-gray);

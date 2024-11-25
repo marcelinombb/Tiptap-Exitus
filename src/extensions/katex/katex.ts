@@ -1,6 +1,4 @@
-//@ts-nocheck
 import { Node } from '@tiptap/core'
-// eslint-disable-next-line import-helpers/order-imports
 import { Fragment } from '@tiptap/pm/model'
 import '../../../node_modules/katex/dist/katex.min.css'
 
