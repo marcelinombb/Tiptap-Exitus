@@ -1,5 +1,5 @@
 import { Plugin } from '@editor/Plugin'
-import { Button, type ButtonEventProps } from '@editor/ui/Button'
+import { type ButtonEventProps } from '@editor/ui/Button'
 import superscript from '@icons/superscript.svg'
 import Superscript from '@tiptap/extension-superscript'
 
@@ -13,16 +13,12 @@ export class SuperscriptPlugin extends Plugin {
   }
 
   init(): void {
-    const config = {
+    this.editor.toolbar.setButton('superscript', {
       icon: superscript,
       click: this.toggleSuperscript,
       checkActive: SuperscriptPlugin.pluginName,
-      tooltip: 'Subscrito (Ctrl + ,)'
-    }
-    const button = new Button(this.editor, config)
-    button.setParentToolbar(this.editor.toolbar)
-    button.bind('click', config.click)
-    this.editor.toolbar.setTool(SuperscriptPlugin.pluginName, button)
+      tooltip: 'Bloco de citação'
+    })
   }
 
   toggleSuperscript({ editor, button }: ButtonEventProps) {

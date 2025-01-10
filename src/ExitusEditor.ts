@@ -1,6 +1,6 @@
 import { type Plugin } from '@editor/Plugin'
 import { Toolbar } from '@editor/toolbar'
-import { createHTMLElement } from '@editor/utils'
+import { createHTMLElement, getHTMLFromFragment } from '@editor/utils'
 import { type AnyExtension, Editor, type EditorOptions } from '@tiptap/core'
 interface Config {
   [key: string]: any
@@ -98,6 +98,10 @@ class ExitusEditor extends Editor {
     this.toolbarItemsDiv = toolbarItemsDiv
 
     return editorShell
+  }
+
+  public getHTML(): string {
+    return getHTMLFromFragment(this.state.doc.content, this.schema)
   }
 
   private _createUI() {

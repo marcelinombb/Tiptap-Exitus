@@ -92,11 +92,9 @@ export class KatexBalloon {
 
   updatePosition(pos: number) {
     try {
-      //const resPos = selectionCell(this.editor.view.state)
       const { top, height, left, width } = getNodeBoundingClientRect(this.editor, pos)
       const main = this.editor.view.dom.getBoundingClientRect()
       this.balloon.setPosition(left - main.left + width / 2, top - main.y + height)
-      //this.balloon.show()
     } catch (error) {
       console.error(error)
     }

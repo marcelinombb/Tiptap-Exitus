@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Toolbar } from '@editor/toolbar'
 import { type DropDownEventProps } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
@@ -11,7 +10,7 @@ import tableRow from '@icons/table-lines.svg'
 import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
-import { type NodeView } from '@tiptap/pm/view'
+import { type NodeView, type ViewMutationRecord } from '@tiptap/pm/view'
 
 import { ItensModalTable } from './itensModalTable'
 import { updateColumnsOnResize } from './prosemirror-tables/src'
@@ -92,6 +91,7 @@ export class TableView implements NodeView {
     this.tableWrapper = document.createElement('div')
     this.dom = this.tableWrapper
     this.tableWrapper.classList.add('tableWrapper', 'tiptap-widget')
+    this.tableWrapper.draggable = false
     this.table = this.tableWrapper.appendChild(document.createElement('table'))
     this.colgroup = this.table.appendChild(document.createElement('colgroup'))
 
@@ -180,6 +180,10 @@ export class TableView implements NodeView {
     clickHandler(this)
   }
 
+  selectNode() {
+    this.tableWrapper.draggable = false
+  }
+
   deselectNode() {
     this.tableWrapper.classList.remove('ex-selected')
   }
@@ -226,7 +230,7 @@ export class TableView implements NodeView {
     return false
   }
 
-  ignoreMutation(mutation: MutationRecord | { type: 'selection'; target: Element }) {
+  ignoreMutation(mutation: ViewMutationRecord | { type: 'selection'; target: Element }) {
     if (mutation.type === 'attributes' && this.balloon.ballonMenu.contains(mutation.target)) {
       return true
     }
@@ -235,7 +239,7 @@ export class TableView implements NodeView {
       return true
     }
 
-    if (mutation.type === 'selection' && mutation.target.closest('.baloon-menu')) {
+    if (mutation.type === 'selection' && (mutation.target as Element).closest('.baloon-menu')) {
       return true
     }
 

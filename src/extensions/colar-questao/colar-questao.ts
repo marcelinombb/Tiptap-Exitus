@@ -152,10 +152,7 @@ export const ColarQuestao = Node.create({
 
       return {
         dom,
-        contentDOM: content,
-        selectNode() {
-          console.log('selected')
-        }
+        contentDOM: content
       }
     }
   }

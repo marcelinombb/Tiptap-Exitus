@@ -1,5 +1,5 @@
 import { Plugin } from '@editor/Plugin'
-import { Button, type ButtonEventProps } from '@editor/ui'
+import { type ButtonEventProps } from '@editor/ui'
 import subscript from '@icons/subscript.svg'
 import Subscript from '@tiptap/extension-subscript'
 
@@ -13,16 +13,12 @@ export class SubscriptPlugin extends Plugin {
   }
 
   init(): void {
-    const config = {
+    this.editor.toolbar.setButton('subscript', {
       icon: subscript,
       click: this.togglesubscript,
       checkActive: SubscriptPlugin.pluginName,
       tooltip: 'Subscrito (Ctrl + ,)'
-    }
-    const button = new Button(this.editor, config)
-    button.setParentToolbar(this.editor.toolbar)
-    button.bind('click', config.click)
-    this.editor.toolbar.setTool(SubscriptPlugin.pluginName, button)
+    })
   }
 
   togglesubscript({ editor, button }: ButtonEventProps) {

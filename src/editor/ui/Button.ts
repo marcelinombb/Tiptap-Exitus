@@ -37,7 +37,6 @@ export class Button implements Tool {
   button: HTMLButtonElement
   editor: ExitusEditor
   dropdown!: Dropdown
-  parentToolbar!: Toolbar
   constructor(
     editor: ExitusEditor,
     config: Partial<ButtonConfig>,
@@ -70,10 +69,6 @@ export class Button implements Tool {
     }
 
     return button
-  }
-
-  setParentToolbar(toolbar: Toolbar) {
-    this.parentToolbar = toolbar
   }
 
   bindEvents() {

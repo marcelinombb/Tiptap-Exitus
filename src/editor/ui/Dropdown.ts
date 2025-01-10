@@ -33,7 +33,6 @@ export class Dropdown implements Tool {
 
   button!: Button
   editor: ExitusEditor
-  parentToolbar!: Toolbar
 
   constructor(
     editor: ExitusEditor,
@@ -67,12 +66,7 @@ export class Dropdown implements Tool {
     this.dropdownContent = contents
   }
 
-  setParentToolbar(toolbar: Toolbar) {
-    this.parentToolbar = toolbar
-  }
-
   on() {
-    //this.parentToolbar.closeAllTools()
     this.dropdownContentContainer.style.display = 'block'
     this.isOpen = true
   }
@@ -93,7 +87,6 @@ export class Dropdown implements Tool {
         const target = event.target as HTMLElement
         if (!target.closest('.ex-dropdown') && this.config!.closeDropDown!(target)) {
           this.off()
-          window.removeEventListener('click', close)
         }
       }
       window.addEventListener('click', close)

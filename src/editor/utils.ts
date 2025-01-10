@@ -1,5 +1,5 @@
 import { type ChainedCommands, type Editor } from '@tiptap/core'
-import { type Node } from '@tiptap/pm/model'
+import { DOMSerializer, type Node, type Schema } from '@tiptap/pm/model'
 import { TextSelection } from '@tiptap/pm/state'
 import { Fragment } from 'prosemirror-model'
 
@@ -133,6 +133,22 @@ export function objParaCss(styles: Record<string, string>): string {
       cssString += `${property}: ${styles[property]}; `
     }
   }
-
   return cssString.trim()
+}
+
+export function getHTMLFromFragment(fragment: Fragment, schema: Schema): string {
+  const documentFragment = DOMSerializer.fromSchema(schema).serializeFragment(fragment)
+
+  const temporaryDocument = document.implementation.createHTMLDocument()
+  const container = temporaryDocument.createElement('div')
+
+  container.appendChild(documentFragment)
+
+  container.querySelectorAll('p').forEach(paragraph => {
+    if (paragraph.textContent?.trim() === '') {
+      paragraph.appendChild(document.createElement('br'))
+    }
+  })
+
+  return container.innerHTML
 }

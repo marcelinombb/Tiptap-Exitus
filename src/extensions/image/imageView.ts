@@ -31,11 +31,11 @@ function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
         balloon.hide()
         resizer.hide()
         imageWrapper.classList.remove('ex-selected')
-        window.removeEventListener('click', clickOutside)
+        window.removeEventListener('mousedown', clickOutside)
       }
     }
 
-    window.addEventListener('click', clickOutside)
+    window.addEventListener('mousedown', clickOutside)
   })
 }
 
@@ -109,8 +109,6 @@ function criarDropDown(dropdown: Dropdown, imageView: ImageView) {
   dropdownContent.className = 'ex-dropdownList-content'
 
   const original = sizeButton(dropdown, `original`, () => {
-    console.log(imageView.originalSize)
-
     return imageView.originalSize
   })
   const pequeno = sizeButton(dropdown, '300px', 300)

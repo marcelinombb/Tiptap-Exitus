@@ -1,5 +1,5 @@
 import { Plugin } from '@editor/Plugin'
-import { Button, type ButtonEventProps, Dropdown, type DropDownEventProps } from '@editor/ui'
+import { Button, type ButtonEventProps, type Dropdown, type DropDownEventProps } from '@editor/ui'
 import TableCell from '@extensions/table-cell/src'
 import table from '@icons/table-2.svg'
 import TableHeader from '@tiptap/extension-table-header'
@@ -38,25 +38,6 @@ export class TablePlugin extends Plugin {
         return this.createDropDownContent(dropdown)
       }
     )
-  }
-
-  tableDropDown() {
-    const dropdown = new Dropdown(this.editor, {
-      icon: table,
-      click: showTableGridDropdown,
-      tooltip: 'Inserir tabela',
-      classes: []
-    })
-
-    dropdown.setDropDownContent(this.createDropDownContent(dropdown))
-
-    window.addEventListener('click', function (event: Event) {
-      event.stopPropagation()
-      if (dropdown.isOpen) {
-        dropdown.off()
-      }
-    })
-    return dropdown
   }
 
   createDropDownContent(dropdown: Dropdown) {
