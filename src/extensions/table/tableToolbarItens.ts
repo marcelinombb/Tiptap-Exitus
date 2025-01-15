@@ -1,9 +1,9 @@
 //@ts-nocheck
 import { Button, Dropdown, type DropDownEventProps } from '@editor/ui'
 import arrowDropDown from '@icons/arrow-drop-down-line.svg'
-import tableCell from '@icons/merge-tableCells.svg'
-import tableColumns from '@icons/table-columns.svg'
-import tableRow from '@icons/table-lines.svg'
+import tableColumns from '@icons/table-column.svg'
+import tableCell from '@icons/table-merge-cell.svg'
+import tableRow from '@icons/table-row.svg'
 import type ExitusEditor from 'src/ExitusEditor'
 
 let botaoAtivo: Button | null = null

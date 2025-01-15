@@ -177,10 +177,6 @@ export class ItensModalTable {
       this.aplicarDimensoesTabela()
     })
 
-    this.inputLargura.addEventListener('change', () => {
-      this.aplicarDimensoesTabela()
-    })
-
     const dimensoesLabel = document.createElement('strong')
     dimensoesLabel.textContent = 'Dimensões'
     dimensoesLabel.className = 'ex-labels'

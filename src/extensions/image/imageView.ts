@@ -14,22 +14,20 @@ import { type NodeView } from '@tiptap/pm/view'
 import { convertToBase64 } from './image'
 import ResizableImage from './ResizableImage'
 
-function imageClickHandler({ imageWrapper, balloon, resizer }: ImageView) {
+function imageClickHandler({ imageWrapper, balloon }: ImageView) {
   imageWrapper.addEventListener('click', event => {
     event.stopPropagation()
     imageWrapper.classList.add('ex-selected')
 
     if (!balloon.isOpen()) {
       balloon.show()
-      resizer.show()
     }
 
     function clickOutside(event: Event) {
       const target = event.target as HTMLElement
 
-      if (!target.matches('.ex-image-wrapper')) {
+      if (target.closest('.ex-image-wrapper') === null) {
         balloon.hide()
-        resizer.hide()
         imageWrapper.classList.remove('ex-selected')
         window.removeEventListener('mousedown', clickOutside)
       }
@@ -223,7 +221,7 @@ export class ImageView implements NodeView {
 
   urlToBase64(url: string) {
     const image = new Image()
-    image.src = `https://us-central1-desenvolvimento-271520.cloudfunctions.net/imagem-conversao-base64/proxy/${encodeURIComponent(url)}`
+    image.src = `${this.proxyUrl}/${encodeURIComponent(url)}`
     image.setAttribute('crossorigin', 'anonymous')
     image.onload = convertToBase64(image, (base64Url, width) => {
       this.updateAttributes({ src: base64Url })

@@ -74,7 +74,7 @@ export default class TableFocus {
       this.handleClick()
     })
     this.selectTable = element.appendChild(pegaTabela)
-    this.selectTable.classList.add('ex-pegaTabela')
+    this.selectTable.classList.add('ex-focus-table')
   }
 
   private createButton(editor: ExitusEditor, icone: string, onClick: () => void): HTMLElement {

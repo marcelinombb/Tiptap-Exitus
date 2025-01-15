@@ -32,9 +32,9 @@
     "@tiptap/extension-strike": "^2.11.0",
     "@tiptap/extension-subscript": "^2.11.0",
     "@tiptap/extension-superscript": "^2.11.0",
-    "@tiptap/extension-table-cell": "^2.11.0",
-    "@tiptap/extension-table-header": "^2.11.0",
-    "@tiptap/extension-table-row": "^2.11.0",
+    "@tiptap/extension-table-cell": "^2.11.2",
+    "@tiptap/extension-table-header": "^2.11.2",
+    "@tiptap/extension-table-row": "^2.11.2",
     "@tiptap/extension-text": "^2.11.0",
     "@tiptap/extension-text-align": "^2.11.0",
     "@tiptap/extension-underline": "^2.11.0",
@@ -65,6 +65,7 @@
   },
   "dependencies": {
     "@simonwep/pickr": "^1.9.1",
+    "@tiptap/extension-table": "^2.11.2",
     "@tiptap/pm": "^2.11.0",
     "@wiris/mathtype-html-integration-devkit": "^1.17.5",
     "katex": "^0.16.11"

@@ -108,7 +108,7 @@ export const Image = Node.create<ImageOptions>({
         default: 'ex-image-wrapper ex-image-block-middle tiptap-widget'
       },
       style: {
-        default: 'display: table-cell',
+        default: '',
         parseHTML: element => {
           const parent = element!.parentNode as HTMLElement
           if (

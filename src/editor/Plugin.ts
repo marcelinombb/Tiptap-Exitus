@@ -1,12 +1,7 @@
 import type ExitusEditor from '@src/ExitusEditor'
 import { type AnyExtension } from '@tiptap/core'
 
-export interface PluginInterface {
-  init(): void
-  destroy(): void
-}
-
-export class Plugin implements PluginInterface {
+export class Plugin {
   config: Record<string, string>
   constructor(
     readonly editor: ExitusEditor,

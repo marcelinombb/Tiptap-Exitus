@@ -23,10 +23,22 @@ function generateUUID() {
   })
 }
 
-function loadPluginsRequirements() {
-  return ExitusEditor.plugins.reduce<AnyExtension[]>((acc, plugin) => {
-    return [...acc, ...plugin.requires]
+function loadPluginsRequirements(options: Partial<ExitusEditorOptions>) {
+  const plugins = ExitusEditor.plugins.reduce<AnyExtension[]>((acc, plugin) => {
+    const requirements = plugin.requires.map(p => {
+      if (plugin.pluginName === p.name) {
+        if (options.config?.[plugin.pluginName]) {
+          return p.configure(options.config?.[plugin.pluginName])
+        }
+      }
+
+      return p
+    })
+
+    return [...acc, ...requirements]
   }, [])
+
+  return plugins
 }
 
 class ExitusEditor extends Editor {
@@ -46,7 +58,7 @@ class ExitusEditor extends Editor {
       throw new Error('Invalid Container Element !!')
     }
 
-    const extensions = loadPluginsRequirements()
+    const extensions = loadPluginsRequirements(options)
 
     super({ ...options, extensions })
 

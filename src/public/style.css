@@ -230,7 +230,7 @@ p {
   display: none !important;
 }
 
-.ex-toolbar-button:not(.ex-bolinha):not(.ex-pegaTabela):not(.ex-button-disabled):hover {
+.ex-toolbar-button:not(.ex-bolinha):not(.ex-focus-table):not(.ex-button-disabled):hover {
   background: #f0f0f0;
 }
 .ex-button-disabled {
@@ -597,8 +597,12 @@ p {
   display: block;
 }
 
+.ex-selected .resizer {
+  display: block;
+}
 
 .resizer {
+  display: none;
   width: 10px;
   height: 10px;
   background-color: var(--active-blue);
@@ -785,7 +789,7 @@ p {
   display: none;
 }
 
-.ex-pegaTabela {
+.ex-focus-table {
   width: 26px;
   height: 23px;
   background-color: hsl(218, 81.8%, 56.9%);
@@ -799,7 +803,7 @@ p {
 }
 
 .tableWrapper:not(.ex-selected) {
-  .ex-pegaTabela {
+  .ex-focus-table {
     background-color: #ffc83d;
   }
   .ex-bolinha {

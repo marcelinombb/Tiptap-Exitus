@@ -24,7 +24,7 @@ export default class ResizableImage {
 
   private initializeResizers() {
     const resizerContainer = document.createElement('div')
-    resizerContainer.className = 'resizers-container ex-hidden'
+    resizerContainer.className = 'resizers-container'
     this.topLeftResizer = this.createResizer(resizerContainer, 'top-left')
     this.topRightResizer = this.createResizer(resizerContainer, 'top-right')
     this.bottomLeftResizer = this.createResizer(resizerContainer, 'bottom-left')

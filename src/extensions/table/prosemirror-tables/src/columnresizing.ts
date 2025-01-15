@@ -221,7 +221,6 @@ function handleMouseDown(
     if (pluginState?.dragging) {
       const dragged = draggedWidth(pluginState.dragging, event, cellMinWidth);
       const { maxWidth } = pluginState.dragging;
-      //if (dragged <= pluginState.dragging.maxWidth) {
       updateColumnWidth(
         view,
         pluginState.activeHandle,
@@ -230,7 +229,6 @@ function handleMouseDown(
       view.dispatch(
         view.state.tr.setMeta(columnResizingPluginKey, { setDragging: null }),
       );
-      //}
     }
   }
 
