@@ -5,6 +5,7 @@ import { BlockquotePlugin } from './extensions/blockquote/BlockquotePlugin'
 import { BoldPlugin } from './extensions/bold/BoldPlugin'
 import { ColarQuestaoPlugin } from './extensions/colar-questao/ColarQuestaoPlugin'
 import { DefaultPlugin } from './extensions/default-plugin/DefaultPlugin'
+import { FormatClear } from './extensions/format-clear/FormatClearPlugin'
 import { HistoryPlugin } from './extensions/history/HistoryPlugin'
 import { ImagePlugin } from './extensions/image/ImagePlugin'
 import { IndentPlugin } from './extensions/indent/IndentPlugin'
@@ -38,7 +39,8 @@ ExitusEditor.plugins = [
   ListItemPlugin,
   TabPlugin,
   IndentPlugin,
-  ColarQuestaoPlugin
+  ColarQuestaoPlugin,
+  FormatClear
 ]
 
 ExitusEditor.toolbarOrder = [
@@ -48,6 +50,7 @@ ExitusEditor.toolbarOrder = [
   'strike',
   'subscript',
   'superscript',
+  'formatClear',
   '|',
   'table',
   'textAlign',
