@@ -198,12 +198,13 @@ function ensureBlockContent(slice: Slice, schema: Schema) {
     const paragraph = schema.nodes.paragraph.create(null, inlineNodes)
     inlineNodes = []
     blockNodes.push(paragraph)
-  } else {
-    const paragraph = schema.nodes.paragraph.create(null, null)
-    blockNodes.push(paragraph)
   }
 
-  const fragment = Fragment.fromArray(blockNodes)
+  let fragment = Fragment.fromArray(blockNodes)
+
+  if (fragment.size === 0) {
+    fragment = Fragment.fromArray([schema.nodes.paragraph.create(null, null)])
+  }
 
   return new Slice(fragment, slice.openStart, slice.openEnd)
 }

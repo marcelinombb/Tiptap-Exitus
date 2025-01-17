@@ -15,6 +15,10 @@ export class ColarQuestaoPlugin extends Plugin {
 
   init() {}
 
+  addColarQuestao(title: string) {
+    this.editor.commands.addColarQuestao(title)
+  }
+
   getColarQuestao() {
     const nodes: Record<string, string> = {}
 
