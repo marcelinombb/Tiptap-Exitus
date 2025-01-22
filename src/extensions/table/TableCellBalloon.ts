@@ -1,4 +1,4 @@
-import { Balloon, Button } from '@editor/ui'
+import { Balloon, BalloonPosition, Button } from '@editor/ui'
 import { getNodeBoundingClientRect } from '@editor/utils'
 import { selectionCell } from '@extensions/table/prosemirror-tables/src'
 import textDr from '@icons/align-bottom.svg'
@@ -49,14 +49,25 @@ export class TableCellBalloon {
   editor: ExitusEditor
   itenModal!: ItensModalCell
 
+  public static instance = new WeakMap<ExitusEditor, TableCellBalloon>()
+
   constructor(editor: ExitusEditor) {
     this.editor = editor
     this.balloon = new Balloon(editor, {
-      position: 'float'
+      position: BalloonPosition.FLOAT,
+      arrowPosition: 'top'
     })
     this.itenModal = new ItensModalCell(editor, this)
     this.balloon.setPanelContent(this.itenModal.render())
     editor.view.dom!.parentElement!.appendChild(this.balloon.getBalloon())
+  }
+
+  public static getInstance(editor: ExitusEditor): TableCellBalloon {
+    if (!TableCellBalloon.instance.has(editor)) {
+      TableCellBalloon.instance.set(editor, new TableCellBalloon(editor))
+    }
+
+    return TableCellBalloon.instance.get(editor) as TableCellBalloon
   }
 
   destroy() {
@@ -79,7 +90,7 @@ export class TableCellBalloon {
       const { top, height, left, width } = getNodeBoundingClientRect(this.editor, resPos.pos)
       const main = this.editor.view.dom.getBoundingClientRect()
       this.updateSyleDefaults(resPos)
-      this.balloon.setPosition(left - main.left + width / 2, top - main.y + height)
+      this.balloon.setPosition(left - main.left + width / 2, top - main.y + height, 'bottom')
     } catch (error) {
       console.error(error)
     }
@@ -200,11 +211,7 @@ export class ItensModalCell {
   }
 
   updateBackGroundValue(attr: Attrs) {
-    if (attr?.background) {
-      this.cellBackgroundColorPickr?.setColor(attr.background)
-    } else {
-      this.cellBackgroundColorPickr?.setColor('')
-    }
+    this.cellBackgroundColorPickr?.setColor(attr?.background ?? '#ffffffff')
   }
 
   updateSizeValue(attr: Attrs) {
@@ -348,11 +355,6 @@ export class ItensModalCell {
     iconCancela.className = 'ex-icone-cancelamento'
 
     const botaoConfirma = createButton(this.editor, 'Salvar', () => {
-      /* const borderColor = this.cellBorderColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
-      const backgroundColor = this.cellBackgroundColorPickr?.getColor()?.toRGBA()?.toString() ?? ''
-      this.aplicarEstiloBorda(borderColor)
-      this.aplicarEstiloCelulas(backgroundColor)
-      this.aplicarDimensoesTabela() */
       this.balloon.off()
     })
     botaoConfirma.className = 'ex-botaoSalvar'

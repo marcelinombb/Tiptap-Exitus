@@ -23,7 +23,8 @@ export class KatexBalloon {
     const { display, latexFormula } = latexConfig
     this.editor = editor
     this.balloon = new Balloon(editor, {
-      position: position
+      position: position,
+      arrowPosition: 'top'
     })
 
     this.input = createHTMLElement('input', {
@@ -94,7 +95,7 @@ export class KatexBalloon {
     try {
       const { top, height, left, width } = getNodeBoundingClientRect(this.editor, pos)
       const main = this.editor.view.dom.getBoundingClientRect()
-      this.balloon.setPosition(left - main.left + width / 2, top - main.y + height)
+      this.balloon.setPosition(left - main.left + width / 2, top - main.y + height, 'bottom')
     } catch (error) {
       console.error(error)
     }

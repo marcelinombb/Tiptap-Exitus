@@ -49,12 +49,16 @@ export const TableCustom = Table.extend({
     const styleTableWrapper = HTMLAttributes.styleTableWrapper || {}
 
     const mergedAttributes = mergeAttributes(this.options.HTMLAttributes, {
-      style: objParaCss({ width: tableWidth, ...style })
+      style: objParaCss(style)
     })
 
     const table: DOMOutputSpec = [
       'div',
-      ['div', { class: 'tableWrapper tiptap-widget', style: objParaCss(styleTableWrapper) }, ['table', mergedAttributes, colgroup, ['tbody', 0]]]
+      [
+        'div',
+        { class: 'tableWrapper tiptap-widget', style: objParaCss({ width: tableWidth, ...styleTableWrapper }) },
+        ['table', mergedAttributes, colgroup, ['tbody', 0]]
+      ]
     ]
     return table
   },

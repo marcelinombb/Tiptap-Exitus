@@ -1,5 +1,5 @@
 import { Plugin } from '@editor/Plugin'
-import { type ButtonEventProps } from '@editor/ui'
+import { BalloonPosition, type ButtonEventProps } from '@editor/ui'
 import formula from '@icons/formula.svg'
 import './style.css'
 
@@ -61,7 +61,7 @@ export class KatexPlugin extends Plugin {
       },
       confirmButtonCallback,
       cancelButtonCallback,
-      'float'
+      BalloonPosition.FLOAT
     )
 
     const focus = () => {
@@ -75,6 +75,6 @@ export class KatexPlugin extends Plugin {
     editor.on('focus', focus)
 
     editor.editorMainDiv.appendChild(balloon.getBalloon())
-    balloon.balloon.setPosition(left - main.left, bottom - main.y)
+    balloon.balloon.setPosition(left - main.left, bottom - main.y, 'bottom')
   }
 }

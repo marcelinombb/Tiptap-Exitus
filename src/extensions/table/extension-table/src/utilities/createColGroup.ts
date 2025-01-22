@@ -24,7 +24,7 @@ export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, over
 
     for (let j = 0; j < colspan; j += 1, col += 1) {
       const hasWidth = (overrideCol === col ? overrideValue : colwidth && colwidth[j]) ?? 100
-      const cssWidth = hasWidth ? `${hasWidth}px` : ''
+      const cssWidth = hasWidth ? `${(Number(hasWidth) / 857) * 100}%` : ''
 
       totalWidth += hasWidth || cellMinWidth
 
@@ -36,8 +36,8 @@ export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, over
     }
   }
 
-  const tableWidth = fixedWidth ? `${totalWidth}px` : ''
-  const tableMinWidth = fixedWidth ? '' : `${totalWidth}px`
+  const tableWidth = fixedWidth ? `${(Number(totalWidth) / 857) * 100}%` : ''
+  const tableMinWidth = fixedWidth ? '' : `${(Number(totalWidth) / 857) * 100}%`
 
   const colgroup: DOMOutputSpec = ['colgroup', {}, ...cols]
 

@@ -1,3 +1,4 @@
+import { BalloonPosition } from '@editor/ui'
 import { createHTMLElement, setSelectionAfter } from '@editor/utils'
 import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
@@ -67,7 +68,7 @@ export class KatexView implements NodeView {
       },
       confirmBalloon.bind(this),
       cancelBalloon.bind(this),
-      'float'
+      BalloonPosition.FLOAT
     )
 
     this.renderedLatex = document.createElement('span')

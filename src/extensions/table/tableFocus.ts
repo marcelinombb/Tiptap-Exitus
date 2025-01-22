@@ -5,6 +5,7 @@ import setaBaixo from '@icons/corner-down-right-line.svg'
 import selecionaIcon from '@icons/select-all.svg'
 import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
+import { NodeSelection } from '@tiptap/pm/state'
 
 import { type TableView } from './TableView'
 
@@ -83,6 +84,14 @@ export default class TableFocus {
       classList: ['ex-getTable']
     })
     button.button.addEventListener('pointerdown', onClick)
+    button.button.addEventListener('click', () => {
+      const { view } = this.tableView.editor
+      if (typeof this.tableView.getPos === 'function') {
+        const transaction = view.state.tr.setSelection(NodeSelection.create(view.state.doc, this.tableView.getPos()))
+        this.tableView.tableWrapper.classList.add('ex-selected')
+        view.dispatch(transaction)
+      }
+    })
     return button.render()
   }
 }

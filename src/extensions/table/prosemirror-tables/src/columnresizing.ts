@@ -346,7 +346,7 @@ function updateColumnWidth(
     if (attrs.colwidth && attrs.colwidth[index] == width) continue;
     const colwidth = attrs.colwidth
       ? attrs.colwidth.slice()
-      : zeroes(attrs.colspan);
+      : zeroes(attrs.colspan)
     colwidth[index] = width;
     tr.setNodeMarkup(start + pos, null, { ...attrs, colwidth: colwidth });
   }
@@ -374,7 +374,7 @@ function displayColumnWidth(
   updateColumnsOnResize(
     table,
     dom.firstChild as HTMLTableColElement,
-    dom as HTMLTableElement,
+    dom.parentElement as HTMLTableElement,
     cellMinWidth,
     col,
     width,

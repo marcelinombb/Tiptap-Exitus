@@ -57,7 +57,9 @@ export function updateColumnsOnResize(
     for (let j = 0; j < colspan; j++, col++) {
       const hasWidth =
         (overrideCol == col ? overrideValue : colwidth && colwidth[j]) ?? cellMinWidth;
-      const cssWidth = hasWidth ? hasWidth + 'px' : '';
+
+      const cssWidth = hasWidth ? `${(Number(hasWidth) / 857) * 100}%` : '';
+
       totalWidth += hasWidth || cellMinWidth;
       if (!hasWidth) fixedWidth = false;
       if (!nextDOM) {
@@ -77,10 +79,10 @@ export function updateColumnsOnResize(
   }
 
   if (fixedWidth) {
-    table.style.width = totalWidth + 'px';
+    table.style.width = `${(Number(totalWidth) / 857) * 100}%`;
     table.style.minWidth = '';
   } else {
     table.style.width = '';
-    table.style.minWidth = totalWidth + 'px';
+    table.style.minWidth = `${(Number(totalWidth) / 857) * 100}%`;
   }
 }

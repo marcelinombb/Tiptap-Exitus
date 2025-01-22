@@ -1,3 +1,4 @@
+import { EventBus } from '@editor/EventBus'
 import { type Plugin } from '@editor/Plugin'
 import { Toolbar } from '@editor/toolbar'
 import { createHTMLElement, getHTMLFromFragment } from '@editor/utils'
@@ -52,7 +53,7 @@ class ExitusEditor extends Editor {
   static toolbarOrder: string[]
   private container: Element
   private config?: Config
-
+  private _eventBus: EventBus
   constructor(options: Partial<ExitusEditorOptions>) {
     if (!options.container) {
       throw new Error('Invalid Container Element !!')
@@ -61,6 +62,7 @@ class ExitusEditor extends Editor {
     const extensions = loadPluginsRequirements(options)
 
     super({ ...options, extensions })
+    this._eventBus = new EventBus()
 
     this.config = options.config
     this.editorInstance = generateUUID()
@@ -114,6 +116,10 @@ class ExitusEditor extends Editor {
 
   public getHTML(): string {
     return getHTMLFromFragment(this.state.doc.content, this.schema)
+  }
+
+  get eventBus() {
+    return this._eventBus
   }
 
   private _createUI() {

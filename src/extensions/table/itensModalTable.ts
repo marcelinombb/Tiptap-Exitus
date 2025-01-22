@@ -43,7 +43,6 @@ const createPickrInstance = (selector: string, onCancel: () => void): Pickr => {
 
 export class ItensModalTable {
   private editor: ExitusEditor
-  private style: any
   private selectInput: HTMLSelectElement
   private cellBackgroundColorPickr: Pickr | null
   private larguraBloco1: HTMLInputElement
@@ -51,9 +50,10 @@ export class ItensModalTable {
   private inputAltura: HTMLInputElement
   private inputLargura: HTMLInputElement
 
-  constructor(editor: ExitusEditor, style: any) {
+  public static instance = new WeakMap<ExitusEditor, ItensModalTable>()
+
+  constructor(editor: ExitusEditor) {
     this.editor = editor
-    this.style = style
 
     this.selectInput = document.createElement('select')
     this.selectInput.style.width = '80px'
@@ -77,26 +77,35 @@ export class ItensModalTable {
       this.selectInput.appendChild(option)
     })
 
-    const [size = '', border = 'none'] = (this.style.border ?? '').split(' ')
-
-    this.selectInput.value = border
-
     this.larguraBloco1 = createInput('number', 'Largura')
     this.larguraBloco1.className = 'ex-largura1'
     this.larguraBloco1.disabled = true
     this.larguraBloco1.style.cursor = 'not-allowed'
-    this.larguraBloco1.value = size.replace('px', '')
 
     this.cellBorderColorPickr = null
     this.cellBackgroundColorPickr = null
 
     this.inputAltura = createInput('number', 'Altura')
     this.inputAltura.className = 'ex-inputDimensoes'
-    this.inputAltura.value = style.height ? style.height.replace('em', '') : ''
 
     this.inputLargura = createInput('number', 'Largura')
     this.inputLargura.className = 'ex-inputDimensoes'
+  }
+
+  public updateStyles(style: any) {
+    const [size = '', border = 'none'] = (style.border ?? '').split(' ')
+    this.larguraBloco1.value = size.replace('px', '')
+    this.selectInput.value = border
+    this.inputAltura.value = style.height ? style.height.replace('em', '') : ''
     this.inputLargura.value = style.width ? style.width.replace('em', '') : ''
+  }
+
+  public static getIntance(editor: ExitusEditor) {
+    if (!ItensModalTable.instance.has(editor)) {
+      ItensModalTable.instance.set(editor, new ItensModalTable(editor))
+    }
+    //ItensModalTable.instance.updateStyles(style)
+    return ItensModalTable.instance.get(editor) as ItensModalTable
   }
 
   public render() {

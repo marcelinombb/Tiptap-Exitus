@@ -13,7 +13,8 @@ export enum BalloonPosition {
 }
 
 export interface BalloonOptions {
-  position: 'top' | 'bottom' | 'float'
+  position: BalloonPosition
+  arrowPosition?: 'top' | 'bottom'
 }
 
 export class Balloon {
@@ -21,7 +22,7 @@ export class Balloon {
   ballonPanel!: HTMLDivElement
   editor: Editor
   options: BalloonOptions = {
-    position: 'bottom'
+    position: BalloonPosition.BOTTOM
   }
   constructor(editor: Editor, options?: BalloonOptions) {
     this.editor = editor
@@ -56,7 +57,13 @@ export class Balloon {
 
     this.ballonPanel = this.ballonMenu.appendChild(document.createElement('div'))
 
-    const arrowDirection = this.options.position == BalloonPosition.TOP ? 'balloon-arrow-down' : 'balloon-arrow-up'
+    let arrowDirection
+
+    if (this.options.position === BalloonPosition.FLOAT) {
+      arrowDirection = this.options.arrowPosition == 'top' ? 'balloon-arrow-up' : 'balloon-arrow-down'
+    } else {
+      arrowDirection = this.options.position == BalloonPosition.TOP ? 'balloon-arrow-down' : 'balloon-arrow-up'
+    }
 
     this.ballonPanel.classList.add('balloon-panel', arrowDirection)
 
@@ -75,12 +82,20 @@ export class Balloon {
     this.ballonPanel.appendChild(content)
   }
 
-  setPosition(x: number, y: number) {
+  setPosition(x: number, y: number, position: 'top' | 'bottom') {
     //+10 is the height of the arrow
-    this.ballonMenu.style.top = `${y + 10}px`
-    this.ballonMenu.style.left = `${x}px`
 
     this.ballonMenu.classList.remove('ex-hidden')
+    const menuHeight = this.ballonMenu.scrollHeight
+
+    if (position === 'top') {
+      y = y - menuHeight
+    } else {
+      y = y + (0 + 10)
+    }
+
+    this.ballonMenu.style.top = `${y}px`
+    this.ballonMenu.style.left = `${x}px`
 
     requestAnimationFrame(() => {
       this.ballonMenu.classList.add(`balloon-menu-${this.options.position}-center`)
