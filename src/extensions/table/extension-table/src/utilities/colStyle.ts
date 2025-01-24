@@ -1,14 +1,15 @@
 export function getColStyleDeclaration(minWidth: number, width: number | undefined): [string, string] {
   if (width) {
-    const maxWidth = 857
-    const finalWidth = Math.min(Math.max(width, minWidth), maxWidth)
-    return ['width', `${finalWidth}px`]
+    // apply the stored width unless it is below the configured minimum cell width
+    return ['width', `${calculatePercentage(Math.max(width, minWidth))}%`]
   }
 
-  return ['min-width', `${minWidth}px`]
+  // set the minimum with on the column if it has no stored width
+  return ['min-width', `${calculatePercentage(minWidth)}%`]
 }
 
 export function calculatePercentage(totalWidth: number) {
-  const maxWidth = 857
-  return Math.min(Number(totalWidth), maxWidth)
+  const percentage = (Number(totalWidth) / 857) * 100
+  return Math.min(percentage, 100).toFixed(4)
+  //return totalWidth
 }
