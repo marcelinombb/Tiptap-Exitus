@@ -191,7 +191,6 @@ function handleMouseDown(
   cellMinWidth: number,
 ): boolean {
   const win = view.dom.ownerDocument.defaultView ?? window;
-
   const pluginState = columnResizingPluginKey.getState(view.state);
   if (!pluginState || pluginState.activeHandle == -1 || pluginState.dragging)
     return false;
@@ -208,7 +207,7 @@ function handleMouseDown(
       setDragging: {
         startX: event.clientX,
         startWidth: width,
-        maxWidth: 860 - (table.width - width),
+        maxWidth: 857 - (table.width - width),
       },
     }),
   );
@@ -224,7 +223,7 @@ function handleMouseDown(
       updateColumnWidth(
         view,
         pluginState.activeHandle,
-        Math.min(maxWidth - 1, dragged),
+        Math.min(maxWidth, dragged),
       );
       view.dispatch(
         view.state.tr.setMeta(columnResizingPluginKey, { setDragging: null }),
@@ -348,6 +347,8 @@ function updateColumnWidth(
       ? attrs.colwidth.slice()
       : zeroes(attrs.colspan)
     colwidth[index] = width;
+    console.log(colwidth);
+
     tr.setNodeMarkup(start + pos, null, { ...attrs, colwidth: colwidth });
   }
   if (tr.docChanged) view.dispatch(tr);

@@ -43,7 +43,7 @@ export const TableCustom = Table.extend({
     }
   },
   renderHTML({ node, HTMLAttributes }) {
-    const { colgroup, tableWidth } = createColGroup(node, this.options.cellMinWidth)
+    const { colgroup, tableWidth, tableMinWidth } = createColGroup(node, this.options.cellMinWidth)
 
     const style = HTMLAttributes.style || {}
     const styleTableWrapper = HTMLAttributes.styleTableWrapper || {}
@@ -56,7 +56,7 @@ export const TableCustom = Table.extend({
       'div',
       [
         'div',
-        { class: 'tableWrapper tiptap-widget', style: objParaCss({ width: tableWidth, ...styleTableWrapper }) },
+        { class: 'tableWrapper tiptap-widget', style: objParaCss({ ...styleTableWrapper, width: tableWidth || tableMinWidth }) },
         ['table', mergedAttributes, colgroup, ['tbody', 0]]
       ]
     ]

@@ -247,7 +247,7 @@ export const Table = Node.create<TableOptions>({
       // TODO: fix
       View: null,
       lastColumnResizable: true,
-      allowTableNodeSelection: false
+      allowTableNodeSelection: true
     }
   },
 

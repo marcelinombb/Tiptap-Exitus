@@ -6,6 +6,7 @@ import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 
 import { TableCustom } from './table'
+import './styles.css'
 
 export class TablePlugin extends Plugin {
   static get pluginName() {
@@ -17,11 +18,13 @@ export class TablePlugin extends Plugin {
       TableCustom.configure({
         resizable: true,
         allowTableNodeSelection: true,
-        cellMinWidth: 100
+        cellMinWidth: 30
       }),
       TableRow,
       TableHeader,
-      TableCell
+      TableCell.configure({
+        cellMinWidth: 30
+      })
     ]
   }
 

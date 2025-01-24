@@ -1,5 +1,15 @@
 import { type DOMOutputSpec, type Node as ProseMirrorNode } from '@tiptap/pm/model'
 
+import { calculatePercentage, getColStyleDeclaration } from './colStyle'
+
+export type ColGroup =
+  | {
+      colgroup: DOMOutputSpec
+      tableWidth: string
+      tableMinWidth: string
+    }
+  | Record<string, never>
+
 /**
  * Creates a colgroup element for a table node in ProseMirror.
  *
@@ -9,7 +19,9 @@ import { type DOMOutputSpec, type Node as ProseMirrorNode } from '@tiptap/pm/mod
  * @param overrideValue - (Optional) The width value to use for the overridden column.
  * @returns An object containing the colgroup element, the total width of the table, and the minimum width of the table.
  */
-export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, overrideCol?: number, overrideValue?: any) {
+export function createColGroup(node: ProseMirrorNode, cellMinWidth: number): ColGroup
+export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, overrideCol: number, overrideValue: number): ColGroup
+export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, overrideCol?: number, overrideValue?: number): ColGroup {
   let totalWidth = 0
   let fixedWidth = true
   const cols: DOMOutputSpec[] = []
@@ -23,8 +35,7 @@ export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, over
     const { colspan, colwidth } = row.child(i).attrs
 
     for (let j = 0; j < colspan; j += 1, col += 1) {
-      const hasWidth = (overrideCol === col ? overrideValue : colwidth && colwidth[j]) ?? 100
-      const cssWidth = hasWidth ? `${(Number(hasWidth) / 857) * 100}%` : ''
+      const hasWidth = overrideCol === col ? overrideValue : colwidth && (colwidth[j] as number | undefined)
 
       totalWidth += hasWidth || cellMinWidth
 
@@ -32,12 +43,14 @@ export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, over
         fixedWidth = false
       }
 
-      cols.push(['col', cssWidth ? { style: `width: ${cssWidth}` } : {}])
+      const [property, value] = getColStyleDeclaration(cellMinWidth, hasWidth)
+
+      cols.push(['col', { style: `${property}: ${value}` }])
     }
   }
 
-  const tableWidth = fixedWidth ? `${(Number(totalWidth) / 857) * 100}%` : ''
-  const tableMinWidth = fixedWidth ? '' : `${(Number(totalWidth) / 857) * 100}%`
+  const tableWidth = fixedWidth ? `${calculatePercentage(totalWidth)}%` : ''
+  const tableMinWidth = fixedWidth ? '' : `${calculatePercentage(totalWidth)}%`
 
   const colgroup: DOMOutputSpec = ['colgroup', {}, ...cols]
 

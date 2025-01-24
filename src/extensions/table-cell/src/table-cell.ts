@@ -9,6 +9,7 @@ export interface TableCellOptions {
    * @example { class: 'foo' }
    */
   HTMLAttributes: Record<string, any>
+  cellMinWidth: number
 }
 
 /**
@@ -29,7 +30,8 @@ export const TableCell = Node.create<TableCellOptions>({
 
   addOptions() {
     return {
-      HTMLAttributes: {}
+      HTMLAttributes: {},
+      cellMinWidth: 30
     }
   },
 
@@ -71,7 +73,7 @@ export const TableCell = Node.create<TableCellOptions>({
   renderHTML({ HTMLAttributes }) {
     const attributesMerged = mergeAttributes(this.options.HTMLAttributes, {
       ...HTMLAttributes,
-      colwidth: HTMLAttributes.colwidth ?? [100],
+      colwidth: HTMLAttributes.colwidth ?? [''],
       style: objParaCss(HTMLAttributes.style)
     })
 
