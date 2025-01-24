@@ -45,6 +45,7 @@ export function updateColumnsOnResize(
   cellMinWidth: number,
   overrideCol?: number,
   overrideValue?: number,
+  fixed: boolean = false
 ): void {
   let totalWidth = 0;
   let fixedWidth = true;
@@ -94,7 +95,7 @@ export function updateColumnsOnResize(
 
   const realTable = (table.firstElementChild) as HTMLTableElement
 
-  if (fixedWidth) {
+  if (fixedWidth || fixed) {
     console.log('fixed');
     realTable.classList.add('table-resized')
     table.style.width = `${calculatePercentage(totalWidth)}%`

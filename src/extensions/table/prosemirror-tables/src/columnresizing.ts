@@ -347,8 +347,6 @@ function updateColumnWidth(
       ? attrs.colwidth.slice()
       : zeroes(attrs.colspan)
     colwidth[index] = width;
-    console.log(colwidth);
-
     tr.setNodeMarkup(start + pos, null, { ...attrs, colwidth: colwidth });
   }
   if (tr.docChanged) view.dispatch(tr);
@@ -379,6 +377,7 @@ function displayColumnWidth(
     cellMinWidth,
     col,
     width,
+    true
   );
 }
 
