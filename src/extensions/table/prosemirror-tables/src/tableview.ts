@@ -96,7 +96,6 @@ export function updateColumnsOnResize(
   const realTable = (table.firstElementChild) as HTMLTableElement
 
   if (fixedWidth || fixed) {
-    console.log('fixed');
     realTable.classList.add('table-resized')
     table.style.width = `${calculatePercentage(totalWidth)}%`
     table.style.minWidth = ''

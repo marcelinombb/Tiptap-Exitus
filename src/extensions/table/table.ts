@@ -49,6 +49,7 @@ export const TableCustom = Table.extend({
     const styleTableWrapper = HTMLAttributes.styleTableWrapper || {}
 
     const mergedAttributes = mergeAttributes(this.options.HTMLAttributes, {
+      class: tableWidth ? 'table-resized' : '',
       style: objParaCss(style)
     })
 

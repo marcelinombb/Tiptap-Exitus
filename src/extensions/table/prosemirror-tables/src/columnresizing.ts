@@ -185,6 +185,18 @@ function handleMouseLeave(view: EditorView): void {
     updateHandle(view, -1);
 }
 
+function fixTableCells(view: EditorView, cell: number) {
+  const $cell = view.state.doc.resolve(cell);
+    const tableNode = $cell.node(-1)
+    const start = $cell.start(-1)
+    TableMap.get(tableNode).map.forEach(pos => {
+      const relativePos = pos + start
+      const cel = view.state.doc.nodeAt(relativePos)!;
+      const width = currentColWidth(view, relativePos, cel.attrs);
+      updateColumnWidth(view, relativePos, width)
+    })
+}
+
 function handleMouseDown(
   view: EditorView,
   event: MouseEvent,
@@ -194,12 +206,17 @@ function handleMouseDown(
   const pluginState = columnResizingPluginKey.getState(view.state);
   if (!pluginState || pluginState.activeHandle == -1 || pluginState.dragging)
     return false;
-  const table = getTable(
+  const tableDom = getTable(
     view,
     pluginState.activeHandle,
   ).getBoundingClientRect();
 
   const cell = view.state.doc.nodeAt(pluginState.activeHandle)!;
+
+  if (!cell.attrs?.width) {
+    fixTableCells(view, pluginState.activeHandle)
+  }
+
   const width = currentColWidth(view, pluginState.activeHandle, cell.attrs);
 
   view.dispatch(
@@ -207,7 +224,7 @@ function handleMouseDown(
       setDragging: {
         startX: event.clientX,
         startWidth: width,
-        maxWidth: 857 - (table.width - width),
+        maxWidth: 857 - (tableDom.width - width),
       },
     }),
   );
