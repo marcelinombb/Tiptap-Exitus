@@ -146,7 +146,8 @@ export function getHTMLFromFragment(fragment: Fragment, schema: Schema): string 
 
   container.querySelectorAll('p').forEach(paragraph => {
     if (paragraph.textContent?.trim() === '') {
-      paragraph.appendChild(document.createElement('br'))
+      paragraph.innerHTML = ''
+      paragraph.appendChild(document.createElement('br')).classList.add('ProseMirror-trailingBreak')
     }
   })
 

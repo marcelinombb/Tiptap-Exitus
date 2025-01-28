@@ -50,7 +50,7 @@ export class TableView implements NodeView {
     this.node = node
     this.editor = editor
     this.getPos = getPos
-    this.cellMinWidth = 100
+    this.cellMinWidth = 30
     this.dom = document.createElement('div')
     this.tableWrapper = document.createElement('div')
     this.dom = this.tableWrapper
@@ -61,9 +61,10 @@ export class TableView implements NodeView {
 
     this.tableStyle = node.attrs.style
     this.tableWrapperStyle = node.attrs.styleTableWrapper
-    updateTableStyle(this)
 
+    updateTableStyle(this)
     updateColumnsOnResize(node, this.colgroup, this.tableWrapper as HTMLTableElement, this.cellMinWidth)
+
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
 
     new TableFocus(this, this.editor as ExitusEditor)
@@ -98,7 +99,7 @@ export class TableView implements NodeView {
   }
 
   destroy() {
-    //this.balloon.destroy()
+    this.tableBalloonToolbar.balloon.destroy()
     //this.tableCellBalloon.destroy()
   }
 
@@ -108,9 +109,9 @@ export class TableView implements NodeView {
     }
 
     this.node = node
-
     this.tableStyle = node.attrs.style
     this.tableWrapperStyle = node.attrs.styleTableWrapper
+
     updateTableStyle(this)
     updateColumnsOnResize(node, this.colgroup, this.tableWrapper as HTMLTableElement, this.cellMinWidth)
 
@@ -145,6 +146,6 @@ export class TableView implements NodeView {
 }
 function updateTableStyle(tableView: TableView) {
   const { tableWrapperStyle, tableWrapper, table, tableStyle } = tableView
-  table.setAttribute('style', objParaCss({ ...tableStyle, width: '100%' }))
+  table.setAttribute('style', objParaCss({ ...tableStyle }))
   tableWrapper.setAttribute('style', objParaCss(tableWrapperStyle))
 }

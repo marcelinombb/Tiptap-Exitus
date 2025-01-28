@@ -1,6 +1,6 @@
 import { Node } from 'prosemirror-model';
 import { NodeView, ViewMutationRecord } from 'prosemirror-view';
-import { CellAttrs } from './util';
+//import { CellAttrs } from './util';
 
 /**
  * @public
@@ -45,44 +45,80 @@ export function updateColumnsOnResize(
   cellMinWidth: number,
   overrideCol?: number,
   overrideValue?: number,
+  fixed: boolean = false
 ): void {
   let totalWidth = 0;
   let fixedWidth = true;
-  let nextDOM = colgroup.firstChild as HTMLElement;
+  let nextDOM = colgroup.firstChild;
   const row = node.firstChild;
-  if (!row) return;
+  if (row !== null) {
+    for (let i = 0, col = 0; i < row.childCount; i += 1) {
+      const { colspan, colwidth } = row.child(i).attrs
 
-  for (let i = 0, col = 0; i < row.childCount; i++) {
-    const { colspan, colwidth } = row.child(i).attrs as CellAttrs;
-    for (let j = 0; j < colspan; j++, col++) {
-      const hasWidth =
-        (overrideCol == col ? overrideValue : colwidth && colwidth[j]) ?? cellMinWidth;
+      for (let j = 0; j < colspan; j += 1, col += 1) {
+        const hasWidth = overrideCol === col ? overrideValue : (colwidth && colwidth[j]) as number | undefined
+        const cssWidth = hasWidth ? `${calculatePercentage(hasWidth )}%` : ''
 
-      const cssWidth = hasWidth ? `${(Number(hasWidth) / 857) * 100}%` : '';
+        totalWidth += hasWidth || cellMinWidth
 
-      totalWidth += hasWidth || cellMinWidth;
-      if (!hasWidth) fixedWidth = false;
-      if (!nextDOM) {
-        colgroup.appendChild(document.createElement('col')).style.width =
-          cssWidth;
-      } else {
-        if (nextDOM.style.width != cssWidth) nextDOM.style.width = cssWidth;
-        nextDOM = nextDOM.nextSibling as HTMLElement;
+        if (!hasWidth) {
+          fixedWidth = false
+        }
+
+        if (!nextDOM) {
+          const colElement = document.createElement('col')
+
+          const [propertyKey, propertyValue] = getColStyleDeclaration(cellMinWidth, hasWidth)
+
+          colElement.style.setProperty(propertyKey, propertyValue)
+
+          colgroup.appendChild(colElement)
+        } else {
+          if ((nextDOM as HTMLTableColElement).style.width !== cssWidth) {
+            const [propertyKey, propertyValue] = getColStyleDeclaration(cellMinWidth, hasWidth);
+
+            (nextDOM as HTMLTableColElement).style.setProperty(propertyKey, propertyValue)
+          }
+
+          nextDOM = nextDOM.nextSibling
+        }
       }
     }
   }
 
   while (nextDOM) {
-    const after = nextDOM.nextSibling;
-    nextDOM.parentNode?.removeChild(nextDOM);
-    nextDOM = after as HTMLElement;
+    const after = nextDOM.nextSibling
+
+    nextDOM.parentNode?.removeChild(nextDOM)
+    nextDOM = after
   }
 
-  if (fixedWidth) {
-    table.style.width = `${(Number(totalWidth) / 857) * 100}%`;
-    table.style.minWidth = '';
+  const realTable = (table.firstElementChild) as HTMLTableElement
+
+  if (fixedWidth || fixed) {
+    realTable.classList.add('table-resized')
+    table.style.width = `${calculatePercentage(totalWidth)}%`
+    table.style.minWidth = ''
   } else {
-    table.style.width = '';
-    table.style.minWidth = `${(Number(totalWidth) / 857) * 100}%`;
+    table.style.minWidth = `${calculatePercentage(totalWidth)}%`
+    table.style.width = ''
+
   }
+}
+
+
+export function getColStyleDeclaration(minWidth: number, width: number | undefined): [string, string] {
+  if (width) {
+    // apply the stored width unless it is below the configured minimum cell width
+    return ['width', `${calculatePercentage(Math.max(width, minWidth))}%`]
+  }
+
+  // set the minimum with on the column if it has no stored width
+  return ['min-width', `${calculatePercentage(minWidth)}%`]
+}
+
+export function calculatePercentage(totalWidth: number) {
+  const percentage = (Number(totalWidth) / 857) * 100
+  return Math.min(percentage, 100).toFixed(4)
+  //return totalWidth
 }
