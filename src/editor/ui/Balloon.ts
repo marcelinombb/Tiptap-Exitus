@@ -86,10 +86,10 @@ export class Balloon {
     //+10 is the height of the arrow
 
     this.ballonMenu.classList.remove('ex-hidden')
-    const menuHeight = this.ballonMenu.scrollHeight
+    const menuHeight = this.ballonMenu.offsetHeight
 
     if (position === 'top') {
-      y = y - menuHeight
+      y = y - menuHeight - 10
     } else {
       y = y + (0 + 10)
     }

@@ -114,7 +114,9 @@ export class TableView implements NodeView {
 
     updateTableStyle(this)
     updateColumnsOnResize(node, this.colgroup, this.tableWrapper as HTMLTableElement, this.cellMinWidth)
-
+    if (typeof this.getPos === 'function') {
+      this.tableBalloonToolbar.updatePosition(this.getPos())
+    }
     return true
   }
 
