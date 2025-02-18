@@ -1,7 +1,7 @@
 import closeIcon from '@icons/close-line.svg'
-import { type Editor, mergeAttributes, Node } from '@tiptap/core'
+import { type Editor, findParentNode, mergeAttributes, Node } from '@tiptap/core'
 import { Fragment, type Node as PmNode, type Schema, Slice } from '@tiptap/pm/model'
-import { TextSelection } from '@tiptap/pm/state'
+import { type Selection, TextSelection } from '@tiptap/pm/state'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -79,7 +79,7 @@ export const ColarQuestao = Node.create({
             const { from, to } = state.selection
             const slice = state.doc.slice(from, to)
 
-            const newSlice = ensureBlockContent(slice, state.schema)
+            const newSlice = ensureBlockContent(slice, state.schema, state.selection)
 
             const colarNode = state.schema.nodes.colarQuestao.createChecked({ title }, newSlice.content)
 
@@ -177,7 +177,7 @@ function isSelectionWithinNode(editor: Editor, nodeType: string): false | [PmNod
   return isWithinNode
 }
 
-function ensureBlockContent(slice: Slice, schema: Schema) {
+function ensureBlockContent(slice: Slice, schema: Schema, selection: Selection) {
   const blockNodes: PmNode[] = []
   let inlineNodes: PmNode[] = []
 
@@ -195,7 +195,9 @@ function ensureBlockContent(slice: Slice, schema: Schema) {
   })
 
   if (inlineNodes.length) {
-    const paragraph = schema.nodes.paragraph.create(null, inlineNodes)
+    const parentParagraph = findParentNode(node => node.type.name === 'paragraph')(selection)
+    const attrs = parentParagraph?.node.attrs ?? null
+    const paragraph = schema.nodes.paragraph.create(attrs, inlineNodes)
     inlineNodes = []
     blockNodes.push(paragraph)
   }
