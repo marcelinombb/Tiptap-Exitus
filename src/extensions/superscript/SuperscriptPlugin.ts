@@ -17,7 +17,7 @@ export class SuperscriptPlugin extends Plugin {
       icon: superscript,
       click: this.toggleSuperscript,
       checkActive: SuperscriptPlugin.pluginName,
-      tooltip: 'Bloco de citação'
+      tooltip: 'Sobescrito (Ctrl + .)'
     })
   }
 
