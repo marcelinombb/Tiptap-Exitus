@@ -48,22 +48,24 @@ export class TextAlignPlugin extends Plugin {
     const dropdownContent = document.createElement('div')
     dropdownContent.className = 'ex-dropdown-content'
 
-    const alignLeft = createAlignmentButton(editor, dropdown, alignLeftIcon, 'left')
-    const alignRight = createAlignmentButton(editor, dropdown, alignRightIcon, 'right')
-    const justify = createAlignmentButton(editor, dropdown, justifyIcon, 'justify')
-    const center = createAlignmentButton(editor, dropdown, centertIcon, 'center')
+    const alignLeft = createAlignmentButton(editor, dropdown, alignLeftIcon, 'left', 'esquerda')
+    const alignRight = createAlignmentButton(editor, dropdown, alignRightIcon, 'right', 'direita')
+    const center = createAlignmentButton(editor, dropdown, centertIcon, 'center', 'centro')
+    const justify = createAlignmentButton(editor, dropdown, justifyIcon, 'justify', 'justificar')
 
-    dropdownContent?.append(alignLeft, alignRight, justify, center)
+    dropdownContent?.append(alignLeft, alignRight, center, justify)
 
     return dropdownContent
   }
 }
 
-function createAlignmentButton(editor: ExitusEditor, dropdown: Dropdown, icon: string, alignment: string) {
+function createAlignmentButton(editor: ExitusEditor, dropdown: Dropdown, icon: string, alignment: string, direcao: string) {
+  const tooltipText = direcao === 'justificar' ? 'Justificar texto' : direcao === 'centro' ? `Alinhar ao ${direcao}` : `Alinhar à ${direcao}`
   const button = new Button(editor, {
     icon: icon,
     classList: ['ex-mr-0'],
-    checkActive: { textAlign: alignment }
+    checkActive: { textAlign: alignment },
+    tooltip: tooltipText
   })
 
   button.bind('click', () => {
