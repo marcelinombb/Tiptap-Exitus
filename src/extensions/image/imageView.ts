@@ -5,11 +5,12 @@ import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
 import imgSize from '@icons/image-size.svg'
+import imgCaption from '@icons/image-caption.svg'
 import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type Node } from '@tiptap/pm/model'
-import { type NodeView } from '@tiptap/pm/view'
+import { ViewMutationRecord, type NodeView } from '@tiptap/pm/view'
 
 import { convertToBase64 } from './image'
 import ResizableImage from './ResizableImage'
@@ -130,6 +131,7 @@ function showDropdown({ event, dropdown }: DropDownEventProps) {
 export class ImageView implements NodeView {
   node: Node
   dom: Element
+  contentDOM?: HTMLElement | null | undefined;
   image: HTMLImageElement
   imageWrapper: HTMLElement
   balloon: Balloon
@@ -147,13 +149,20 @@ export class ImageView implements NodeView {
     this.node = node
     this.editor = editor
     this.getPos = getPos
-    this.dom = document.createElement('div')
-    this.imageWrapper = this.dom.appendChild(document.createElement('div'))
+
+    this.imageWrapper = document.createElement('figure')
+
+    this.dom = this.imageWrapper
+
     this.imageWrapper.className = node.attrs.classes
 
     this.image = this.imageWrapper.appendChild(document.createElement('img'))
     this.setImageAttributes(this.image, node)
     this.image.setAttribute('style', 'display: table-cell')
+
+    const figureCaption = this.imageWrapper.appendChild(document.createElement('figcaption'))
+    figureCaption.className = 'ex-hidden'
+    this.contentDOM = figureCaption
 
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
 
@@ -169,7 +178,15 @@ export class ImageView implements NodeView {
     // Adiciona redimensionamento de imagens
     this.resizer = new ResizableImage(this)
 
-    const toolbar = new Toolbar(editor as ExitusEditor, ['alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'])
+    const toolbar = new Toolbar(editor as ExitusEditor, ['adicionarLegenda', 'alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'])
+    toolbar.setButton('adicionarLegenda', {
+      icon: imgCaption,
+      click: ({button}) => {
+        this.toggleFigcation()
+        button.toggle()
+      },
+      tooltip: 'Habilitar legenda',
+    })
     toolbar.setButton('alinhaDireita', {
       icon: textDr,
       click: alinhaDireita(this),
@@ -208,6 +225,18 @@ export class ImageView implements NodeView {
     imageClickHandler(this)
   }
 
+  toggleFigcation() {
+    const figcaption = this.imageWrapper.querySelector('figcaption')
+    if (figcaption) {
+      if (figcaption.classList.contains('ex-hidden')) {
+        figcaption.classList.remove('ex-hidden')
+      } else {
+        figcaption.classList.add('ex-hidden')
+        figcaption.textContent = ''
+      }
+    }
+  }
+
   update(newNode: ProseMirrorNode) {
     if (newNode.type !== this.node.type) {
       return false
@@ -217,6 +246,14 @@ export class ImageView implements NodeView {
     this.setImageAttributes(this.image, this.node)
 
     return true
+  }
+
+  stopEvent(event: Event) {
+    if (event.type === 'dragstart') {
+      event.preventDefault()
+      return true
+    }
+    return false
   }
 
   urlToBase64(url: string) {
@@ -230,8 +267,13 @@ export class ImageView implements NodeView {
     })
   }
 
-  deselectNode() {
-    this.imageWrapper.classList.remove('ex-selected')
+  ignoreMutation(mutation: ViewMutationRecord) {
+
+    if (mutation.type === 'attributes') {
+      return true
+    }
+
+    return false
   }
 
   updateAttributes(attributes: Record<string, any>) {

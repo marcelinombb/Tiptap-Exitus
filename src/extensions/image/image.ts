@@ -60,9 +60,6 @@ export interface ImageOptions {
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     image: {
-      /**
-       * Add an image
-       */
       setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType
       setImageWidth: (width: string) => ReturnType
     }
@@ -88,10 +85,14 @@ export const Image = Node.create<ImageOptions>({
   },
 
   group() {
-    return this.options.inline ? 'inline' : 'block'
+    return 'block'
   },
 
-  draggable: true,
+  content: 'inline*',
+
+  draggable: false,
+
+  isolating: true,
 
   addAttributes() {
     return {
@@ -143,10 +144,17 @@ export const Image = Node.create<ImageOptions>({
     ]
   },
 
-  renderHTML({ HTMLAttributes }) {
+  renderHTML({ node, HTMLAttributes }) {
     const { style, classes, src } = HTMLAttributes
 
-    return ['div', { style, class: classes }, ['img', { src, style: 'display: table-cell' }]]
+    const figcaptionText = node.content.content[0]
+
+    if(figcaptionText) {
+      return ['figure', { style, class: classes }, ['img', { src, style: 'display: table-cell' }], ['figcaption', {}, figcaptionText.text]]
+    } else {
+      return ['figure', { style, class: classes }, ['img', { src, style: 'display: table-cell' }]]
+    }
+
   },
 
   addCommands() {

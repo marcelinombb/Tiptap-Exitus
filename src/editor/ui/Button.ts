@@ -100,6 +100,10 @@ export class Button implements Tool {
     this.button.classList.remove('ex-button-active')
   }
 
+  toggle() {
+    this.button.classList.toggle('ex-button-active')
+  }
+
   toggleActive(on: boolean) {
     this.button.classList.toggle('ex-button-active', on)
   }

@@ -9,6 +9,7 @@
   --color-cancel: #db3700;
   --color-base-text: #333;
   --color-focused-background: rgba(158, 201, 250, 0.3);
+  --image-caption-background: #f7f7f7;
   --ex-font-size-base: 13px;
   --ex-line-height-base: 1.84615;
   --ex-font-face: Helvetica, Arial, Tahoma, Verdana, Sans-Serif;
@@ -429,6 +430,18 @@ p {
   display: table;
   padding: 0.08em;
   max-width: 100%;
+  text-align: center;
+}
+
+.ex-image-wrapper > figcaption {
+    background-color: var(--image-caption-background);
+    caption-side: bottom;
+    color: var(--color-base-text);
+    display: table-caption;
+    font-size: .75em;
+    outline-offset: -1px;
+    padding: .6em;
+    word-break: break-word;
 }
 
 .icon-arrow {
