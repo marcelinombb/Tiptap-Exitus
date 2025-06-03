@@ -1,16 +1,16 @@
 import { Toolbar } from '@editor/toolbar'
 import { Button, type ButtonEventProps, type Dropdown, type DropDownEventProps } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
+import imgCaption from '@icons/image-caption.svg'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
 import imgSize from '@icons/image-size.svg'
-import imgCaption from '@icons/image-caption.svg'
 import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type Node } from '@tiptap/pm/model'
-import { ViewMutationRecord, type NodeView } from '@tiptap/pm/view'
+import { type NodeView, type ViewMutationRecord } from '@tiptap/pm/view'
 
 import { convertToBase64 } from './image'
 import ResizableImage from './ResizableImage'
@@ -131,9 +131,10 @@ function showDropdown({ event, dropdown }: DropDownEventProps) {
 export class ImageView implements NodeView {
   node: Node
   dom: Element
-  contentDOM?: HTMLElement | null | undefined;
+  contentDOM?: HTMLElement | null | undefined
   image: HTMLImageElement
   imageWrapper: HTMLElement
+  figcaption: HTMLElement
   balloon: Balloon
   editor: Editor
   getPos: boolean | (() => number)
@@ -151,18 +152,23 @@ export class ImageView implements NodeView {
     this.getPos = getPos
 
     this.imageWrapper = document.createElement('figure')
-
-    this.dom = this.imageWrapper
-
+    this.imageWrapper.draggable = true
     this.imageWrapper.className = node.attrs.classes
 
     this.image = this.imageWrapper.appendChild(document.createElement('img'))
     this.setImageAttributes(this.image, node)
+    this.image.contentEditable = 'false'
+    this.image.draggable = false
     this.image.setAttribute('style', 'display: table-cell')
 
-    const figureCaption = this.imageWrapper.appendChild(document.createElement('figcaption'))
-    figureCaption.className = 'ex-hidden'
-    this.contentDOM = figureCaption
+    this.figcaption = this.imageWrapper.appendChild(document.createElement('figcaption'))
+    this.figcaption.dataset['placeholder'] = 'Legenda da imagem'
+    const figcaptionText = node.content.size === 0
+    if (figcaptionText) {
+      this.figcaption.className = 'ex-hidden'
+    }
+
+    this.contentDOM = this.figcaption
 
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
 
@@ -178,14 +184,92 @@ export class ImageView implements NodeView {
     // Adiciona redimensionamento de imagens
     this.resizer = new ResizableImage(this)
 
-    const toolbar = new Toolbar(editor as ExitusEditor, ['adicionarLegenda', 'alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'])
+    const toolbar = this.setupToolbar()
+
+    this.balloon = new Balloon(this.editor, {
+      position: BalloonPosition.TOP
+    })
+
+    this.balloon.ballonPanel.appendChild(toolbar.render())
+
+    this.imageWrapper.appendChild(this.balloon.getBalloon())
+
+    imageClickHandler(this)
+
+    this.dom = this.imageWrapper
+  }
+
+  toggleFigcation(button: Button) {
+    const figcaption = this.figcaption
+    if (figcaption) {
+      if (figcaption.classList.contains('ex-hidden')) {
+        figcaption.classList.remove('ex-hidden')
+        this.figcaption.classList.add('figcaption-is-empty')
+        button.on()
+      } else {
+        figcaption.classList.add('ex-hidden')
+        figcaption.textContent = ''
+        button.off()
+      }
+    }
+  }
+
+  update(newNode: ProseMirrorNode) {
+    if (newNode.type !== this.node.type) {
+      return false
+    }
+
+    this.figcaption.classList.toggle('figcaption-is-empty', newNode.content.size === 0)
+
+    this.node = newNode
+    this.setImageAttributes(this.image, this.node)
+
+    return true
+  }
+
+  urlToBase64(url: string) {
+    const image = new Image()
+    image.src = `${this.proxyUrl}/${encodeURIComponent(url)}`
+    image.setAttribute('crossorigin', 'anonymous')
+    image.onload = convertToBase64(image, (base64Url, width) => {
+      this.updateAttributes({ src: base64Url })
+      image.onload = null
+      this.originalSize = width
+    })
+  }
+
+  ignoreMutation(mutation: ViewMutationRecord) {
+    if (mutation.type === 'attributes') {
+      return true
+    }
+    return false
+  }
+
+  updateAttributes(attributes: Record<string, any>) {
+    if (typeof this.getPos === 'function') {
+      const { view } = this.editor
+      const transaction = view.state.tr
+      transaction.setNodeMarkup(this.getPos(), undefined, {
+        ...this.node.attrs,
+        ...attributes
+      })
+      view.dispatch(transaction)
+    }
+  }
+
+  setImageAttributes(image: Element, node: Node) {
+    ;(this.imageWrapper as HTMLElement).setAttribute('style', `${node.attrs.style}`)
+    image.setAttribute('src', node.attrs.src)
+  }
+
+  setupToolbar() {
+    const toolbar = new Toolbar(this.editor as ExitusEditor, ['adicionarLegenda', 'alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'])
     toolbar.setButton('adicionarLegenda', {
       icon: imgCaption,
-      click: ({button}) => {
-        this.toggleFigcation()
-        button.toggle()
+      click: ({ button }) => {
+        this.toggleFigcation(button)
       },
-      tooltip: 'Habilitar legenda',
+      tooltip: 'Habilitar legenda'
     })
     toolbar.setButton('alinhaDireita', {
       icon: textDr,
@@ -214,82 +298,7 @@ export class ImageView implements NodeView {
         return criarDropDown(dropdown, this)
       }
     )
-    this.balloon = new Balloon(editor, {
-      position: BalloonPosition.TOP
-    })
 
-    this.balloon.ballonPanel.appendChild(toolbar.render())
-
-    this.imageWrapper.appendChild(this.balloon.getBalloon())
-
-    imageClickHandler(this)
-  }
-
-  toggleFigcation() {
-    const figcaption = this.imageWrapper.querySelector('figcaption')
-    if (figcaption) {
-      if (figcaption.classList.contains('ex-hidden')) {
-        figcaption.classList.remove('ex-hidden')
-      } else {
-        figcaption.classList.add('ex-hidden')
-        figcaption.textContent = ''
-      }
-    }
-  }
-
-  update(newNode: ProseMirrorNode) {
-    if (newNode.type !== this.node.type) {
-      return false
-    }
-
-    this.node = newNode
-    this.setImageAttributes(this.image, this.node)
-
-    return true
-  }
-
-  stopEvent(event: Event) {
-    if (event.type === 'dragstart') {
-      event.preventDefault()
-      return true
-    }
-    return false
-  }
-
-  urlToBase64(url: string) {
-    const image = new Image()
-    image.src = `${this.proxyUrl}/${encodeURIComponent(url)}`
-    image.setAttribute('crossorigin', 'anonymous')
-    image.onload = convertToBase64(image, (base64Url, width) => {
-      this.updateAttributes({ src: base64Url })
-      image.onload = null
-      this.originalSize = width
-    })
-  }
-
-  ignoreMutation(mutation: ViewMutationRecord) {
-
-    if (mutation.type === 'attributes') {
-      return true
-    }
-
-    return false
-  }
-
-  updateAttributes(attributes: Record<string, any>) {
-    if (typeof this.getPos === 'function') {
-      const { view } = this.editor
-      const transaction = view.state.tr
-      transaction.setNodeMarkup(this.getPos(), undefined, {
-        ...this.node.attrs,
-        ...attributes
-      })
-      view.dispatch(transaction)
-    }
-  }
-
-  setImageAttributes(image: Element, node: Node) {
-    ;(this.imageWrapper as HTMLElement).setAttribute('style', `${node.attrs.style}`)
-    image.setAttribute('src', node.attrs.src)
+    return toolbar
   }
 }

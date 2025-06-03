@@ -431,6 +431,7 @@ p {
   padding: 0.08em;
   max-width: 100%;
   text-align: center;
+  position: relative;
 }
 
 .ex-image-wrapper > figcaption {
@@ -443,6 +444,15 @@ p {
     padding: .6em;
     word-break: break-word;
 }
+
+.figcaption-is-empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
 
 .icon-arrow {
   width: 12px !important;

@@ -1,4 +1,5 @@
 import { type Editor, Node, nodeInputRule } from '@tiptap/core'
+import { Fragment } from '@tiptap/pm/model'
 import { Plugin, PluginKey } from 'prosemirror-state'
 import { findSelectedNodeOfType } from 'prosemirror-utils'
 
@@ -88,11 +89,15 @@ export const Image = Node.create<ImageOptions>({
     return 'block'
   },
 
+  selectable: false,
+
   content: 'inline*',
 
-  draggable: false,
+  draggable: true,
 
   isolating: true,
+
+  defining: true,
 
   addAttributes() {
     return {
@@ -139,7 +144,16 @@ export const Image = Node.create<ImageOptions>({
           return (
             (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure' || isUrlImage || isBase64Url) && null
           )
+        },
+        getContent: (node, schema) => {
+          const figcaption = (node.parentElement as HTMLElement).querySelector('figcaption')
+          if (!figcaption) return Fragment.empty
+          return Fragment.from(schema.text(figcaption.textContent ?? ''))
         }
+      },
+      {
+        tag: 'figcaption',
+        ignore: true
       }
     ]
   },
@@ -147,14 +161,13 @@ export const Image = Node.create<ImageOptions>({
   renderHTML({ node, HTMLAttributes }) {
     const { style, classes, src } = HTMLAttributes
 
-    const figcaptionText = node.content.content[0]
+    const figcaptionFragment = node.content
 
-    if(figcaptionText) {
-      return ['figure', { style, class: classes }, ['img', { src, style: 'display: table-cell' }], ['figcaption', {}, figcaptionText.text]]
+    if (figcaptionFragment.size) {
+      return ['figure', { style, class: classes }, ['img', { src, style: 'display: table-cell' }], ['figcaption', {}, 0]]
     } else {
       return ['figure', { style, class: classes }, ['img', { src, style: 'display: table-cell' }]]
     }
-
   },
 
   addCommands() {
