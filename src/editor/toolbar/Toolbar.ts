@@ -14,8 +14,12 @@ export class Toolbar {
   currentActive!: string
   constructor(
     public editor: ExitusEditor,
-    public toolbarOrder: string[]
-  ) {}
+    public toolbarOrder: string[],
+    public chekcActive: boolean = true
+  ) {
+    this.closeToolsOnFocus()
+    this.toolActive()
+  }
 
   setTool(name: string, tool: Tool) {
     if (this.tools.has(name)) {
@@ -27,6 +31,25 @@ export class Toolbar {
   notifyAllTools() {
     this.tools.forEach((tool, _key) => {
       tool.update(this)
+    })
+  }
+
+  closeToolsOnFocus() {
+    this.editor.on('focus', () => {
+      this.closeAllTools()
+    })
+  }
+
+  toolActive() {
+    if (!this.chekcActive) return
+    this.editor!.on('transaction', () => {
+      this.tools.forEach(tool => {
+        if (this.editor!.isActive(tool.name)) {
+          tool.on()
+        } else {
+          tool.off()
+        }
+      })
     })
   }
 
@@ -64,7 +87,11 @@ export class Toolbar {
   }
 
   closeAllTools() {
-    this.tools.forEach(tool => tool.off())
+    this.tools.forEach(tool => {
+      if (tool instanceof Dropdown) {
+        tool.off()
+      }
+    })
   }
 
   render() {

@@ -35,7 +35,6 @@ export class Balloon {
 
   destroy() {
     this.hide()
-    //this.ballonMenu.parentElement!.removeChild(this.ballonMenu)
   }
 
   toggle(on: boolean) {

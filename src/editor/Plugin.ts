@@ -1,6 +1,8 @@
 import type ExitusEditor from '@src/ExitusEditor'
 import { type AnyExtension } from '@tiptap/core'
 
+import { type Tool } from './toolbar'
+
 export class Plugin {
   config: Record<string, string>
   constructor(
@@ -11,6 +13,9 @@ export class Plugin {
   }
   init(): void {
     throw new Error('init must be implemented in the derived class')
+  }
+  tool(): Tool | null {
+    return null
   }
   destroy(): void {}
   static get pluginName(): string {

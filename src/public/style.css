@@ -481,6 +481,16 @@ p {
   margin-left: auto;
 }
 
+.ex-image-float-left {
+  float: left;
+  margin-right: 1.5em;
+}
+
+.ex-image-float-right {
+  float: right;
+  margin-left: 1.5em;
+}
+
 .math-tex {
   display: inline;
 }

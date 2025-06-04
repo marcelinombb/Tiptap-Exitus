@@ -34,9 +34,11 @@ export class Dropdown implements Tool {
   button!: Button
   editor: ExitusEditor
 
+  tools: Tool[] = []
+
   constructor(
     editor: ExitusEditor,
-    config: DropdownConfig,
+    config: Partial<DropdownConfig> = {},
     public name: string = ''
   ) {
     this.config = { ...this.config, ...config }
@@ -50,6 +52,15 @@ export class Dropdown implements Tool {
 
     this.dropdownContent = document.createElement('div')
     this.dropdownContent.classList.add('ex-dropdown-content')
+  }
+
+  setTools(tools: Tool[]) {
+    tools.forEach(tool => {
+      if (tool instanceof Button) {
+        tool.setEditor(this.editor)
+      }
+    })
+    this.tools = tools
   }
 
   update(toolbar: Toolbar): void {
@@ -82,17 +93,25 @@ export class Dropdown implements Tool {
       tooltip: this.config.tooltip
     })
     this.button.bind('click', ({ event }) => {
-      this.config.click({ editor: this.editor, event, button: this.button, dropdown: this })
-      const close = (event: Event) => {
-        const target = event.target as HTMLElement
-        if (!target.closest('.ex-dropdown') && this.config!.closeDropDown!(target)) {
-          this.off()
-        }
+      event.stopPropagation()
+      if (this.isOpen) {
+        this.off()
+      } else {
+        this.on()
       }
-      window.addEventListener('click', close)
     })
 
-    this.dropdownContentContainer.appendChild(this.dropdownContent)
+    const dropdownContent = document.createElement('div')
+    dropdownContent.className = 'ex-dropdownList-content'
+
+    this.tools.forEach(tool => {
+      const toolElement = tool.render()
+      if (toolElement) {
+        dropdownContent.appendChild(toolElement)
+      }
+    })
+
+    this.dropdownContentContainer.appendChild(dropdownContent)
     this.dropdownContainer.append(this.button.render(), this.dropdownContentContainer)
     return this.dropdownContainer
   }

@@ -4,8 +4,6 @@ import type ExitusEditor from '@src/ExitusEditor'
 
 import { type Tool } from '../toolbar/Tool'
 
-import { type Dropdown } from '.'
-
 export type ButtonEventProps = {
   editor: ExitusEditor
   button: Button
@@ -34,17 +32,17 @@ const defaultConfig: Partial<ButtonConfig> = {
 
 export class Button implements Tool {
   config: Partial<ButtonConfig>
-  button: HTMLButtonElement
-  editor: ExitusEditor
-  dropdown!: Dropdown
+  button: HTMLButtonElement | null = null
+  editor: ExitusEditor | null = null
+  events: { [key: string]: (obj: ButtonEventProps) => void } = {}
   constructor(
-    editor: ExitusEditor,
+    editor: ExitusEditor | null,
     config: Partial<ButtonConfig>,
     public name: string = ''
   ) {
     this.config = { ...defaultConfig, ...config }
     this.editor = editor
-    this.button = this.createButton()
+    //this.button = this.createButton()
   }
 
   update(toolbar: Toolbar): void {
@@ -63,7 +61,7 @@ export class Button implements Tool {
       ...this.config.attributes
     })
 
-    if (!this.editor.isEditable) {
+    if (!this.editor!.isEditable) {
       button.setAttribute('disabled', '')
       button.classList.add('ex-button-disabled')
     }
@@ -81,47 +79,43 @@ export class Button implements Tool {
   }
 
   bind(eventName: string, callback: (obj: ButtonEventProps) => void) {
-    this.button.addEventListener(eventName, event => {
-      event.stopPropagation()
-      event.preventDefault()
-      callback({
-        editor: this.editor,
-        button: this,
-        event: event as Event
-      })
-    })
+    this.events[eventName] = callback
   }
 
-  on() {
-    this.button.classList.add('ex-button-active')
-  }
-
-  off() {
-    this.button.classList.remove('ex-button-active')
-  }
-
-  toggle() {
-    this.button.classList.toggle('ex-button-active')
-  }
-
-  toggleActive(on: boolean) {
-    this.button.classList.toggle('ex-button-active', on)
-  }
-
-  active() {
-    return this.button.classList.contains('ex-button-active')
-  }
-
-  editorCheckActive() {
-    if (this.config.checkActive != undefined) {
-      this.editor.on('transaction', () => {
-        if (this.editor.isActive(this.config?.checkActive as string | object)) {
-          this.on()
-        } else {
-          this.off()
+  private listenEvents() {
+    for (const eventName in this.events) {
+      this.button!.addEventListener(eventName, (event: Event) => {
+        event.stopPropagation()
+        event.preventDefault()
+        if (this.editor) {
+          this.events[eventName]({
+            editor: this.editor,
+            button: this,
+            event: event
+          })
         }
       })
     }
+  }
+
+  on() {
+    this.button!.classList.add('ex-button-active')
+  }
+
+  off() {
+    this.button!.classList.remove('ex-button-active')
+  }
+
+  toggle() {
+    this.button!.classList.toggle('ex-button-active')
+  }
+
+  toggleActive(on: boolean) {
+    this.button!.classList.toggle('ex-button-active', on)
+  }
+
+  active() {
+    return this.button!.classList.contains('ex-button-active')
   }
 
   createTooltip(parent: HTMLButtonElement, tooltipText: string) {
@@ -151,7 +145,9 @@ export class Button implements Tool {
   }
 
   render() {
-    this.editorCheckActive()
+    //this.editorCheckActive()
+    this.button = this.createButton()
+    this.listenEvents()
     this.button.innerHTML = (this.config?.icon as string) + (this.config?.label as string)
     if (this.config.tooltip) {
       this.createTooltip(this.button, this.config.tooltip)
@@ -159,7 +155,7 @@ export class Button implements Tool {
     return this.button
   }
 
-  getButtonElement(): HTMLButtonElement {
+  getButtonElement(): HTMLButtonElement | null {
     return this.button
   }
 }

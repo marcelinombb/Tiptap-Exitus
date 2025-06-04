@@ -1,5 +1,6 @@
 import { Plugin } from '@editor/Plugin'
-import { Button, type Dropdown, type DropDownEventProps } from '@editor/ui'
+import { type Tool } from '@editor/toolbar'
+import { Button, Dropdown, type DropDownEventProps } from '@editor/ui'
 import listFullIcon from '@icons/list-check.svg'
 import listOrederedIcon from '@icons/list-ordered-2.svg'
 import listIcon from '@icons/list-unordered.svg'
@@ -16,19 +17,23 @@ export class ListItemPlugin extends Plugin {
     return [ListItem, OrderedList, BulletList]
   }
 
-  init(): void {
-    this.editor.toolbar.setDropDown(
-      'listItem',
+  init(): void {}
+
+  tool(): Tool {
+    const dropdown = new Dropdown(
+      this.editor,
       {
         icon: listIcon,
         click: showDropdown,
         tooltip: 'Listas',
         classes: []
       },
-      dropdown => {
-        return this.createDropDownContent(dropdown)
-      }
+      ListItemPlugin.pluginName
     )
+
+    dropdown.setTools(this.createDropDownContent(dropdown))
+
+    return dropdown
   }
 
   listaOrdenada(dropdown: Dropdown, icon: string) {
@@ -42,7 +47,7 @@ export class ListItemPlugin extends Plugin {
       dropdown.off()
     })
 
-    return button.render()
+    return button
   }
 
   listaBolinhaCheia(dropdown: Dropdown, icon: string) {
@@ -56,19 +61,13 @@ export class ListItemPlugin extends Plugin {
       dropdown.off()
     })
 
-    return button.render()
+    return button
   }
 
   createDropDownContent(dropdown: Dropdown) {
-    const dropdownContent = document.createElement('div')
-    dropdownContent.className = 'ex-dropdownList-content'
-
     const listFull = this.listaBolinhaCheia(dropdown, listFullIcon)
     const listOredered = this.listaOrdenada(dropdown, listOrederedIcon)
-
-    dropdownContent?.append(listFull, listOredered)
-
-    return dropdownContent
+    return [listFull, listOredered]
   }
 }
 

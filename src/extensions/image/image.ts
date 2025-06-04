@@ -89,7 +89,7 @@ export const Image = Node.create<ImageOptions>({
     return 'block'
   },
 
-  selectable: false,
+  //selectable: false,
 
   content: 'inline*',
 

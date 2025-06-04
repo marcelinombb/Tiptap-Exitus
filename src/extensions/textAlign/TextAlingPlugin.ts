@@ -1,5 +1,5 @@
 import { Plugin } from '@editor/Plugin'
-import { Button, type Dropdown, type DropDownEventProps } from '@editor/ui'
+import { Button, Dropdown, type DropDownEventProps } from '@editor/ui'
 import centertIcon from '@icons/align-center.svg'
 import justifyIcon from '@icons/align-justify.svg'
 import alignLeftIcon from '@icons/align-left.svg'
@@ -20,19 +20,23 @@ export class TextAlignPlugin extends Plugin {
     ]
   }
 
-  init(): void {
-    this.editor.toolbar.setDropDown(
-      TextAlignPlugin.pluginName,
+  init(): void {}
+
+  tool() {
+    const dropdown = new Dropdown(
+      this.editor,
       {
         icon: alignLeftIcon,
         click: this.showDropdown,
         tooltip: 'Alinhamento de texto',
         classes: ['ex-dropdown-alignments']
       },
-      dropdown => {
-        return this.createDropDownContent(this.editor, dropdown)
-      }
+      TextAlignPlugin.pluginName
     )
+
+    dropdown.setTools(this.createDropDownContent(this.editor, dropdown))
+
+    return dropdown
   }
 
   showDropdown({ event, dropdown }: DropDownEventProps) {
@@ -45,17 +49,14 @@ export class TextAlignPlugin extends Plugin {
   }
 
   createDropDownContent(editor: ExitusEditor, dropdown: Dropdown) {
-    const dropdownContent = document.createElement('div')
-    dropdownContent.className = 'ex-dropdown-content'
 
     const alignLeft = createAlignmentButton(editor, dropdown, alignLeftIcon, 'left', 'esquerda')
     const alignRight = createAlignmentButton(editor, dropdown, alignRightIcon, 'right', 'direita')
     const center = createAlignmentButton(editor, dropdown, centertIcon, 'center', 'centro')
     const justify = createAlignmentButton(editor, dropdown, justifyIcon, 'justify', 'justificar')
 
-    dropdownContent?.append(alignLeft, alignRight, center, justify)
+    return [alignLeft, alignRight, center, justify]
 
-    return dropdownContent
   }
 }
 
@@ -73,5 +74,5 @@ function createAlignmentButton(editor: ExitusEditor, dropdown: Dropdown, icon: s
     dropdown.off()
   })
 
-  return button.render()
+  return button
 }

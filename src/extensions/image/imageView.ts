@@ -1,5 +1,5 @@
 import { Toolbar } from '@editor/toolbar'
-import { Button, type ButtonEventProps, type Dropdown, type DropDownEventProps } from '@editor/ui'
+import { Button, type ButtonEventProps, Dropdown } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
 import imgCaption from '@icons/image-caption.svg'
 import textDl from '@icons/image-left.svg'
@@ -14,29 +14,6 @@ import { type NodeView, type ViewMutationRecord } from '@tiptap/pm/view'
 
 import { convertToBase64 } from './image'
 import ResizableImage from './ResizableImage'
-
-function imageClickHandler({ imageWrapper, balloon }: ImageView) {
-  imageWrapper.addEventListener('click', event => {
-    event.stopPropagation()
-    imageWrapper.classList.add('ex-selected')
-
-    if (!balloon.isOpen()) {
-      balloon.show()
-    }
-
-    function clickOutside(event: Event) {
-      const target = event.target as HTMLElement
-
-      if (target.closest('.ex-image-wrapper') === null) {
-        balloon.hide()
-        imageWrapper.classList.remove('ex-selected')
-        window.removeEventListener('mousedown', clickOutside)
-      }
-    }
-
-    window.addEventListener('mousedown', clickOutside)
-  })
-}
 
 function alinhaDireita(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
@@ -89,43 +66,41 @@ function alinhaMeio(imageView: ImageView) {
   }
 }
 
-function sizeButton(dropdown: Dropdown, label: string, size: number | (() => number)) {
-  const button = new Button(dropdown.editor, {
+function sizeButton(imageView: ImageView, label: string, size: number | (() => number)) {
+  const button = new Button(null, {
     label,
     classList: ['ex-mr-0']
   })
 
   button.bind('click', () => {
     const sizeValue = typeof size == 'number' ? size : size()
-    dropdown.editor.commands.setImageWidth(`${sizeValue}px`)
+    imageView.updateAttributes({
+      style: 'width: ' + sizeValue + 'px;'
+    })
   })
 
-  return button.render()
+  return button
 }
 
-function criarDropDown(dropdown: Dropdown, imageView: ImageView) {
-  const dropdownContent = document.createElement('div')
-  dropdownContent.className = 'ex-dropdownList-content'
+function criarDropDown(imageView: ImageView): Dropdown {
+  const dropdown = new Dropdown(
+    imageView.editor as ExitusEditor,
+    {
+      icon: imgSize
+    },
+    'tamanhoImg'
+  )
 
-  const original = sizeButton(dropdown, `original`, () => {
+  const original = sizeButton(imageView, `original`, () => {
     return imageView.originalSize
   })
-  const pequeno = sizeButton(dropdown, '300px', 300)
-  const medio = sizeButton(dropdown, '400px', 400)
-  const grande = sizeButton(dropdown, '700px', 700)
+  const pequeno = sizeButton(imageView, '300px', 300)
+  const medio = sizeButton(imageView, '400px', 400)
+  const grande = sizeButton(imageView, '700px', 700)
 
-  dropdownContent?.append(original, pequeno, medio, grande)
+  dropdown.setTools([original, pequeno, medio, grande])
 
-  return dropdownContent
-}
-
-function showDropdown({ event, dropdown }: DropDownEventProps) {
-  event.stopPropagation()
-  if (dropdown.isOpen) {
-    dropdown.off()
-  } else {
-    dropdown.on()
-  }
+  return dropdown
 }
 
 export class ImageView implements NodeView {
@@ -194,7 +169,7 @@ export class ImageView implements NodeView {
 
     this.imageWrapper.appendChild(this.balloon.getBalloon())
 
-    imageClickHandler(this)
+    this.imageClickHandler()
 
     this.dom = this.imageWrapper
   }
@@ -212,6 +187,29 @@ export class ImageView implements NodeView {
         button.off()
       }
     }
+  }
+
+  imageClickHandler() {
+    this.imageWrapper.addEventListener('click', event => {
+      event.stopPropagation()
+      this.imageWrapper.classList.add('ex-selected')
+      //this.makeNodeSelection()
+      if (!this.balloon.isOpen()) {
+        this.balloon.show()
+      }
+
+      const clickOutside = (event: Event) => {
+        const target = event.target as HTMLElement
+
+        if (target.closest('.ex-image-wrapper') === null) {
+          this.balloon.hide()
+          this.imageWrapper.classList.remove('ex-selected')
+          window.removeEventListener('mousedown', clickOutside)
+        }
+      }
+
+      window.addEventListener('mousedown', clickOutside)
+    })
   }
 
   update(newNode: ProseMirrorNode) {
@@ -263,7 +261,8 @@ export class ImageView implements NodeView {
   }
 
   setupToolbar() {
-    const toolbar = new Toolbar(this.editor as ExitusEditor, ['adicionarLegenda', 'alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'])
+    const toolbarOrder = ['adicionarLegenda', 'alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'alinhamentoTexto', 'tamanhoImg']
+    const toolbar = new Toolbar(this.editor as ExitusEditor, toolbarOrder, false)
     toolbar.setButton('adicionarLegenda', {
       icon: imgCaption,
       click: ({ button }) => {
@@ -286,18 +285,7 @@ export class ImageView implements NodeView {
       click: alinhaEsquerda(this),
       tooltip: 'Imagem alinhada a asquerda'
     })
-    toolbar.setDropDown(
-      'tamanhoImg',
-      {
-        icon: imgSize,
-        click: showDropdown,
-        tooltip: 'Redimensionar imagem',
-        classes: []
-      },
-      dropdown => {
-        return criarDropDown(dropdown, this)
-      }
-    )
+    toolbar.setTool('tamanhoImg', criarDropDown(this))
 
     return toolbar
   }

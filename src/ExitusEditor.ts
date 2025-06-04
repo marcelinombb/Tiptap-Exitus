@@ -83,6 +83,10 @@ class ExitusEditor extends Editor {
       const config = options.config?.[plugin.pluginName]
       const pluginInstance = new plugin(this, config)
       pluginInstance.init()
+      const tool = pluginInstance.tool()
+      if (tool) {
+        this.toolbar.setTool(plugin.pluginName, tool)
+      }
       this.pluginsInstances.set(plugin.pluginName, pluginInstance)
     })
   }
