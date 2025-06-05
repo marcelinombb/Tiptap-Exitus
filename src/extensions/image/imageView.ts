@@ -80,12 +80,12 @@ function alinhaEsquerda(imageView: ImageView) {
 function alinhaMeio(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
-    if (!imageWrapper.classList.contains('ex-image-block-align-center')) {
+    if (!imageWrapper.classList.contains('ex-image-block-middle')) {
       button.on()
-      resetImageClass(imageWrapper, 'ex-image-block-align-center')
+      resetImageClass(imageWrapper, 'ex-image-block-middle')
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-image-block-align-center')
+      imageWrapper.classList.remove('ex-image-block-middle')
     }
     imageView.updateAttributes({
       classes: imageWrapper.className
