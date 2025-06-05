@@ -1,7 +1,6 @@
 import { type Editor, Node, nodeInputRule } from '@tiptap/core'
 import { Fragment } from '@tiptap/pm/model'
 import { Plugin, PluginKey } from 'prosemirror-state'
-import { findSelectedNodeOfType } from 'prosemirror-utils'
 
 import { ImageView } from './imageView'
 
@@ -62,7 +61,6 @@ declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     image: {
       setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType
-      setImageWidth: (width: string) => ReturnType
     }
   }
 }
@@ -179,36 +177,7 @@ export const Image = Node.create<ImageOptions>({
             type: this.name,
             attrs: options
           })
-        },
-      setImageWidth: (width: string) => {
-        return ({ tr, state, dispatch }) => {
-          // Get the selection
-          const { selection } = state
-          // Find the table node around the selection
-          let nodePos = null
-          const imageNode = findSelectedNodeOfType(state.schema.nodes.image)(selection)
-
-          if (imageNode) {
-            nodePos = imageNode.pos
-          }
-
-          // If no table was found or position is undefined, abort the command
-          if (!nodePos) return false
-
-          // Ensure we have a valid width to set
-          if (!width || typeof width !== 'string') return false
-
-          // Create a new attributes object with the updated width
-          const attrs = { ...imageNode?.node.attrs, style: `width: ${width}` }
-
-          // Create a transaction that sets the new attributes
-          if (dispatch) {
-            tr.setNodeMarkup(nodePos, undefined, attrs)
-            dispatch(tr)
-          }
-          return true
         }
-      }
     }
   },
   addInputRules() {

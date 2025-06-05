@@ -2,6 +2,8 @@ import { Toolbar } from '@editor/toolbar'
 import { Button, type ButtonEventProps, type Dropdown, type DropDownEventProps } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
 import imgCaption from '@icons/image-caption.svg'
+import imgFloatLeft from '@icons/image-float-left.svg'
+import imgFloatRight from '@icons/image-float-right.svg'
 import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
@@ -38,16 +40,20 @@ function imageClickHandler({ imageWrapper, balloon }: ImageView) {
   })
 }
 
+function resetImageClass(imageWrapper: HTMLElement, newClass: string) {
+  imageWrapper.className = ''
+  imageWrapper.classList.add('ex-image-wrapper', 'tiptap-widget', newClass)
+}
+
 function alinhaDireita(imageView: ImageView) {
   return ({ button }: ButtonEventProps) => {
     const { imageWrapper } = imageView
     if (!imageWrapper.classList.contains('ex-image-block-align-right')) {
       button.on()
-      imageWrapper.classList.add('ex-image-block-align-right')
-      imageWrapper.classList.remove('ex-image-block-align-center', 'ex-image-block-align-left')
+      resetImageClass(imageWrapper, 'ex-image-block-align-right')
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-image-block-align-right')
+      resetImageClass(imageWrapper, 'ex-image-block-middle')
     }
     imageView.updateAttributes({
       classes: imageWrapper.className
@@ -60,11 +66,10 @@ function alinhaEsquerda(imageView: ImageView) {
     const { imageWrapper } = imageView
     if (!imageWrapper.classList.contains('ex-image-block-align-left')) {
       button.on()
-      imageWrapper.classList.add('ex-image-block-align-left')
-      imageWrapper.classList.remove('ex-image-block-align-center', 'ex-image-block-align-right')
+      resetImageClass(imageWrapper, 'ex-image-block-align-left')
     } else {
       button.off()
-      imageWrapper.classList.remove('ex-image-block-align-left')
+      resetImageClass(imageWrapper, 'ex-image-block-middle')
     }
     imageView.updateAttributes({
       classes: imageWrapper.className
@@ -77,8 +82,7 @@ function alinhaMeio(imageView: ImageView) {
     const { imageWrapper } = imageView
     if (!imageWrapper.classList.contains('ex-image-block-align-center')) {
       button.on()
-      imageWrapper.classList.add('ex-image-block-align-center')
-      imageWrapper.classList.remove('ex-image-block-align-left', 'ex-image-block-align-right')
+      resetImageClass(imageWrapper, 'ex-image-block-align-center')
     } else {
       button.off()
       imageWrapper.classList.remove('ex-image-block-align-center')
@@ -89,7 +93,7 @@ function alinhaMeio(imageView: ImageView) {
   }
 }
 
-function sizeButton(dropdown: Dropdown, label: string, size: number | (() => number)) {
+function sizeButton(dropdown: Dropdown, imageView: ImageView, label: string, size: number | (() => number)) {
   const button = new Button(dropdown.editor, {
     label,
     classList: ['ex-mr-0']
@@ -97,7 +101,9 @@ function sizeButton(dropdown: Dropdown, label: string, size: number | (() => num
 
   button.bind('click', () => {
     const sizeValue = typeof size == 'number' ? size : size()
-    dropdown.editor.commands.setImageWidth(`${sizeValue}px`)
+    imageView.updateAttributes({
+      style: `width: ${sizeValue}px;`
+    })
   })
 
   return button.render()
@@ -107,12 +113,12 @@ function criarDropDown(dropdown: Dropdown, imageView: ImageView) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdownList-content'
 
-  const original = sizeButton(dropdown, `original`, () => {
+  const original = sizeButton(dropdown, imageView, `original`, () => {
     return imageView.originalSize
   })
-  const pequeno = sizeButton(dropdown, '300px', 300)
-  const medio = sizeButton(dropdown, '400px', 400)
-  const grande = sizeButton(dropdown, '700px', 700)
+  const pequeno = sizeButton(dropdown, imageView, '300px', 300)
+  const medio = sizeButton(dropdown, imageView, '400px', 400)
+  const grande = sizeButton(dropdown, imageView, '700px', 700)
 
   dropdownContent?.append(original, pequeno, medio, grande)
 
@@ -128,6 +134,63 @@ function showDropdown({ event, dropdown }: DropDownEventProps) {
   }
 }
 
+function criarDropDownAlinhamentoTexto(dropdown: Dropdown, imageView: ImageView) {
+  const dropdownContent = document.createElement('div')
+  dropdownContent.className = 'ex-dropdownList-content'
+
+  const buttonAlignLeft = new Button(dropdown.editor, {
+    icon: imgFloatLeft,
+    classList: ['ex-mr-0']
+  })
+
+  const buttonAlignRight = new Button(dropdown.editor, {
+    icon: imgFloatRight,
+    classList: ['ex-mr-0']
+  })
+
+  buttonAlignLeft.bind('click', () => {
+    const { imageWrapper } = imageView
+    if (!imageWrapper.classList.contains('ex-image-float-left')) {
+      buttonAlignLeft.on()
+      buttonAlignRight.off()
+      resetImageClass(imageWrapper, 'ex-image-float-left')
+    } else {
+      buttonAlignLeft.off()
+      resetImageClass(imageWrapper, 'ex-image-block-middle')
+    }
+    imageView.updateAttributes({
+      classes: imageWrapper.className
+    })
+  })
+
+  buttonAlignRight.bind('click', () => {
+    const { imageWrapper } = imageView
+    if (!imageWrapper.classList.contains('ex-image-float-right')) {
+      buttonAlignRight.on()
+      buttonAlignLeft.off()
+      resetImageClass(imageWrapper, 'ex-image-float-right')
+    } else {
+      buttonAlignRight.off()
+      resetImageClass(imageWrapper, 'ex-image-block-middle')
+    }
+    imageView.updateAttributes({
+      classes: imageWrapper.className
+    })
+  })
+
+  dropdownContent?.append(buttonAlignLeft.render(), buttonAlignRight.render())
+
+  return dropdownContent
+}
+
+function showDropdownAlinnhamentoTexto({ event, dropdown }: DropDownEventProps) {
+  event.stopPropagation()
+  if (dropdown.isOpen) {
+    dropdown.off()
+  } else {
+    dropdown.on()
+  }
+}
 export class ImageView implements NodeView {
   node: Node
   dom: Element
@@ -263,7 +326,14 @@ export class ImageView implements NodeView {
   }
 
   setupToolbar() {
-    const toolbar = new Toolbar(this.editor as ExitusEditor, ['adicionarLegenda', 'alinhaEsquerda', 'alinhaMeio', 'alinhaDireita', 'tamanhoImg'])
+    const toolbar = new Toolbar(this.editor as ExitusEditor, [
+      'adicionarLegenda',
+      'alinhaEsquerda',
+      'alinhaMeio',
+      'alinhaDireita',
+      'tamanhoImg',
+      'alinhamentoTexto'
+    ])
     toolbar.setButton('adicionarLegenda', {
       icon: imgCaption,
       click: ({ button }) => {
@@ -296,6 +366,18 @@ export class ImageView implements NodeView {
       },
       dropdown => {
         return criarDropDown(dropdown, this)
+      }
+    )
+    toolbar.setDropDown(
+      'alinhamentoTexto',
+      {
+        icon: imgFloatLeft,
+        click: showDropdownAlinnhamentoTexto,
+        tooltip: 'Alinhar imagem ao texto',
+        classes: []
+      },
+      dropdown => {
+        return criarDropDownAlinhamentoTexto(dropdown, this)
       }
     )
 
