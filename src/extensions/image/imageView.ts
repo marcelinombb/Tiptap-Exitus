@@ -173,7 +173,7 @@ export class ImageView implements NodeView {
     toolbar.setButton('alinhaDireita', {
       icon: textDr,
       click: alinhaDireita(this),
-      tooltip: 'Imagem alinhada a direita'
+      tooltip: 'Imagem alinhada à direita'
     })
     toolbar.setButton('alinhaMeio', {
       icon: textDm,
@@ -183,7 +183,7 @@ export class ImageView implements NodeView {
     toolbar.setButton('alinhaEsquerda', {
       icon: textDl,
       click: alinhaEsquerda(this),
-      tooltip: 'Imagem alinhada a asquerda'
+      tooltip: 'Imagem alinhada à asquerda'
     })
     toolbar.setDropDown(
       'tamanhoImg',
