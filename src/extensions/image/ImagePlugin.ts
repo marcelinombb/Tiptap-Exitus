@@ -12,7 +12,7 @@ export class ImagePlugin extends Plugin {
   static get requires() {
     return [
       Image.configure({
-        inline: true,
+        inline: false,
         allowBase64: true
       })
     ]
