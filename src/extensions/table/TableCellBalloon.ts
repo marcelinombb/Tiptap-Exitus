@@ -13,6 +13,7 @@ const createPickrInstance = (selector: string, onCancel: () => void): Pickr => {
   const pickr = Pickr.create({
     el: selector,
     theme: 'nano',
+    default: '#ffffff', // Cor padrão branca
     swatches: [
       'rgba(230, 77, 77, 1)',
       'rgba(230, 153, 77, 1)',
@@ -248,6 +249,9 @@ export class ItensModalCell {
 
     const borderColorElement = document.createElement('div')
     borderColorElement.className = 'color-picker-border'
+    // Adicionar borda ao color picker
+    borderColorElement.style.border = '1px solid #ccc'
+    borderColorElement.style.borderRadius = '4px'
 
     bloco1.append(bordaLabel, this.cellBorderStyles, this.cellBorderWidth, borderColorElement)
     dropdownContent.appendChild(bloco1)
@@ -262,6 +266,9 @@ export class ItensModalCell {
 
     const backgroundColorElement = document.createElement('div')
     backgroundColorElement.className = 'color-picker-background'
+    // Adicionar borda ao color picker
+    backgroundColorElement.style.border = '1px solid #ccc'
+    backgroundColorElement.style.borderRadius = '4px'
 
     bloco2.append(corDeFundoLabel, backgroundColorElement)
     dropdownContent.appendChild(bloco2)
@@ -406,9 +413,19 @@ export class ItensModalCell {
     const width = this.cellWidth.value
 
     if (height && width) {
+      const widthNum = parseInt(width, 10)
+      const heightNum = parseInt(height, 10)
+
+      const maxCellWidth = 400
+      const widthFinal = Math.min(widthNum, maxCellWidth)
+
+      if (widthFinal !== widthNum) {
+        this.cellWidth.value = widthFinal.toString()
+      }
+
       this.editor.commands.setCellAttributes(this.selectedCell, {
-        height: `${height}px`,
-        width: `${width}px`
+        height: `${heightNum}px`,
+        width: `${widthFinal}px`
       })
       this.selectedCell = this.editor.view.state.doc.resolve(this.selectedCell.pos)
     }

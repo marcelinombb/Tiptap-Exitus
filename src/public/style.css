@@ -848,6 +848,7 @@ p {
     no-repeat center;
   background-size: 0;
   transition: all 0.3s;
+  border: 1px solid #7a7a7a;
 }
 
 .ex-tooltip-text {

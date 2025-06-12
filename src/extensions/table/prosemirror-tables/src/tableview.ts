@@ -57,7 +57,6 @@ export function updateColumnsOnResize(
 
       for (let j = 0; j < colspan; j += 1, col += 1) {
         const hasWidth = overrideCol === col ? overrideValue : (colwidth && colwidth[j]) as number | undefined
-        const cssWidth = hasWidth ? `${calculatePercentage(hasWidth )}%` : ''
 
         totalWidth += hasWidth || cellMinWidth
 
@@ -74,11 +73,9 @@ export function updateColumnsOnResize(
 
           colgroup.appendChild(colElement)
         } else {
-          if ((nextDOM as HTMLTableColElement).style.width !== cssWidth) {
-            const [propertyKey, propertyValue] = getColStyleDeclaration(cellMinWidth, hasWidth);
+          const [propertyKey, propertyValue] = getColStyleDeclaration(cellMinWidth, hasWidth);
 
-            (nextDOM as HTMLTableColElement).style.setProperty(propertyKey, propertyValue)
-          }
+          (nextDOM as HTMLTableColElement).style.setProperty(propertyKey, propertyValue)
 
           nextDOM = nextDOM.nextSibling
         }
@@ -93,32 +90,31 @@ export function updateColumnsOnResize(
     nextDOM = after
   }
 
-  const realTable = (table.firstElementChild) as HTMLTableElement
+  const maxTableWidth = 857 
+  const finalTableWidth = Math.min(totalWidth, maxTableWidth)
 
   if (fixedWidth || fixed) {
-    realTable.classList.add('table-resized')
-    table.style.width = `${calculatePercentage(totalWidth)}%`
+    table.classList.add('table-resized')
+    table.style.width = `${finalTableWidth}px`
     table.style.minWidth = ''
   } else {
-    table.style.minWidth = `${calculatePercentage(totalWidth)}%`
+    table.style.minWidth = `${finalTableWidth}px`
     table.style.width = ''
-
   }
 }
 
 
 export function getColStyleDeclaration(minWidth: number, width: number | undefined): [string, string] {
   if (width) {
-    // apply the stored width unless it is below the configured minimum cell width
-    return ['width', `${calculatePercentage(Math.max(width, minWidth))}%`]
+    const maxWidth = 857 
+    const finalWidth = Math.min(Math.max(width, minWidth), maxWidth)
+    return ['width', `${finalWidth}px`]
   }
 
-  // set the minimum with on the column if it has no stored width
-  return ['min-width', `${calculatePercentage(minWidth)}%`]
+  return ['min-width', `${minWidth}px`]
 }
 
 export function calculatePercentage(totalWidth: number) {
-  const percentage = (Number(totalWidth) / 857) * 100
-  return Math.min(percentage, 100).toFixed(4)
-  //return totalWidth
+  const maxWidth = 857 
+  return Math.min(Number(totalWidth), maxWidth)
 }
