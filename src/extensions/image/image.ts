@@ -1,6 +1,6 @@
 import { type Editor, Node, nodeInputRule } from '@tiptap/core'
+import { Fragment } from '@tiptap/pm/model'
 import { Plugin, PluginKey } from 'prosemirror-state'
-import { findSelectedNodeOfType } from 'prosemirror-utils'
 
 import { ImageView } from './imageView'
 
@@ -60,11 +60,7 @@ export interface ImageOptions {
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     image: {
-      /**
-       * Add an image
-       */
       setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType
-      setImageWidth: (width: string) => ReturnType
     }
   }
 }
@@ -88,10 +84,18 @@ export const Image = Node.create<ImageOptions>({
   },
 
   group() {
-    return this.options.inline ? 'inline' : 'block'
+    return 'block'
   },
 
+  selectable: false,
+
+  content: 'inline*',
+
   draggable: true,
+
+  isolating: true,
+
+  defining: true,
 
   addAttributes() {
     return {
@@ -138,15 +142,30 @@ export const Image = Node.create<ImageOptions>({
           return (
             (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure' || isUrlImage || isBase64Url) && null
           )
+        },
+        getContent: (node, schema) => {
+          const figcaption = (node.parentElement as HTMLElement).querySelector('figcaption')
+          if (!figcaption) return Fragment.empty
+          return Fragment.from(schema.text(figcaption.textContent ?? ''))
         }
+      },
+      {
+        tag: 'figcaption',
+        ignore: true
       }
     ]
   },
 
-  renderHTML({ HTMLAttributes }) {
+  renderHTML({ node, HTMLAttributes }) {
     const { style, classes, src } = HTMLAttributes
 
-    return ['div', { style, class: classes }, ['img', { src, style: 'display: table-cell' }]]
+    const figcaptionFragment = node.content
+
+    if (figcaptionFragment.size) {
+      return ['figure', { style, class: classes }, ['img', { src, style: 'display: table-cell' }], ['figcaption', {}, 0]]
+    } else {
+      return ['figure', { style, class: classes }, ['img', { src, style: 'display: table-cell' }]]
+    }
   },
 
   addCommands() {
@@ -158,36 +177,7 @@ export const Image = Node.create<ImageOptions>({
             type: this.name,
             attrs: options
           })
-        },
-      setImageWidth: (width: string) => {
-        return ({ tr, state, dispatch }) => {
-          // Get the selection
-          const { selection } = state
-          // Find the table node around the selection
-          let nodePos = null
-          const imageNode = findSelectedNodeOfType(state.schema.nodes.image)(selection)
-
-          if (imageNode) {
-            nodePos = imageNode.pos
-          }
-
-          // If no table was found or position is undefined, abort the command
-          if (!nodePos) return false
-
-          // Ensure we have a valid width to set
-          if (!width || typeof width !== 'string') return false
-
-          // Create a new attributes object with the updated width
-          const attrs = { ...imageNode?.node.attrs, style: `width: ${width}` }
-
-          // Create a transaction that sets the new attributes
-          if (dispatch) {
-            tr.setNodeMarkup(nodePos, undefined, attrs)
-            dispatch(tr)
-          }
-          return true
         }
-      }
     }
   },
   addInputRules() {

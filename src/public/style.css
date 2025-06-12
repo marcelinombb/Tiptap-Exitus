@@ -9,6 +9,7 @@
   --color-cancel: #db3700;
   --color-base-text: #333;
   --color-focused-background: rgba(158, 201, 250, 0.3);
+  --image-caption-background: #f7f7f7;
   --ex-font-size-base: 13px;
   --ex-line-height-base: 1.84615;
   --ex-font-face: Helvetica, Arial, Tahoma, Verdana, Sans-Serif;
@@ -424,12 +425,43 @@ p {
   border-color: var(--active-blue);
 }
 
+figure, figcaption {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
 .ex-image-wrapper {
   clear: both;
   display: table;
   padding: 0.08em;
   max-width: 100%;
+  text-align: center;
+  position: relative;
 }
+
+.ex-image-wrapper > figcaption {
+    background-color: var(--image-caption-background);
+    caption-side: bottom;
+    color: var(--color-base-text);
+    display: table-caption;
+    font-size: .75em;
+    outline-offset: -1px;
+    padding: .6em;
+    word-break: break-word;
+}
+
+.figcaption-is-empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
 
 .icon-arrow {
   width: 12px !important;
@@ -456,6 +488,16 @@ p {
 .ex-image-block-align-center {
   margin-right: auto;
   margin-left: auto;
+}
+
+.ex-image-float-left {
+  float: left;
+  margin-right: 0.9em;
+}
+
+.ex-image-float-right {
+  float: right;
+  margin-left: 0.9em;
 }
 
 .math-tex {
