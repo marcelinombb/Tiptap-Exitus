@@ -1,0 +1,16 @@
+/* Estilos para blockquote */
+blockquote {
+  font-style: italic;
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 4px solid #ccc;
+}
+
+blockquote p {
+  font-style: italic;
+  margin: 0;
+}
+
+blockquote * {
+  font-style: italic;
+}
