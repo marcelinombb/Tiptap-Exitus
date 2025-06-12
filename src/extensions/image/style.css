@@ -1,0 +1,114 @@
+/* Estilos para redimensionamento de imagem */
+.resizers-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.resizer {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #3b82f6;
+  border: 2px solid white;
+  border-radius: 50%;
+  pointer-events: all;
+  cursor: nw-resize;
+  z-index: 10;
+}
+
+.resizer.top-left {
+  top: -5px;
+  left: -5px;
+  cursor: nw-resize;
+}
+
+.resizer.top-right {
+  top: -5px;
+  right: -5px;
+  cursor: ne-resize;
+}
+
+.resizer.bottom-left {
+  bottom: -5px;
+  left: -5px;
+  cursor: sw-resize;
+}
+
+.resizer.bottom-right {
+  bottom: -5px;
+  right: -5px;
+  cursor: se-resize;
+}
+
+/* Estilos para wrapper de imagem */
+.ex-image-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 10px 0;
+}
+
+.ex-image-wrapper.ex-selected .resizers-container {
+  display: block;
+}
+
+.ex-image-wrapper:not(.ex-selected) .resizers-container {
+  display: none;
+}
+
+/* Estilos para alinhamento */
+.ex-image-block-middle {
+  display: block;
+  margin: 10px auto;
+}
+
+.ex-image-block-align-left {
+  display: block;
+  margin: 10px auto 10px 0;
+}
+
+.ex-image-block-align-right {
+  display: block;
+  margin: 10px 0 10px auto;
+}
+
+.ex-image-float-left {
+  float: left;
+  margin: 0 15px 15px 0;
+}
+
+.ex-image-float-right {
+  float: right;
+  margin: 0 0 15px 15px;
+}
+
+/* Estilos para legenda */
+.ex-image-wrapper figcaption {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  font-style: italic;
+}
+
+.ex-image-wrapper figcaption.ex-hidden {
+  display: none;
+}
+
+.ex-image-wrapper figcaption.figcaption-is-empty:before {
+  content: attr(data-placeholder);
+  color: #999;
+}
+
+/* Utilitários */
+.ex-hidden {
+  display: none !important;
+}
+
+.ex-mr-0 {
+  margin-right: 0 !important;
+}

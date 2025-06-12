@@ -6,6 +6,7 @@ export default class ResizableImage {
   private initialX: number = 0
   private initialWidth: number = 0
   private resizers!: HTMLDivElement
+  //private proportionLabel!: HTMLDivElement
 
   topLeftResizer!: HTMLElement
   topRightResizer!: HTMLElement
@@ -20,6 +21,7 @@ export default class ResizableImage {
     this.handleResizeEvent = this.resize.bind(this)
     this.handleStopResizeEvent = this.stopResize.bind(this)
     this.initializeResizers()
+    //this.createProportionLabel()
   }
 
   private initializeResizers() {
@@ -43,6 +45,41 @@ export default class ResizableImage {
     return resizer
   }
 
+  /* private createProportionLabel() {
+    this.proportionLabel = document.createElement('div')
+    this.proportionLabel.className = 'ex-image-proportion-label'
+    this.proportionLabel.style.cssText = `
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      white-space: nowrap;
+      z-index: 1000;
+      display: none;
+      pointer-events: none;
+    `
+    this.resizers.appendChild(this.proportionLabel)
+  }
+
+  private updateProportionLabel(width: number) {
+    const height = Math.round(width * (this.imageView.image.naturalHeight / this.imageView.image.naturalWidth))
+    this.proportionLabel.textContent = `${width} x ${height}px`
+  }
+
+  private showProportionLabel() {
+    this.proportionLabel.style.display = 'block'
+  }
+
+  private hideProportionLabel() {
+    this.proportionLabel.style.display = 'none'
+  } */
+
   private startResize(event: PointerEvent) {
     event.preventDefault()
     this._isResizing = true
@@ -50,6 +87,8 @@ export default class ResizableImage {
     this.initialWidth = this.imageView.imageWrapper.offsetWidth
 
     // Mostra a label
+    /*  this.showProportionLabel()
+    this.updateProportionLabel(this.initialWidth) */
 
     document.addEventListener('pointermove', this.handleResizeEvent)
     document.addEventListener('pointerup', this.handleStopResizeEvent)
@@ -63,6 +102,9 @@ export default class ResizableImage {
 
     const newWidth = Math.min(isLeftResize ? this.initialWidth - deltaX : this.initialWidth + deltaX, 700)
     this.imageView.imageWrapper.style.width = `${newWidth}px`
+
+    // Atualiza a label com as novas proporções
+    //this.updateProportionLabel(newWidth)
   }
 
   public show() {
@@ -77,6 +119,9 @@ export default class ResizableImage {
     this._isResizing = false
     document.removeEventListener('pointermove', this.handleResizeEvent)
     document.removeEventListener('pointerup', this.handleStopResizeEvent)
+
+    // Esconde a label
+    //this.hideProportionLabel()
 
     this.imageView.updateAttributes({
       style: `width: ${this.imageView.imageWrapper.style.width}`
