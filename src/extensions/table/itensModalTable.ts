@@ -10,6 +10,7 @@ const createPickrInstance = (selector: string, onCancel: () => void): Pickr => {
   const pickr = Pickr.create({
     el: selector,
     theme: 'nano',
+    default: '#ffffff', // Cor padrão branca
     swatches: [
       'rgba(230, 77, 77, 1)',
       'rgba(230, 153, 77, 1)',
@@ -96,8 +97,8 @@ export class ItensModalTable {
     const [size = '', border = 'none'] = (style.border ?? '').split(' ')
     this.larguraBloco1.value = size.replace('px', '')
     this.selectInput.value = border
-    this.inputAltura.value = style.height ? style.height.replace('em', '') : ''
-    this.inputLargura.value = style.width ? style.width.replace('em', '') : ''
+    this.inputAltura.value = style.height ? style.height.replace('px', '') : ''
+    this.inputLargura.value = style.width ? style.width.replace('px', '') : ''
   }
 
   public static getIntance(editor: ExitusEditor) {
@@ -143,6 +144,8 @@ export class ItensModalTable {
 
     const borderColorElement = document.createElement('div')
     borderColorElement.className = 'color-picker-border'
+    borderColorElement.style.border = '4px solid #ccc'
+    borderColorElement.style.borderRadius = '4px'
 
     bloco1.append(bordaLabel, this.selectInput, this.larguraBloco1, borderColorElement)
     dropdownContent.appendChild(bloco1)
@@ -155,6 +158,9 @@ export class ItensModalTable {
     bloco2.className = 'ex-bloco2'
     const backgroundColorElement = document.createElement('div')
     backgroundColorElement.className = 'color-picker-background'
+
+    backgroundColorElement.style.border = '4px solid #ccc'
+    backgroundColorElement.style.borderRadius = '4px'
 
     bloco2.append(corFundoLabel, backgroundColorElement)
     dropdownContent.appendChild(bloco2)
@@ -183,6 +189,10 @@ export class ItensModalTable {
     })
 
     this.inputAltura.addEventListener('change', () => {
+      this.aplicarDimensoesTabela()
+    })
+
+    this.inputLargura.addEventListener('change', () => {
       this.aplicarDimensoesTabela()
     })
 
@@ -311,10 +321,20 @@ export class ItensModalTable {
   private aplicarDimensoesTabela() {
     const altura = this.inputAltura.value
     const largura = this.inputLargura.value
+
     if (altura && largura) {
+      const larguraNum = parseInt(largura, 10)
+      const alturaNum = parseInt(altura, 10)
+
+      const larguraFinal = Math.min(larguraNum, 857)
+
+      if (larguraFinal !== larguraNum) {
+        this.inputLargura.value = larguraFinal.toString()
+      }
+
       this.editor.commands.setTableStyle({
-        height: `${altura}em`,
-        width: `${largura}em`
+        height: `${alturaNum}px`,
+        width: `${larguraFinal}px`
       })
     }
   }

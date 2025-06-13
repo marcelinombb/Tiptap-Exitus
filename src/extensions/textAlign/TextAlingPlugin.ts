@@ -30,9 +30,39 @@ export class TextAlignPlugin extends Plugin {
         classes: ['ex-dropdown-alignments']
       },
       dropdown => {
+        this.setupActiveStateMonitoring(dropdown)
         return this.createDropDownContent(this.editor, dropdown)
       }
     )
+  }
+
+  private setupActiveStateMonitoring(dropdown: Dropdown): void {
+    this.editor.on('transaction', () => {
+      let currentIcon = alignLeftIcon
+      let hasActiveAlignment = false
+
+      if (this.editor.isActive({ textAlign: 'left' })) {
+        currentIcon = alignLeftIcon
+        hasActiveAlignment = true
+      } else if (this.editor.isActive({ textAlign: 'center' })) {
+        currentIcon = centertIcon
+        hasActiveAlignment = true
+      } else if (this.editor.isActive({ textAlign: 'right' })) {
+        currentIcon = alignRightIcon
+        hasActiveAlignment = true
+      } else if (this.editor.isActive({ textAlign: 'justify' })) {
+        currentIcon = justifyIcon
+        hasActiveAlignment = true
+      }
+
+      dropdown.button.button.innerHTML = currentIcon + dropdown.button.button.innerHTML.split('</svg>').slice(1).join('</svg>')
+
+      if (hasActiveAlignment) {
+        dropdown.button.on()
+      } else {
+        dropdown.button.off()
+      }
+    })
   }
 
   showDropdown({ event, dropdown }: DropDownEventProps) {
