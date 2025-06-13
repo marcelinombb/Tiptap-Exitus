@@ -49,6 +49,17 @@
   position: relative;
   display: inline-block;
   margin: 10px 0;
+  max-width: 100%;
+}
+
+.ex-image-wrapper img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ex-image-wrapper:not([style*="width"]) {
+  width: 400px;
 }
 
 .ex-image-wrapper.ex-selected .resizers-container {

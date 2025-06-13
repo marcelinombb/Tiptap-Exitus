@@ -239,7 +239,16 @@ export class ImageView implements NodeView {
       this.urlToBase64(node.attrs.src)
     } else {
       this.image.onload = () => {
-        this.originalSize = this.image.width
+        const naturalWidth = this.image.naturalWidth
+        this.originalSize = naturalWidth
+
+        if (!node.attrs.style || !node.attrs.style.includes('width')) {
+          const defaultWidth = Math.min(naturalWidth, 400)
+          this.updateAttributes({
+            style: `width: ${defaultWidth}px;`
+          })
+        }
+
         this.image.onload = null
       }
     }
@@ -295,9 +304,16 @@ export class ImageView implements NodeView {
     image.src = `${this.proxyUrl}/${encodeURIComponent(url)}`
     image.setAttribute('crossorigin', 'anonymous')
     image.onload = convertToBase64(image, (base64Url, width) => {
-      this.updateAttributes({ src: base64Url })
-      image.onload = null
       this.originalSize = width
+
+      const attributes: Record<string, any> = { src: base64Url }
+      if (!this.node.attrs.style || !this.node.attrs.style.includes('width')) {
+        const defaultWidth = Math.min(width, 400)
+        attributes.style = `width: ${defaultWidth}px;`
+      }
+
+      this.updateAttributes(attributes)
+      image.onload = null
     })
   }
 
