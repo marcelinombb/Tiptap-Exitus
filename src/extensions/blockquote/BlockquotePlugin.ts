@@ -2,6 +2,7 @@ import { Plugin } from '@editor/Plugin'
 import { type ButtonEventProps } from '@editor/ui'
 import quote from '@icons/double-quotes-l.svg'
 import { Blockquote } from '@tiptap/extension-blockquote'
+import './style.css'
 
 export class BlockquotePlugin extends Plugin {
   static get pluginName() {
