@@ -1,0 +1,33 @@
+.misspelled-word {
+  text-decoration: underline;
+  text-decoration-color: red;
+  text-decoration-style: wavy;
+}
+
+.spellcheck-error {
+  text-decoration: underline;
+  text-decoration-color: #ff6b6b;
+  text-decoration-style: wavy;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.spellcheck-error:hover {
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+.spellcheck-suggestions {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.4;
+}
+
+.spellcheck-suggestion:hover,
+.spellcheck-add-to-dict:hover {
+  background-color: #f0f0f0;
+}
+
+.spellcheck-add-to-dict {
+  font-style: italic;
+}

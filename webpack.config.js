@@ -79,7 +79,11 @@ module.exports = (env, argv) => {
           {
             from: path.resolve(__dirname, 'README.md'),
             to: path.resolve(__dirname, 'dist')
-          }
+          },
+          {
+          from: path.resolve(__dirname, 'src/extensions/espell-checker/dictionaries'),
+          to: path.resolve(__dirname, 'dist/dictionaries'), // This will copy into `dist/typo/dictionaries`
+        },
         ]
       })
     ],

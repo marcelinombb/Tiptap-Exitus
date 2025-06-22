@@ -20,6 +20,7 @@ import { TabPlugin } from './extensions/tab/TabPlugin'
 import { TablePlugin } from './extensions/table/TablePlugin'
 import { TextAlignPlugin } from './extensions/textAlign/TextAlingPlugin'
 import { UnderlinePlugin } from './extensions/underline/UnderlinePlugin'
+import { EspellCheckerPlugin } from './extensions/espell-checker/EspellCheckerPlugin'
 
 ExitusEditor.plugins = [
   DefaultPlugin,
@@ -40,7 +41,8 @@ ExitusEditor.plugins = [
   TabPlugin,
   IndentPlugin,
   ColarQuestaoPlugin,
-  FormatClear
+  FormatClear,
+  EspellCheckerPlugin
 ]
 
 ExitusEditor.toolbarOrder = [
