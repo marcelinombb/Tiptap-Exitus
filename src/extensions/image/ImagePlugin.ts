@@ -3,6 +3,7 @@ import imageAdd from '@icons/image-add-fill.svg'
 import type ExitusEditor from '@src/ExitusEditor'
 
 import { Image, parseImagesToBase64 } from './image'
+import './style.css'
 
 export class ImagePlugin extends Plugin {
   static get pluginName(): string {
