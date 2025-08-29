@@ -12,33 +12,11 @@ import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type Node } from '@tiptap/pm/model'
+import { NodeSelection } from '@tiptap/pm/state'
 import { type NodeView, type ViewMutationRecord } from '@tiptap/pm/view'
 
 import { convertToBase64 } from './image'
 import ResizableImage from './ResizableImage'
-
-function imageClickHandler({ imageWrapper, balloon }: ImageView) {
-  imageWrapper.addEventListener('click', event => {
-    event.stopPropagation()
-    imageWrapper.classList.add('ex-selected')
-
-    if (!balloon.isOpen()) {
-      balloon.show()
-    }
-
-    function clickOutside(event: Event) {
-      const target = event.target as HTMLElement
-
-      if (target.closest('.ex-image-wrapper') === null) {
-        balloon.hide()
-        imageWrapper.classList.remove('ex-selected')
-        window.removeEventListener('mousedown', clickOutside)
-      }
-    }
-
-    window.addEventListener('mousedown', clickOutside)
-  })
-}
 
 function resetImageClass(imageWrapper: HTMLElement, newClass: string) {
   imageWrapper.className = ''
@@ -257,7 +235,7 @@ export class ImageView implements NodeView {
 
     this.imageWrapper.appendChild(this.balloon.getBalloon())
 
-    imageClickHandler(this)
+    this.imageClickHandler()
 
     this.dom = this.imageWrapper
   }
@@ -288,6 +266,36 @@ export class ImageView implements NodeView {
     this.setImageAttributes(this.image, this.node)
 
     return true
+  }
+
+  imageClickHandler() {
+    this.image.addEventListener('click', event => {
+      event.stopPropagation()
+
+      const clickOutside = (event: Event) => {
+        const target = event.target as HTMLElement
+
+        if (target.closest('.ex-image-wrapper') === null) {
+          this.balloon.hide()
+          this.imageWrapper.classList.remove('ex-selected')
+          window.removeEventListener('mousedown', clickOutside)
+        }
+      }
+
+      window.addEventListener('mousedown', clickOutside)
+
+      const { view, state } = this.editor
+
+      if (typeof this.getPos === 'function') {
+        const transaction = state.tr.setSelection(NodeSelection.create(state.doc, this.getPos()))
+        view.dispatch(transaction)
+      }
+    })
+  }
+
+  selectNode() {
+    this.imageWrapper.classList.add('ex-selected')
+    this.balloon.show()
   }
 
   urlToBase64(url: string) {
@@ -321,7 +329,7 @@ export class ImageView implements NodeView {
   }
 
   setImageAttributes(image: Element, node: Node) {
-    ;(this.imageWrapper as HTMLElement).setAttribute('style', `${node.attrs.style}`)
+    this.imageWrapper.setAttribute('style', `${node.attrs.style}`)
     image.setAttribute('src', node.attrs.src)
   }
 
