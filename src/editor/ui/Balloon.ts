@@ -53,7 +53,7 @@ export class Balloon {
   render() {
     this.ballonMenu = document.createElement('div')
     this.ballonMenu.contentEditable = 'false'
-    this.ballonMenu.className = 'balloon-menu ex-reset-all ex-hidden'
+    this.ballonMenu.className = 'balloon-menu ex-reset-all ex-hidden ex-bubble-menu'
 
     this.ballonPanel = this.ballonMenu.appendChild(document.createElement('div'))
 

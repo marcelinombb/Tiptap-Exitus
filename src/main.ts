@@ -3,6 +3,7 @@ import './public/style.css'
 import ExitusEditor from './ExitusEditor'
 import { BlockquotePlugin } from './extensions/blockquote/BlockquotePlugin'
 import { BoldPlugin } from './extensions/bold/BoldPlugin'
+import BubbleMenuPlugin from './extensions/bubble-menu/BubbleMenuPlugin'
 import { ColarQuestaoPlugin } from './extensions/colar-questao/ColarQuestaoPlugin'
 import { DefaultPlugin } from './extensions/default-plugin/DefaultPlugin'
 import { FormatClear } from './extensions/format-clear/FormatClearPlugin'
@@ -43,6 +44,9 @@ ExitusEditor.plugins = [
   FormatClear
 ]
 
+// Adiciona o Bubble Menu (por instância) – mantém as extensões existentes
+ExitusEditor.plugins.push(BubbleMenuPlugin)
+
 ExitusEditor.toolbarOrder = [
   'bold',
   'italic',
@@ -66,5 +70,8 @@ ExitusEditor.toolbarOrder = [
   'mathtype',
   'chemtype'
 ]
+
+// Remove a toolbar fixa. Mantemos a ordem somente para reutilizar ferramentas na criação do bubble.
+//ExitusEditor.toolbarOrder = []
 
 export default ExitusEditor
