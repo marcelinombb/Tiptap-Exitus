@@ -1,4 +1,4 @@
-import { Node } from '@tiptap/core'
+import { InputRule, Node } from '@tiptap/core'
 import { Fragment } from '@tiptap/pm/model'
 import '../../../node_modules/katex/dist/katex.min.css'
 
@@ -24,6 +24,21 @@ export const Katex = Node.create({
   content: 'inline*',
 
   draggable: true,
+
+  addInputRules() {
+    return [
+      new InputRule({
+        find: /\$\$([\s\S]+?)\$\$$/,
+        handler: ({ state, range, match }) => {
+          const latex = match[1]
+          const { tr } = state
+          const start = range.from
+          const end = range.to
+          tr.replaceWith(start, end, this.type.create({ latexFormula: parseLatex(latex) }))
+        }
+      })
+    ]
+  },
 
   parseHTML() {
     return [

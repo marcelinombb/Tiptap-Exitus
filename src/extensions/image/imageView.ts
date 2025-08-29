@@ -12,147 +12,11 @@ import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type Node } from '@tiptap/pm/model'
+import { NodeSelection } from '@tiptap/pm/state'
 import { type NodeView, type ViewMutationRecord } from '@tiptap/pm/view'
 
 import { convertToBase64 } from './image'
 import ResizableImage from './ResizableImage'
-
-class CustomSizeManager {
-  private static STORAGE_KEY = 'ex-image-custom-size'
-
-  static getSavedSize(): { width: number; height: number; label: string } | null {
-    try {
-      const saved = localStorage.getItem(this.STORAGE_KEY)
-      return saved ? JSON.parse(saved) : null
-    } catch {
-      return null
-    }
-  }
-
-  static saveSize(width: number, height: number, label?: string): void {
-    const newSize = {
-      width,
-      height,
-      label: label || `${width}x${height}px`
-    }
-
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newSize))
-  }
-
-  static clearSavedSize(): void {
-    localStorage.removeItem(this.STORAGE_KEY)
-  }
-}
-
-// Dropdown para tamanho personalizado
-class CustomSizeDropdown {
-  private dropdown: HTMLElement
-  private widthInput: HTMLInputElement
-  private heightInput: HTMLInputElement
-  private onConfirm: (width: number, height: number) => void
-
-  constructor(onConfirm: (width: number, height: number) => void) {
-    this.onConfirm = onConfirm
-    this.dropdown = this.createDropdown()
-    this.widthInput = this.dropdown.querySelector('#ex-width-input') as HTMLInputElement
-    this.heightInput = this.dropdown.querySelector('#ex-height-input') as HTMLInputElement
-  }
-
-  private createDropdown(): HTMLElement {
-    const dropdown = document.createElement('div')
-    dropdown.className = 'ex-dropdownList-content ex-custom-size-dropdown'
-    dropdown.innerHTML = `
-      <div class="ex-custom-size-form">
-        <div class="ex-input-group">
-          <label for="ex-width-input">Largura (px)</label>
-          <input type="number" id="ex-width-input" min="50" max="1000" placeholder="400">
-        </div>
-        <div class="ex-input-group">
-          <label for="ex-height-input">Altura (px)</label>
-          <input type="number" id="ex-height-input" min="50" max="1000" placeholder="300">
-        </div>
-        ${this.createSavedSizeSection()}
-        <div class="ex-custom-size-buttons">
-          <button class="ex-apply-size">Aplicar</button>
-        </div>
-      </div>
-    `
-
-    this.setupEventListeners(dropdown)
-    return dropdown
-  }
-
-  private createSavedSizeSection(): string {
-    const savedSize = CustomSizeManager.getSavedSize()
-    if (!savedSize) return ''
-
-    return `
-      <div class="ex-custom-size-separator"></div>
-      <div class="ex-saved-size">
-        <button class="ex-saved-size-button" data-width="${savedSize.width}" data-height="${savedSize.height}">
-          ${savedSize.label}
-        </button>
-      </div>
-    `
-  }
-
-  private setupEventListeners(dropdown: HTMLElement): void {
-    const applyBtn = dropdown.querySelector('.ex-apply-size') as HTMLButtonElement
-    applyBtn.addEventListener('click', () => this.handleApply())
-
-    const savedBtn = dropdown.querySelector('.ex-saved-size-button') as HTMLButtonElement
-    if (savedBtn) {
-      savedBtn.addEventListener('click', () => {
-        const width = parseInt(savedBtn.dataset.width || '0')
-        const height = parseInt(savedBtn.dataset.height || '0')
-        this.onConfirm(width, height)
-      })
-    }
-
-    dropdown.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        this.handleApply()
-      }
-    })
-  }
-
-  private handleApply(): void {
-    const width = parseInt(this.widthInput.value)
-    const height = parseInt(this.heightInput.value)
-
-    if (width > 0 && height > 0) {
-      CustomSizeManager.saveSize(width, height)
-      this.onConfirm(width, height)
-    }
-  }
-
-  getElement(): HTMLElement {
-    return this.dropdown
-  }
-}
-
-function imageClickHandler({ imageWrapper, balloon }: ImageView) {
-  imageWrapper.addEventListener('click', event => {
-    event.stopPropagation()
-    imageWrapper.classList.add('ex-selected')
-
-    if (!balloon.isOpen()) {
-      balloon.show()
-    }
-
-    function clickOutside(event: Event) {
-      const target = event.target as HTMLElement
-
-      if (target.closest('.ex-image-wrapper') === null) {
-        balloon.hide()
-        imageWrapper.classList.remove('ex-selected')
-        window.removeEventListener('mousedown', clickOutside)
-      }
-    }
-
-    window.addEventListener('mousedown', clickOutside)
-  })
-}
 
 function resetImageClass(imageWrapper: HTMLElement, newClass: string) {
   imageWrapper.className = ''
@@ -223,69 +87,6 @@ function sizeButton(dropdown: Dropdown, imageView: ImageView, label: string, siz
   return button.render()
 }
 
-function customSizeButton(dropdown: Dropdown, imageView: ImageView) {
-  const button = new Button(dropdown.editor, {
-    label: 'Personalizado',
-    classList: ['ex-mr-0']
-  })
-
-  button.bind('click', () => {
-    dropdown.off()
-
-    const customDropdown = new CustomSizeDropdown((width, height) => {
-      if (typeof imageView.getPos === 'function') {
-        const pos = imageView.getPos()
-        const { view } = imageView.editor
-        const doc = view.state.doc
-
-        if (pos >= 0 && pos < doc.content.size) {
-          imageView.updateAttributes({
-            style: `width: ${width}px; height: ${height}px;`
-          })
-        }
-      }
-
-      if (document.body.contains(dropdownElement)) {
-        document.body.removeChild(dropdownElement)
-      }
-    })
-
-    const dropdownElement = customDropdown.getElement()
-
-    const balloonElement = imageView.balloon.getBalloon()
-    if (balloonElement) {
-      const rect = balloonElement.getBoundingClientRect()
-      dropdownElement.style.position = 'absolute'
-      dropdownElement.style.left = `${rect.left}px`
-      dropdownElement.style.top = `${rect.bottom + 5}px`
-      dropdownElement.style.zIndex = '1001'
-    }
-
-    document.body.appendChild(dropdownElement)
-
-    const firstInput = dropdownElement.querySelector('input') as HTMLInputElement
-    if (firstInput) {
-      firstInput.focus()
-    }
-
-    const handleClickOutside = (e: Event) => {
-      const target = e.target as HTMLElement
-      if (!dropdownElement.contains(target)) {
-        if (document.body.contains(dropdownElement)) {
-          document.body.removeChild(dropdownElement)
-        }
-        document.removeEventListener('click', handleClickOutside)
-      }
-    }
-
-    setTimeout(() => {
-      document.addEventListener('click', handleClickOutside)
-    }, 100)
-  })
-
-  return button.render()
-}
-
 function criarDropDown(dropdown: Dropdown, imageView: ImageView) {
   const dropdownContent = document.createElement('div')
   dropdownContent.className = 'ex-dropdownList-content'
@@ -296,11 +97,8 @@ function criarDropDown(dropdown: Dropdown, imageView: ImageView) {
   const pequeno = sizeButton(dropdown, imageView, '300px', 300)
   const medio = sizeButton(dropdown, imageView, '400px', 400)
   const grande = sizeButton(dropdown, imageView, '700px', 700)
-  const personalizado = customSizeButton(dropdown, imageView)
 
-  const buttons = [original, pequeno, medio, grande, personalizado]
-
-  dropdownContent?.append(...buttons)
+  dropdownContent?.append(original, pequeno, medio, grande)
 
   return dropdownContent
 }
@@ -419,16 +217,7 @@ export class ImageView implements NodeView {
       this.urlToBase64(node.attrs.src)
     } else {
       this.image.onload = () => {
-        const naturalWidth = this.image.naturalWidth
-        this.originalSize = naturalWidth
-
-        if (!node.attrs.style || !node.attrs.style.includes('width')) {
-          const defaultWidth = Math.min(naturalWidth, 400)
-          this.updateAttributes({
-            style: `width: ${defaultWidth}px;`
-          })
-        }
-
+        this.originalSize = this.image.width
         this.image.onload = null
       }
     }
@@ -446,7 +235,7 @@ export class ImageView implements NodeView {
 
     this.imageWrapper.appendChild(this.balloon.getBalloon())
 
-    imageClickHandler(this)
+    this.imageClickHandler()
 
     this.dom = this.imageWrapper
   }
@@ -479,21 +268,44 @@ export class ImageView implements NodeView {
     return true
   }
 
+  imageClickHandler() {
+    this.image.addEventListener('click', event => {
+      event.stopPropagation()
+
+      const clickOutside = (event: Event) => {
+        const target = event.target as HTMLElement
+
+        if (target.closest('.ex-image-wrapper') === null) {
+          this.balloon.hide()
+          this.imageWrapper.classList.remove('ex-selected')
+          window.removeEventListener('mousedown', clickOutside)
+        }
+      }
+
+      window.addEventListener('mousedown', clickOutside)
+
+      const { view, state } = this.editor
+
+      if (typeof this.getPos === 'function') {
+        const transaction = state.tr.setSelection(NodeSelection.create(state.doc, this.getPos()))
+        view.dispatch(transaction)
+      }
+    })
+  }
+
+  selectNode() {
+    this.imageWrapper.classList.add('ex-selected')
+    this.balloon.show()
+  }
+
   urlToBase64(url: string) {
     const image = new Image()
     image.src = `${this.proxyUrl}/${encodeURIComponent(url)}`
     image.setAttribute('crossorigin', 'anonymous')
     image.onload = convertToBase64(image, (base64Url, width) => {
-      this.originalSize = width
-
-      const attributes: Record<string, any> = { src: base64Url }
-      if (!this.node.attrs.style || !this.node.attrs.style.includes('width')) {
-        const defaultWidth = Math.min(width, 400)
-        attributes.style = `width: ${defaultWidth}px;`
-      }
-
-      this.updateAttributes(attributes)
+      this.updateAttributes({ src: base64Url })
       image.onload = null
+      this.originalSize = width
     })
   }
 
@@ -517,7 +329,7 @@ export class ImageView implements NodeView {
   }
 
   setImageAttributes(image: Element, node: Node) {
-    ;(this.imageWrapper as HTMLElement).setAttribute('style', `${node.attrs.style}`)
+    this.imageWrapper.setAttribute('style', `${node.attrs.style}`)
     image.setAttribute('src', node.attrs.src)
   }
 
@@ -540,7 +352,7 @@ export class ImageView implements NodeView {
     toolbar.setButton('alinhaDireita', {
       icon: textDr,
       click: alinhaDireita(this),
-      tooltip: 'Imagem alinhada à direita'
+      tooltip: 'Imagem alinhada a direita'
     })
     toolbar.setButton('alinhaMeio', {
       icon: textDm,
@@ -550,7 +362,7 @@ export class ImageView implements NodeView {
     toolbar.setButton('alinhaEsquerda', {
       icon: textDl,
       click: alinhaEsquerda(this),
-      tooltip: 'Imagem alinhada à asquerda'
+      tooltip: 'Imagem alinhada a asquerda'
     })
     toolbar.setDropDown(
       'tamanhoImg',
