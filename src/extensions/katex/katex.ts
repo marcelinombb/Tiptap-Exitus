@@ -1,8 +1,11 @@
 import { InputRule, Node } from '@tiptap/core'
 import { Fragment } from '@tiptap/pm/model'
 import '../../../node_modules/katex/dist/katex.min.css'
+import { type EditorView } from '@tiptap/pm/view'
 
 import { KatexView } from './index'
+
+const latexRegex = /\$\$([\s\S]+?)\$\$/g
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -28,7 +31,7 @@ export const Katex = Node.create({
   addInputRules() {
     return [
       new InputRule({
-        find: /\$\$([\s\S]+?)\$\$$/,
+        find: latexRegex,
         handler: ({ state, range, match }) => {
           const latex = match[1]
           const { tr } = state
@@ -102,8 +105,40 @@ export const Katex = Node.create({
     return ({ node, editor, getPos }) => {
       return new KatexView(node, editor, getPos)
     }
+  },
+
+  onTransaction({ editor }) {
+    normalizeLatex(editor.view)
   }
 })
+
+function normalizeLatex(view: EditorView) {
+  const { state, dispatch } = view
+  const tr = state.tr
+  let changed = false
+
+  state.doc.descendants((node, pos) => {
+    if (node.isText) {
+      const text = node.text
+      if (!text) return
+
+      let match
+      let offset = 0
+
+      while ((match = latexRegex.exec(text))) {
+        const from = pos + match.index - offset
+        const to = from + match[0].length
+
+        tr.replaceWith(from, to, state.schema.nodes.katex.create({ latexFormula: match[1].trim() }))
+
+        offset += match[0].length - 1
+        changed = true
+      }
+    }
+  })
+
+  if (changed) dispatch(tr)
+}
 
 export function parseLatex(text: string) {
   const regex = /\\\((.*?)\\\)/g
