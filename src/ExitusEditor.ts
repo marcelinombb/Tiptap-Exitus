@@ -80,6 +80,7 @@ class ExitusEditor extends Editor {
 
   private initializePlugins(options: Partial<ExitusEditorOptions>) {
     ExitusEditor.plugins.forEach(plugin => {
+      console.log(options.config)
       const config = options.config?.[plugin.pluginName]
       const pluginInstance = new plugin(this, config)
       pluginInstance.init()

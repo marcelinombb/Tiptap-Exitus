@@ -38,6 +38,9 @@ export class TextAlignPlugin extends Plugin {
 
   private setupActiveStateMonitoring(dropdown: Dropdown): void {
     this.editor.on('transaction', () => {
+      // Se a toolbar fixa não foi renderizada, o dropdown pode não ter botão.
+      if (!dropdown.button || !dropdown.button.button) return
+
       let currentIcon = alignLeftIcon
       let hasActiveAlignment = false
 

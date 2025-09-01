@@ -65,6 +65,7 @@
   },
   "dependencies": {
     "@simonwep/pickr": "^1.9.1",
+    "@tiptap/extension-bubble-menu": "^2.26.1",
     "@tiptap/extension-table": "^2.11.2",
     "@tiptap/pm": "^2.11.0",
     "@wiris/mathtype-html-integration-devkit": "^1.17.5",
