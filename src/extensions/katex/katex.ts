@@ -1,4 +1,5 @@
-import { InputRule, Node } from '@tiptap/core'
+import { debounce } from '@editor/utils'
+import { type Editor, InputRule, Node } from '@tiptap/core'
 import { Fragment } from '@tiptap/pm/model'
 import '../../../node_modules/katex/dist/katex.min.css'
 import { type EditorView } from '@tiptap/pm/view'
@@ -15,7 +16,11 @@ declare module '@tiptap/core' {
   }
 }
 
-export const Katex = Node.create({
+export type KatexOptions = {
+  debounceFn: (editor: Editor) => void
+}
+
+export const Katex = Node.create<KatexOptions>({
   name: 'katex',
 
   group: 'inline',
@@ -27,6 +32,14 @@ export const Katex = Node.create({
   content: 'inline*',
 
   draggable: true,
+
+  addOptions() {
+    return {
+      debounceFn: debounce((editor: Editor) => {
+        normalizeLatex(editor.view)
+      }, 300)
+    }
+  },
 
   addInputRules() {
     return [
@@ -107,8 +120,12 @@ export const Katex = Node.create({
     }
   },
 
+  onCreate() {
+    normalizeLatex(this.editor.view)
+  },
+
   onTransaction({ editor }) {
-    normalizeLatex(editor.view)
+    this.options.debounceFn(editor)
   }
 })
 
