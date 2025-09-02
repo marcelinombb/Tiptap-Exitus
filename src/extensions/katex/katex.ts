@@ -131,30 +131,32 @@ export const Katex = Node.create<KatexOptions>({
 
 function normalizeLatex(view: EditorView) {
   const { state, dispatch } = view
-  const tr = state.tr
-  let changed = false
+  let tr = state.tr
+  const matches: { start: number; end: number; value: string }[] = []
 
+  // collect all matches
   state.doc.descendants((node, pos) => {
-    if (node.isText) {
-      const text = node.text
-      if (!text) return
-
+    if (node.isText && node.text) {
+      const regex = latexRegex
       let match
-      let offset = 0
-
-      while ((match = latexRegex.exec(text))) {
-        const from = pos + match.index - offset
-        const to = from + match[0].length
-
-        tr.replaceWith(from, to, state.schema.nodes.katex.create({ latexFormula: match[1].trim() }))
-
-        offset += match[0].length - 1
-        changed = true
+      while ((match = regex.exec(node.text)) !== null) {
+        const start = pos + match.index
+        const end = start + match[0].length
+        matches.push({ start, end, value: match[1] })
       }
     }
   })
 
-  if (changed) dispatch(tr)
+  // apply replacements from the end → start
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const { start, end, value } = matches[i]
+    const node = state.schema.nodes.katex.create({ latexFormula: value.trim() })
+    tr = tr.replaceWith(start, end, node)
+  }
+
+  if (tr.docChanged) {
+    dispatch(tr)
+  }
 }
 
 export function parseLatex(text: string) {
