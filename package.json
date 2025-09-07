@@ -64,6 +64,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
+    "@floating-ui/dom": "^1.7.4",
     "@simonwep/pickr": "^1.9.1",
     "@tiptap/extension-table": "^2.11.2",
     "@tiptap/pm": "^2.11.0",
