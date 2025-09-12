@@ -1,8 +1,12 @@
-import { InputRule, Node } from '@tiptap/core'
+import { debounce } from '@editor/utils'
+import { type Editor, InputRule, Node } from '@tiptap/core'
 import { Fragment } from '@tiptap/pm/model'
 import '../../../node_modules/katex/dist/katex.min.css'
+import { type EditorView } from '@tiptap/pm/view'
 
 import { KatexView } from './index'
+
+const latexRegex = /\$\$([\s\S]+?)\$\$/g
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -12,7 +16,11 @@ declare module '@tiptap/core' {
   }
 }
 
-export const Katex = Node.create({
+export type KatexOptions = {
+  debounceFn: (editor: Editor) => void
+}
+
+export const Katex = Node.create<KatexOptions>({
   name: 'katex',
 
   group: 'inline',
@@ -25,10 +33,18 @@ export const Katex = Node.create({
 
   draggable: true,
 
+  addOptions() {
+    return {
+      debounceFn: debounce((editor: Editor) => {
+        normalizeLatex(editor.view)
+      }, 300)
+    }
+  },
+
   addInputRules() {
     return [
       new InputRule({
-        find: /\$\$([\s\S]+?)\$\$$/,
+        find: latexRegex,
         handler: ({ state, range, match }) => {
           const latex = match[1]
           const { tr } = state
@@ -102,8 +118,46 @@ export const Katex = Node.create({
     return ({ node, editor, getPos }) => {
       return new KatexView(node, editor, getPos)
     }
+  },
+
+  onCreate() {
+    normalizeLatex(this.editor.view)
+  },
+
+  onTransaction({ editor }) {
+    this.options.debounceFn(editor)
   }
 })
+
+function normalizeLatex(view: EditorView) {
+  const { state, dispatch } = view
+  let tr = state.tr
+  const matches: { start: number; end: number; value: string }[] = []
+
+  // collect all matches
+  state.doc.descendants((node, pos) => {
+    if (node.isText && node.text) {
+      const regex = latexRegex
+      let match
+      while ((match = regex.exec(node.text)) !== null) {
+        const start = pos + match.index
+        const end = start + match[0].length
+        matches.push({ start, end, value: match[1] })
+      }
+    }
+  })
+
+  // apply replacements from the end → start
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const { start, end, value } = matches[i]
+    const node = state.schema.nodes.katex.create({ latexFormula: value.trim() })
+    tr = tr.replaceWith(start, end, node)
+  }
+
+  if (tr.docChanged) {
+    dispatch(tr)
+  }
+}
 
 export function parseLatex(text: string) {
   const regex = /\\\((.*?)\\\)/g
