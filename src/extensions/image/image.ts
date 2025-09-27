@@ -3,6 +3,8 @@ import { Fragment } from '@tiptap/pm/model'
 import { Plugin, PluginKey } from 'prosemirror-state'
 
 import { ImageView } from './imageView'
+import { EditorView } from '@tiptap/pm/view'
+import { FloatingMenuPlugin } from '@editor/ui/FloatingMenu'
 
 export function convertToBase64(img: HTMLImageElement, callback: (base64Url: string, width: number) => void) {
   return function () {
@@ -199,6 +201,14 @@ export const Image = Node.create<ImageOptions>({
   },
   addProseMirrorPlugins() {
     const self = this
+
+    const floatingMenuElement = document.createElement("div")
+    floatingMenuElement.innerHTML = "<strong>Teste</strong>"
+    floatingMenuElement.style.visibility = 'hidden'
+    floatingMenuElement.style.width = 'max-content'
+
+    //document.body.appendChild(floatingMenuElement)
+
     return [
       new Plugin({
         key: new PluginKey('eventHandler'),
@@ -219,10 +229,23 @@ export const Image = Node.create<ImageOptions>({
                 return true
               }
               return false
+            },
+            paste: (view: EditorView, event: ClipboardEvent) => {
+              console.log(view, event);
+
             }
           }
         }
-      })
+      }),
+      FloatingMenuPlugin({
+        pluginKey: "teste",
+        editor: this.editor,
+        element: floatingMenuElement,
+        updateDelay: 250,
+        options: { strategy: 'absolute', placement: 'bottom', flip: true },
+        appendTo: undefined,
+        shouldShow: null,
+      }),
     ]
   }
 })
