@@ -235,6 +235,10 @@ export class ImageView implements NodeView {
 
     this.imageWrapper.appendChild(this.balloon.getBalloon())
 
+    this.image.onload = () => {
+      this.imageWrapper.style.width = this.image.width + 'px'
+    }
+
     this.imageClickHandler()
 
     this.dom = this.imageWrapper
