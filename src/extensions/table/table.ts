@@ -43,7 +43,7 @@ export const TableCustom = Table.extend({
     }
   },
   renderHTML({ node, HTMLAttributes }) {
-    const { colgroup, tableWidth, tableMinWidth } = createColGroup(node, this.options.cellMinWidth)
+    const { colgroup, tableWidth, tableMinWidth } = createColGroup(node, this.options.cellMinWidth, undefined, undefined, this.editor)
 
     const style = HTMLAttributes.style || {}
     const styleTableWrapper = HTMLAttributes.styleTableWrapper || {}

@@ -1,3 +1,4 @@
+import { type Editor } from '@tiptap/core'
 import { type DOMOutputSpec, type Node as ProseMirrorNode } from '@tiptap/pm/model'
 
 import { calculatePercentage, getColStyleDeclaration } from './colStyle'
@@ -17,11 +18,13 @@ export type ColGroup =
  * @param cellMinWidth - The minimum width of a cell in the table.
  * @param overrideCol - (Optional) The index of the column to override the width of.
  * @param overrideValue - (Optional) The width value to use for the overridden column.
+ * @param editor - (Optional) The width value to use for the overridden column.
  * @returns An object containing the colgroup element, the total width of the table, and the minimum width of the table.
  */
-export function createColGroup(node: ProseMirrorNode, cellMinWidth: number): ColGroup
-export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, overrideCol: number, overrideValue: number): ColGroup
-export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, overrideCol?: number, overrideValue?: number): ColGroup {
+//export function createColGroup(node: ProseMirrorNode, cellMinWidth: number): ColGroup
+//export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, overrideCol: number, overrideValue: number): ColGroup
+//export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, overrideCol?: number, overrideValue?: number): ColGroup {
+export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, overrideCol?: number, overrideValue?: number, editor?: Editor): ColGroup {
   let totalWidth = 0
   let fixedWidth = true
   const cols: DOMOutputSpec[] = []
@@ -35,7 +38,11 @@ export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, over
     const { colspan, colwidth } = row.child(i).attrs
 
     for (let j = 0; j < colspan; j += 1, col += 1) {
-      const hasWidth = overrideCol === col ? overrideValue : colwidth && (colwidth[j] as number | undefined)
+      let hasWidth = overrideCol === col ? overrideValue : colwidth && (colwidth[j] as number | undefined)
+
+      const dom = editor!.view ? editor!.view.nodeDOM(findNodePosition(editor!, row.child(i))) : null
+
+      hasWidth = hasWidth || (dom ? (dom as HTMLElement).offsetWidth : 0)
 
       totalWidth += hasWidth || cellMinWidth
 
@@ -55,4 +62,19 @@ export function createColGroup(node: ProseMirrorNode, cellMinWidth: number, over
   const colgroup: DOMOutputSpec = ['colgroup', {}, ...cols]
 
   return { colgroup, tableWidth, tableMinWidth }
+}
+
+function findNodePosition(editor: Editor, targetNode: ProseMirrorNode) {
+  const { doc } = editor.view.state
+  let position = -1
+
+  doc.descendants((node, pos) => {
+    if (node === targetNode) {
+      position = pos
+      return false // Stop traversing
+    }
+    return true
+  })
+
+  return position
 }
