@@ -216,10 +216,12 @@ export class ImageView implements NodeView {
     if (imageUrlRegex.test(node.attrs.src)) {
       this.urlToBase64(node.attrs.src)
     } else {
-      this.image.onload = () => {
-        this.originalSize = this.image.width
-        this.image.onload = null
-      }
+
+      this.image.addEventListener("load", () => {
+        this.originalSize = this.image.width;        
+        this.updateAttributes({ style: `width: ${this.originalSize}px` })
+      }, { once: true });
+
     }
 
     // Adiciona redimensionamento de imagens
@@ -306,11 +308,16 @@ export class ImageView implements NodeView {
     const image = new Image()
     image.src = `${this.proxyUrl}/${encodeURIComponent(url)}`
     image.setAttribute('crossorigin', 'anonymous')
-    image.onload = convertToBase64(image, (base64Url, width) => {
+
+    this.image.addEventListener("load", () => {
+      convertToBase64(image, (base64Url, width) => {
       this.updateAttributes({ src: base64Url })
-      image.onload = null
-      this.originalSize = width
+      this.originalSize = width;
+      this.updateAttributes({ style: `width: ${width}px` })
     })
+
+    }, { once: true });
+
   }
 
   ignoreMutation(mutation: ViewMutationRecord) {
