@@ -55,7 +55,7 @@
     </div>
 
     <script>
-      const defaultText =`<table class="table-resized" style=""><colgroup><col style="width: 3.5006%"><col style="width: 3.5006%"><col style="width: 3.5006%"></colgroup><tbody><tr><td colspan="1" rowspan="1" style="" colwidth=""><p style="margin-left: 0px!important;"><br class="ProseMirror-trailingBreak"></p></td><td colspan="1" rowspan="1" style="" colwidth=""><p style="margin-left: 0px!important;"><br class="ProseMirror-trailingBreak"></p></td><td colspan="1" rowspan="1" style="" colwidth=""><p style="margin-left: 0px!important;"><br class="ProseMirror-trailingBreak"></p></td></tr><tr><td colspan="1" rowspan="1" style="" colwidth=""><p style="margin-left: 0px!important;"><br class="ProseMirror-trailingBreak"></p></td><td colspan="1" rowspan="1" style="" colwidth=""><p style="margin-left: 0px!important;"><br class="ProseMirror-trailingBreak"></p></td><td colspan="1" rowspan="1" style="" colwidth=""><p style="margin-left: 0px!important;"><br class="ProseMirror-trailingBreak"></p></td></tr></tbody></table>`
+      const defaultText =``
       const exitusEditor = new ExitusEditor({
         container: document.querySelector('.element'),
         content: defaultText,
@@ -77,6 +77,7 @@
           image: {
             proxyUrl: "https://us-central1-desenvolvimento-271520.cloudfunctions.net/imagem-conversao-base64/proxy",
             allowBase64: true,
+            imgColorida: true,
           },
           initialHeight: 400
         }

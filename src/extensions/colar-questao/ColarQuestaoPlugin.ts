@@ -1,4 +1,4 @@
-import './style.css'
+import './style.css'  
 import { Plugin } from '@editor/Plugin'
 import { getHTMLFromFragment } from '@editor/utils'
 

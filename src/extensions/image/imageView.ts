@@ -1,6 +1,7 @@
 import { Toolbar } from '@editor/toolbar'
 import { Button, type ButtonEventProps, type Dropdown, type DropDownEventProps } from '@editor/ui'
 import { Balloon, BalloonPosition } from '@editor/ui/Balloon'
+import crop from '@icons/crop.svg'
 import imgCaption from '@icons/image-caption.svg'
 import imgFloatLeft from '@icons/image-float-left.svg'
 import imgFloatRight from '@icons/image-float-right.svg'
@@ -8,6 +9,7 @@ import textDl from '@icons/image-left.svg'
 import textDm from '@icons/image-middle.svg'
 import textDr from '@icons/image-right.svg'
 import imgSize from '@icons/image-size.svg'
+import pallet from '@icons/palette.svg'
 import type ExitusEditor from '@src/ExitusEditor'
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
@@ -15,12 +17,28 @@ import { type Node } from '@tiptap/pm/model'
 import { NodeSelection } from '@tiptap/pm/state'
 import { type NodeView, type ViewMutationRecord } from '@tiptap/pm/view'
 
-import { convertToBase64 } from './image'
+import ImageCropper from './ImageCropper'
 import ResizableImage from './ResizableImage'
 
+async function blobUrlToFile(blobUrl: string, fileName: string) {
+  // Fetch the blob back from the blob URL
+  const response = await fetch(blobUrl)
+  const blob = await response.blob()
+
+  // Convert blob to File
+  return new File([blob], fileName, {
+    type: blob.type,
+    lastModified: Date.now()
+  })
+}
+
 function resetImageClass(imageWrapper: HTMLElement, newClass: string) {
+  const hadGray = imageWrapper.classList.contains('ex-image-grayscale')
   imageWrapper.className = ''
   imageWrapper.classList.add('ex-image-wrapper', 'tiptap-widget', newClass)
+  if (hadGray) {
+    imageWrapper.classList.add('ex-image-grayscale')
+  }
 }
 
 function alinhaDireita(imageView: ImageView) {
@@ -169,6 +187,22 @@ function showDropdownAlinnhamentoTexto({ event, dropdown }: DropDownEventProps) 
     dropdown.on()
   }
 }
+
+function colorToggle(imageView: ImageView) {
+  return ({ button }: ButtonEventProps) => {
+    const { imageWrapper } = imageView
+    if (imageWrapper.classList.contains('ex-image-grayscale')) {
+      imageWrapper.classList.remove('ex-image-grayscale')
+      button.on()
+    } else {
+      imageWrapper.classList.add('ex-image-grayscale')
+      button.off()
+    }
+    imageView.updateAttributes({
+      classes: imageWrapper.className
+    })
+  }
+}
 export class ImageView implements NodeView {
   node: Node
   dom: Element
@@ -180,13 +214,15 @@ export class ImageView implements NodeView {
   editor: Editor
   getPos: boolean | (() => number)
   resizer: ResizableImage
+  cropper: ImageCropper
   originalSize: number = 300
 
   constructor(
     node: Node,
     editor: Editor,
     getPos: boolean | (() => number),
-    public proxyUrl: string | undefined
+    public uploadServer: { server: string; ignoreUrlsPrefix?: string[] } | undefined,
+    public imgColorida: boolean = false
   ) {
     this.node = node
     this.editor = editor
@@ -195,6 +231,10 @@ export class ImageView implements NodeView {
     this.imageWrapper = document.createElement('figure')
     this.imageWrapper.draggable = true
     this.imageWrapper.className = node.attrs.classes
+    // aplicar grayscale por padrão apenas se imgColorida for false
+    if (!this.imgColorida) {
+      this.imageWrapper.classList.add('ex-image-grayscale')
+    }
 
     this.image = this.imageWrapper.appendChild(document.createElement('img'))
     this.setImageAttributes(this.image, node)
@@ -211,19 +251,19 @@ export class ImageView implements NodeView {
 
     this.contentDOM = this.figcaption
 
-    const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
+    this.uploadToMidiaServer(node.attrs.src)
 
-    if (imageUrlRegex.test(node.attrs.src)) {
-      this.urlToBase64(node.attrs.src)
-    } else {
-      this.image.onload = () => {
-        this.originalSize = this.image.width
-        this.image.onload = null
-      }
-    }
+    // Inicializa o resizer com configurações do Tiptap
+    this.resizer = new ResizableImage(this, {
+      directions: ['topLeft', 'topRight', 'bottomLeft', 'bottomRight'],
+      minWidth: 50,
+      minHeight: 50,
+      maxWidth: 700,
+      maxHeight: 700,
+      preserveAspectRatio: true
+    })
 
-    // Adiciona redimensionamento de imagens
-    this.resizer = new ResizableImage(this)
+    this.cropper = new ImageCropper(this)
 
     const toolbar = this.setupToolbar()
 
@@ -234,10 +274,6 @@ export class ImageView implements NodeView {
     this.balloon.ballonPanel.appendChild(toolbar.render())
 
     this.imageWrapper.appendChild(this.balloon.getBalloon())
-
-    this.image.onload = () => {
-      this.imageWrapper.style.width = this.image.width + 'px'
-    }
 
     this.imageClickHandler()
 
@@ -280,8 +316,12 @@ export class ImageView implements NodeView {
         const target = event.target as HTMLElement
 
         if (target.closest('.ex-image-wrapper') === null) {
+          if (this.cropper.active) {
+            this.cropper.cancel()
+          }
           this.balloon.hide()
           this.imageWrapper.classList.remove('ex-selected')
+          this.resizer.hide()
           window.removeEventListener('mousedown', clickOutside)
         }
       }
@@ -299,18 +339,46 @@ export class ImageView implements NodeView {
 
   selectNode() {
     this.imageWrapper.classList.add('ex-selected')
+    this.resizer.show()
     this.balloon.show()
   }
 
-  urlToBase64(url: string) {
-    const image = new Image()
-    image.src = `${this.proxyUrl}/${encodeURIComponent(url)}`
-    image.setAttribute('crossorigin', 'anonymous')
-    image.onload = convertToBase64(image, (base64Url, width) => {
-      this.updateAttributes({ src: base64Url })
-      image.onload = null
-      this.originalSize = width
-    })
+  async uploadToMidiaServer(url: string) {
+    //const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
+    if (url.startsWith('blob:')) {
+      const imageFile = await blobUrlToFile(url, 'upload.png')
+
+      const formData = new FormData()
+      formData.append('file', imageFile)
+
+      this.imageWrapper.classList.add('ex-image-uploading')
+
+      fetch(`${this.uploadServer?.server}`, {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.imageWrapper.classList.remove('ex-image-uploading')
+          this.updateAttributes({ src: data.url })
+        })
+
+      return
+    }
+
+    if (!this.uploadServer?.ignoreUrlsPrefix?.some(prefix => url.startsWith(prefix)) && !url.startsWith('data:image')) {
+      this.imageWrapper.classList.add('ex-image-uploading')
+      fetch(`${this.uploadServer?.server}?url=${encodeURIComponent(url)}`, {
+        method: 'GET'
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.imageWrapper.classList.remove('ex-image-uploading')
+          this.updateAttributes({ src: data.url })
+        })
+
+      return
+    }
   }
 
   ignoreMutation(mutation: ViewMutationRecord) {
@@ -344,7 +412,9 @@ export class ImageView implements NodeView {
       'alinhaMeio',
       'alinhaDireita',
       'tamanhoImg',
-      'alinhamentoTexto'
+      'alinhamentoTexto',
+      'colorirImagem',
+      'cortarImagem'
     ])
     toolbar.setButton('adicionarLegenda', {
       icon: imgCaption,
@@ -392,6 +462,18 @@ export class ImageView implements NodeView {
         return criarDropDownAlinhamentoTexto(dropdown, this)
       }
     )
+    toolbar.setButton('colorirImagem', {
+      icon: pallet,
+      click: colorToggle(this),
+      tooltip: 'Colorir/descolorir imagem'
+    })
+    toolbar.setButton('cortarImagem', {
+      icon: crop,
+      click: ({ button }) => {
+        this.cropper.toggle(button)
+      },
+      tooltip: 'Cortar imagem'
+    })
 
     return toolbar
   }

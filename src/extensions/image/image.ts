@@ -50,11 +50,22 @@ export function parseImagesToBase64(img: File, editor: Editor) {
   }
 }
 
+export function imageFileToBlobUrl(img: File, editor: Editor) {
+  if (img) {
+    editor
+      .chain()
+      .focus()
+      .setImage({ src: URL.createObjectURL(img) })
+      .run()
+  }
+}
+
 export interface ImageOptions {
   inline: boolean
   allowBase64: boolean
   HTMLAttributes: Record<string, any>
-  proxyUrl: string | undefined
+  uploadServer: { server: string; ignoreUrlsPrefix?: string[] } | undefined
+  imgColorida: boolean
 }
 
 declare module '@tiptap/core' {
@@ -75,7 +86,8 @@ export const Image = Node.create<ImageOptions>({
       inline: false,
       allowBase64: false,
       HTMLAttributes: {},
-      proxyUrl: undefined
+      uploadServer: undefined,
+      imgColorida: false
     }
   },
 
@@ -98,6 +110,9 @@ export const Image = Node.create<ImageOptions>({
   defining: true,
 
   addAttributes() {
+    const baseClasses = 'ex-image-wrapper ex-image-block-middle tiptap-widget'
+    const defaultClasses = this.options.imgColorida ? baseClasses : `${baseClasses} ex-image-grayscale`
+
     return {
       src: {
         default: null
@@ -109,7 +124,7 @@ export const Image = Node.create<ImageOptions>({
         default: null
       },
       classes: {
-        default: 'ex-image-wrapper ex-image-block-middle tiptap-widget'
+        default: defaultClasses
       },
       style: {
         default: '',
@@ -139,9 +154,15 @@ export const Image = Node.create<ImageOptions>({
           const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
           const isBase64Url = /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(node.getAttribute('src') as string)
           const isUrlImage = imageUrlRegex.test(node.getAttribute('src') as string)
-          return (
-            (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure' || isUrlImage || isBase64Url) && null
-          )
+
+          if (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure' || isUrlImage || isBase64Url) {
+            const parentClasses = parent.className
+            if (parentClasses && (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure')) {
+              return { classes: parentClasses }
+            }
+            return null
+          }
+          return false
         },
         getContent: (node, schema) => {
           const figcaption = (node.parentElement as HTMLElement).querySelector('figcaption')
@@ -194,7 +215,7 @@ export const Image = Node.create<ImageOptions>({
   },
   addNodeView() {
     return ({ node, editor, getPos }) => {
-      return new ImageView(node, editor, getPos, this.options.proxyUrl)
+      return new ImageView(node, editor, getPos, this.options.uploadServer, this.options.imgColorida)
     }
   },
   addProseMirrorPlugins() {
@@ -203,23 +224,46 @@ export const Image = Node.create<ImageOptions>({
       new Plugin({
         key: new PluginKey('eventHandler'),
         props: {
-          handleDOMEvents: {
-            drop: (_view, event) => {
-              const hasFiles = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length
-
-              if (hasFiles) {
-                const images = Array.from(event.dataTransfer?.files ?? []).filter(file => /image/i.test(file.type))
-
-                if (images.length === 0) {
-                  return false
-                }
-                images.forEach(image => parseImagesToBase64(image, self.editor))
-
-                event.preventDefault()
-                return true
-              }
+          handlePaste: (_view, event) => {
+            if (!(event.clipboardData && event.clipboardData.files.length)) {
               return false
             }
+
+            const images = Array.from(event.clipboardData.files).filter(file => /image/i.test(file.type))
+
+            if (images.length === 0) {
+              return false
+            }
+
+            if (this.options.uploadServer) {
+              images.forEach(image => imageFileToBlobUrl(image, self.editor))
+            } else {
+              images.forEach(image => parseImagesToBase64(image, self.editor))
+            }
+
+            event.preventDefault()
+            return true
+          },
+          handleDrop: (_view, event, _slice, _moved) => {
+            const hasFiles = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length
+
+            if (hasFiles) {
+              const images = Array.from(event.dataTransfer?.files ?? []).filter(file => /image/i.test(file.type))
+
+              if (images.length === 0) {
+                return false
+              }
+
+              if (this.options.uploadServer) {
+                images.forEach(image => imageFileToBlobUrl(image, self.editor))
+              } else {
+                images.forEach(image => parseImagesToBase64(image, self.editor))
+              }
+
+              event.preventDefault()
+              return true
+            }
+            return false
           }
         }
       })

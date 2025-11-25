@@ -155,14 +155,29 @@ p {
 .ex-toolbar-editor,
 .ex-toolbar-items {
   display: flex;
-  background-color: #fff;
+  background: #f8fafc;
 }
 
 .ex-toolbar-editor {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  border: 1px solid var(--border-gray);
+  border-radius: 12px 12px 0 0;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   padding: 0 calc(0.6em * 0.5);
+  margin-bottom: -2px;
+  border: 1px solid var(--border-gray);
+  background: #f8fafc;
+}
+
+.ex-toolbar-editor .ex-toolbar-items {
+  align-items: center;
+  border-radius: 10px;
+  background: #f8fafc;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.281);
+  margin: 6px 7px;
+  padding: 3px 1%;
+  gap: 6px;
+  width: 100%;
+  justify-content: start;
 }
 
 .ex-toolbar-items {
@@ -215,6 +230,7 @@ p {
     border 0.2s;
   border: 1px solid transparent;
   border-radius: 5px;
+  color: #000000e0;
 }
 
 .ex-text-left {
@@ -227,7 +243,9 @@ p {
 
 .ex-button-active {
   color: var(--active-blue);
-  background-color: #cae1fc;
+  background-color: #e0f0ff;
+  border: 1px solid var(--active-blue);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
 }
 
 .ex-hidden {
@@ -235,10 +253,12 @@ p {
 }
 
 .ex-toolbar-button:not(.ex-bolinha):not(.ex-focus-table):not(.ex-button-disabled):hover {
-  background: #f0f0f0;
+  background: #e0e7ef;
+  border: 1px solid var(--active-blue);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 .ex-button-disabled {
-  opacity: .5;
+  opacity: 0.5;
   z-index: 3;
 }
 
@@ -250,13 +270,15 @@ p {
   margin-top: var(--spacing-sm);
   min-width: 1px;
   width: 1px;
-  margin-right: var(--spacing-sm);
+  margin-right: var(--spacing-md);
+  border-radius: 2px;
 }
 
 .ex-toolbar-button svg {
   width: 20px;
   height: 20px;
 }
+
 
 .ex-bolinha svg {
   width: 15px;

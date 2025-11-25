@@ -99,7 +99,9 @@ export class TableView implements NodeView {
   }
 
   destroy() {
-    this.tableBalloonToolbar.balloon.destroy()
+    if (this.tableBalloonToolbar?.balloon) {
+      this.tableBalloonToolbar.balloon.destroy()
+    }
     //this.tableCellBalloon.destroy()
   }
 

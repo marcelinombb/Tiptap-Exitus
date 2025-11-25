@@ -149,7 +149,9 @@ export class MathTypePlugin extends Plugin {
 
   destroy(): void {
     this.dbClick && this.editor.view.dom.removeEventListener('click', this.dbClick)
-    this.integration.destroy()
-    this.integration = null
+    if (this.integration) {
+      this.integration.destroy()
+      this.integration = null
+    }
   }
 }
