@@ -84,7 +84,7 @@ export const Image = Node.create<ImageOptions>({
   },
 
   group() {
-    return 'block'
+    return this.options.inline ? 'inline' : 'block'
   },
 
   selectable: false,
